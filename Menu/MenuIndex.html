@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Taverns & Castles - Menu</title>
+    <title>Taverns & Castles - Vstup do kráľovstva</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,29 +14,41 @@
 <body>
 
     <div id="main-menu">
+        
         <div class="menu-container">
             
             <div class="menu-left">
-                <div class="image-overlay"></div>
+                <div class="logo-backglow"></div>
+                
+                <div class="vertical-divider"></div>
             </div>
 
             <div class="menu-right">
-                <h1 class="game-title">TAVERNS<br>&<br>CASTLES</h1>
                 
+                <div class="ornament-top">◈ ════════════ ◈</div>
+
                 <nav class="menu-nav">
-                    <button class="menu-btn" onclick="startGame()">Start</button>
-                    <button class="menu-btn">Options</button>
-                    <button class="menu-btn">Quit</button>
+                    
+                    <button class="menu-btn start-btn" id="btn-start" onclick="startGame()">Vstúpiť do hry</button>
+                    
+                    <button class="menu-btn chronicle-btn" onclick="openOptions()">Kronika sveta (Options)</button>
+                    
+                    <button class="menu-btn quit-btn" onclick="quitGame()">Opustiť krčmu (Quit)</button>
                 </nav>
 
+                <div class="ornament-bottom">◈ ════════════ ◈</div>
+
                 <div class="menu-footer">
-                    <p>Verzia 0.1 | 2026 Project</p>
+                    <p>Verzia 0.1 | Anno Domini MMXXVI</p>
                 </div>
+                
+                <div class="pergamen-corners"></div>
             </div>
 
         </div>
     </div>
 
     <script src="MenuScript.js"></script>
+
 </body>
 </html>
