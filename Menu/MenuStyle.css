@@ -34,12 +34,13 @@ body {
 
 .menu-left {
     flex: 1.2;
-    /* Cesta k tvojmu obrázku v priečinku Main/assets/images */
-    background-image: url('../Main/assets/images/menu_art.jpg'); 
-    background-size: cover;
-    background-position: center;
-    background-color: #000;
-    border-right: 4px solid #8b4513;
+    background-image: url('../Resources/chart.png');
+    background-size: contain;   
+    background-repeat: no-repeat; 
+    background-position: center; 
+    
+    background-color: #111; 
+    border-right: 4px solid #8b4513; 
 }
 
 .menu-right {
