@@ -4,51 +4,53 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Taverns & Castles - Vstup do kráľovstva</title>
-    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet">
-    
     <link rel="stylesheet" href="MenuStyle.css">
 </head>
 <body>
 
+    <div class="fog-overlay"></div>
+    <div class="ash-particles">
+        <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+    </div>
+
     <div id="main-menu">
         
-        <div class="menu-container">
+        <div class="iron-corner top-left"></div>
+        <div class="iron-corner top-right"></div>
+        <div class="iron-corner bottom-left"></div>
+        <div class="iron-corner bottom-right"></div>
+
+        <div class="menu-left">
+            <div class="hearth-light"></div>
+            <div class="logo"></div>
+        </div>
+
+        <div class="menu-right">
+            <div class="burnt-edges"></div>
             
-            <div class="menu-left">
-                <div class="logo-backglow"></div>
+            <div class="parchment-content">
+                <div class="gothic-ornament">⚜ ✠ ⚜</div>
                 
-                <div class="vertical-divider"></div>
+                <button class="menu-btn" onclick="startGame()">
+                    <span class="rune">⚔</span> Vstúpiť do hry <span class="rune">⚔</span>
+                </button>
+                <button class="menu-btn" onclick="openOptions()">
+                    <span class="rune">⚜</span> Kronika sveta <span class="rune">⚜</span>
+                </button>
+                <button class="menu-btn" onclick="quitGame()">
+                    <span class="rune">☠</span> Opustiť krčmu <span class="rune">☠</span>
+                </button>
+                
+                <div class="gothic-ornament">⚜ ✠ ⚜</div>
             </div>
-
-            <div class="menu-right">
-                
-                <div class="ornament-top">◈ ════════════ ◈</div>
-
-                <nav class="menu-nav">
-                    
-                    <button class="menu-btn start-btn" id="btn-start" onclick="startGame()">Vstúpiť do hry</button>
-                    
-                    <button class="menu-btn chronicle-btn" onclick="openOptions()">Kronika sveta (Options)</button>
-                    
-                    <button class="menu-btn quit-btn" onclick="quitGame()">Opustiť krčmu (Quit)</button>
-                </nav>
-
-                <div class="ornament-bottom">◈ ════════════ ◈</div>
-
-                <div class="menu-footer">
-                    <p>Verzia 0.1 | Anno Domini MMXXVI</p>
-                </div>
-                
-                <div class="pergamen-corners"></div>
-            </div>
-
+            
+            <div class="wax-seal">MMXXVI</div>
         </div>
     </div>
 
     <script src="MenuScript.js"></script>
-
 </body>
 </html>
