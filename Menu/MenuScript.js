@@ -1,9 +1,16 @@
 function startGame() {
-    // Skryje celé menu
-    document.getElementById('main-menu').style.opacity = '0';
+    const menu = document.getElementById('main-menu');
+    menu.style.opacity = '0';
+
     setTimeout(() => {
-        document.getElementById('main-menu').style.display = 'none';
-        // Tu môžeš pridať spustenie hudby
-        console.log("Hra spustená...");
-    }, 500);
+        window.location.href = "../Main/index.html";
+    }, 600);
+}
+
+function openOptions() {
+    console.log("Options clicked");
+}
+
+function quitGame() {
+    console.log("Quit clicked");
 }
