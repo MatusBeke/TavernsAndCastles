@@ -3,51 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Taverns & Castles - Vstup do kráľovstva</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <title>Taverns & Castles</title>
     <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="MenuStyle.css">
 </head>
 <body>
+    
+    <div class="menu-right-image"></div>
 
-    <div class="fog-overlay"></div>
-    <div class="ash-particles">
-        <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
-    </div>
-
-    <div id="main-menu">
-        
-        <div class="iron-corner top-left"></div>
-        <div class="iron-corner top-right"></div>
-        <div class="iron-corner bottom-left"></div>
-        <div class="iron-corner bottom-right"></div>
-
-        <div class="menu-left">
-            <div class="hearth-light"></div>
-            <div class="logo"></div>
-        </div>
-
-        <div class="menu-right">
-            <div class="burnt-edges"></div>
-            
-            <div class="parchment-content">
-                <div class="gothic-ornament">⚜ ✠ ⚜</div>
-                
-                <button class="menu-btn" onclick="startGame()">
-                    <span class="rune">⚔</span> Vstúpiť do hry <span class="rune">⚔</span>
-                </button>
-                <button class="menu-btn" onclick="openOptions()">
-                    <span class="rune">⚜</span> Kronika sveta <span class="rune">⚜</span>
-                </button>
-                <button class="menu-btn" onclick="quitGame()">
-                    <span class="rune">☠</span> Opustiť krčmu <span class="rune">☠</span>
-                </button>
-                
-                <div class="gothic-ornament">⚜ ✠ ⚜</div>
-            </div>
-            
-            <div class="wax-seal">MMXXVI</div>
+    <div class="menu-left-content">
+        <div class="nav-container">
+            <button class="menu-btn" onclick="startGame()">Vstúpiť do hry</button>
+            <button class="menu-btn" onclick="openOptions()">Kronika sveta</button>
+            <button class="menu-btn" onclick="quitGame()">Opustiť krčmu</button>
         </div>
     </div>
 
