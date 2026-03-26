@@ -1,19 +1,3 @@
-<<<<<<< Updated upstream
-/* Import fontu - uisti sa, že súbor máš v priečinku */
-@font-face {
-    font-family: 'Chomsky';
-    src: url('Chomsky.otf'); /* Ak ho máš inde, uprav cestu */
-}
-
-#main-menu {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: #1a1a1a;
-    z-index: 100; /* Musí byť nad canvasom */
-=======
 @import url('https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap');
 
 body {
@@ -22,7 +6,6 @@ body {
     background-color: #000;
     font-family: 'MedievalSharp', cursive;
     height: 100vh;
->>>>>>> Stashed changes
     display: flex;
     justify-content: center;
     align-items: center;
@@ -34,28 +17,6 @@ body {
     background: #2b2b2b;
     border: 8px double #8b4513; 
     display: flex;
-<<<<<<< Updated upstream
-    width: 80%;
-    height: 70%;
-    background: #2a2a2a;
-    border: 5px solid #8b4513;
-    box-shadow: 0 0 50px rgba(0,0,0,0.8);
-}
-
-.menu-left {
-    flex: 1;
-    border-right: 3px solid #8b4513;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: #111;
-}
-
-.image-placeholder {
-    color: #555;
-    text-align: center;
-    padding: 20px;
-=======
     overflow: hidden;
     box-shadow: 0 0 100px rgba(0,0,0,1);
 }
@@ -67,7 +28,6 @@ body {
     background-position: center;
     border-right: 4px solid #8b4513;
     background-color: #111; 
->>>>>>> Stashed changes
 }
 
 .menu-right {
@@ -76,17 +36,6 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-<<<<<<< Updated upstream
-    padding: 40px;
-}
-
-.game-title {
-    font-family: 'Chomsky', serif;
-    color: #d4af37; /* Zlatá farba */
-    font-size: 4rem;
-    margin-bottom: 50px;
-    text-shadow: 2px 2px 10px black;
-=======
     background-color: #1a1a1a;
     padding: 20px;
 }
@@ -98,42 +47,26 @@ body {
     line-height: 1;
     margin-bottom: 60px;
     text-shadow: 4px 4px 0px #000;
->>>>>>> Stashed changes
 }
 
 nav {
     display: flex;
     flex-direction: column;
-<<<<<<< Updated upstream
-    gap: 20px;
-    width: 250px;
-=======
     gap: 25px;
->>>>>>> Stashed changes
 }
 
 .menu-btn {
-    font-family: 'Chomsky', serif;
-    background: transparent;
+    font-family: 'MedievalSharp', cursive;
+    background: none;
     border: none;
-<<<<<<< Updated upstream
-    color: white;
-    font-size: 2rem;
-    cursor: pointer;
-    transition: 0.3s;
-=======
     color: #fff;
     font-size: 2.5rem;
     cursor: pointer;
     transition: 0.3s ease;
->>>>>>> Stashed changes
 }
 
 .menu-btn:hover {
     color: #d4af37;
-<<<<<<< Updated upstream
-    transform: scale(1.1);
-=======
     transform: translateX(10px); 
     text-shadow: 0 0 15px #d4af37;
 }
@@ -142,5 +75,4 @@ nav {
     margin-top: auto;
     color: #555;
     font-size: 0.9rem;
->>>>>>> Stashed changes
 }
