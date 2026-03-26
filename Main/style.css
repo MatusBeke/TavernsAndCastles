@@ -22,3 +22,92 @@ body {
     border-radius: 5px;
     pointer-events: none; 
 }
+
+#building-menu-element-name{
+    font-size: 50px;
+    font-family: "Roboto Serif", serif;
+}
+
+/* Container for the whole menu */
+#building-menu {
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+    background: rgba(20, 20, 25, 0.9); /* Dark semi-transparent background */
+    border-radius: 15px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: white;
+    width: fit-content;
+}
+
+/* Individual Building Card */
+#building-menu-element {
+    background: linear-gradient(145deg, #2a2a32, #1e1e24);
+    border: 2px solid #3f3f4a;
+    border-radius: 12px;
+    padding: 15px;
+    width: 160px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: transform 0.2s, border-color 0.2s;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+}
+
+#building-menu-element:hover {
+    transform: translateY(-5px);
+    border-color: #00d4ff; /* Highlight color on hover */
+}
+
+/* Building Image */
+#building-menu-element-img {
+    width: 80px;
+    height: 80px;
+    background: #333; /* Placeholder color */
+    border-radius: 8px;
+    margin-bottom: 10px;
+    object-fit: cover;
+}
+
+/* Text Styling */
+#building-menu-element-name {
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin: 5px 0;
+}
+
+#building-menu-element-level {
+    font-size: 0.8rem;
+    color: #aaa;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+#building-menu-element-price {
+    font-size: 1rem;
+    color: #ffd700; /* Gold color */
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+/* The Action Button */
+#building-menu-element-button {
+    background: #00d4ff;
+    color: #000;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    width: 100%;
+    transition: background 0.2s;
+}
+
+#building-menu-element-button:hover {
+    background: #0099bb;
+}
+
+#building-menu-element-button:active {
+    transform: scale(0.95);
+}
