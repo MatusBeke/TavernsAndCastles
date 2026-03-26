@@ -1,16 +1,42 @@
-<div id="main-menu">
-    <div class="menu-container">
-        <div class="menu-left">
-            <div class="image-placeholder">Miesto pre tvoj Art (hrad/taverna)</div>
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taverns & Castles - Menu</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="MenuStyle.css">
+</head>
+<body>
+
+    <div id="main-menu">
+        <div class="menu-container">
+            
+            <div class="menu-left">
+                <div class="image-overlay"></div>
             </div>
 
-        <div class="menu-right">
-            <h1 class="game-title">Taverns & Castles</h1>
-            <nav>
-                <button class="menu-btn" onclick="startGame()">Start</button>
-                <button class="menu-btn">Options</button>
-                <button class="menu-btn">Quit</button>
-            </nav>
+            <div class="menu-right">
+                <h1 class="game-title">Taverns <br> & <br> Castles</h1>
+                
+                <nav class="menu-nav">
+                    <button class="menu-btn" onclick="startGame()">Start</button>
+                    <button class="menu-btn" onclick="openOptions()">Options</button>
+                    <button class="menu-btn" onclick="quitGame()">Quit</button>
+                </nav>
+
+                <div class="menu-footer">
+                    <p>Verzia 0.1 | 2026 Project</p>
+                </div>
+            </div>
+
         </div>
     </div>
-</div>
+
+    <script src="MenuScript.js"></script>
+</body>
+</html>
