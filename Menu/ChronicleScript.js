@@ -10,13 +10,11 @@ function goBack() {
     }, 1000);
 }
 
-// 1. Ukladanie Hlasitosti
 const volumeSlider = document.getElementById('volume-slider');
 volumeSlider.addEventListener('input', (e) => {
     localStorage.setItem('game_volume', e.target.value);
 });
 
-// 2. Fullscreen (Celá obrazovka)
 const fullscreenBtn = document.getElementById('fullscreen-btn');
 fullscreenBtn.addEventListener('click', () => {
     if (!document.fullscreenElement) {
@@ -36,7 +34,6 @@ fullscreenBtn.addEventListener('click', () => {
     }
 });
 
-// 3. Efekty a častice (Optimalizácia výkonu)
 const particlesBtn = document.getElementById('particles-btn');
 const particleContainer = document.getElementById('particle-container');
 
@@ -56,18 +53,15 @@ particlesBtn.addEventListener('click', () => {
     }
 });
 
-// 4. Vymazanie postupu (Reset LocalStorage)
 const resetBtn = document.getElementById('reset-btn');
 resetBtn.addEventListener('click', () => {
     if(confirm("Naozaj chceš zmazať všetok svoj postup? Táto akcia sa nedá vrátiť späť!")) {
         localStorage.clear();
         alert("Kronika bola zmazaná. Tvoj postup je preč.");
-        // Obnovenie vizuálu tlačidiel do defaultu po zmazaní pamäte
         loadSettings(); 
     }
 });
 
-// Načítanie nastavení pri štarte
 function loadSettings() {
     // Hlasitosť
     const savedVolume = localStorage.getItem('game_volume');
