@@ -1,21 +1,24 @@
+//Generovanie mapy za pouzitia Perlin Noise a poyb kamery pomocou mysky
 {
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
 
-    // 1. Camera & Map State
     let camera = { x: 0, y: 0, zoom: 1 };
     let isDragging = false;
     let lastMouse = { x: 0, y: 0 };
     const MAP_SIZE = 50;
-    const TILE_SIZE = 32;
-    let mapData = []; // Store the noise values so we don't re-calculate every frame
+    const TILE_SIZE = 128;
+    let mapData = []; 
 
-    // 2. Load Images (Using the relative path we discussed)
+    let waterLevel = 0.4;
+    let landLevel = 0.75;
+    let mountainLevel = 1;
+
+    //Nacitavanie obrazkov
     const imgWater = new Image(); imgWater.src = '../Resources/Tiles/Img_WaterDefault.gif';
     const imgLand = new Image(); imgLand.src = '../Resources/Tiles/Img_LandDefault.png';
     const imgMountains = new Image(); imgMountains.src = '../Resources/Tiles/Img_MountainsDefault.png';
 
-    // Initialize Map Data
     function initMap() {
         noise.seed(Math.random());
         const NOISE_ZOOM = 0.08;
@@ -29,13 +32,9 @@
         requestAnimationFrame(draw);
     }
 
-    // 3. The Drawing Loop
     function draw() {
-        // Clear canvas and fill with a background color
         ctx.setTransform(1, 0, 0, 1, 0, 0);
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        // Apply Camera Transform
         ctx.translate(Math.floor(camera.x), Math.floor(camera.y));
         ctx.scale(camera.zoom, camera.zoom);
         ctx.imageSmoothingEnabled = false;
@@ -43,7 +42,17 @@
         for (let y = 0; y < MAP_SIZE; y++) {
             for (let x = 0; x < MAP_SIZE; x++) {
                 const n = mapData[y][x];
-                let img = n < 0.4 ? imgWater : (n < 0.75 ? imgLand : imgMountains);
+                let img;
+                
+                if (n < waterLevel){
+                    img = imgWater
+                }
+                else if(n < landLevel){
+                    img = imgLand
+                }
+                else if (n < mountainLevel){
+                    img = imgMountains
+                }
                 
                 ctx.drawImage(img, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE + 1, TILE_SIZE + 1);
             }
@@ -51,17 +60,27 @@
         requestAnimationFrame(draw);
     }
 
-    // 4. Input Listeners (Drag & Zoom)
-    
-    // Zoom with Scroll
+    // Zoom
     canvas.addEventListener('wheel', (e) => {
         e.preventDefault();
+        
         const zoomSpeed = 0.1;
-        if (e.deltaY < 0) camera.zoom += zoomSpeed;
-        else camera.zoom = Math.max(0.2, camera.zoom - zoomSpeed); // Don't zoom out too far
-    }, { passive: false });
+        const oldZoom = camera.zoom;
 
-    // Drag with Mouse
+        if (e.deltaY < 0) {
+            camera.zoom += zoomSpeed;
+        } else {
+            camera.zoom = Math.max(0.2, camera.zoom - zoomSpeed);
+        }
+
+        const mouseX = e.clientX;
+        const mouseY = e.clientY;
+        camera.x -= (mouseX - camera.x) * (camera.zoom / oldZoom - 1);
+        camera.y -= (mouseY - camera.y) * (camera.zoom / oldZoom - 1);
+
+    }, { passive: false });
+    
+    // Drag
     canvas.addEventListener('mousedown', (e) => {
         isDragging = true;
         lastMouse = { x: e.clientX, y: e.clientY };
@@ -80,11 +99,14 @@
 
     window.addEventListener('mouseup', () => isDragging = false);
 
-    // Initial Trigger
     imgMountains.onload = () => {
-        // Ensure canvas fills the screen or your container
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
+
+        // Vycentrovanie kamery na stred mapy
+        camera.x = (canvas.width / 2) - (MAP_SIZE * TILE_SIZE / 2);
+        camera.y = (canvas.height / 2) - (MAP_SIZE * TILE_SIZE / 2);
+
         initMap();
     };
 }
