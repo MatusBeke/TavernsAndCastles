@@ -115,29 +115,25 @@
 async function loadBuildingMenu() {
     const menuContainer = document.getElementById('building-menu');
     
-    try {
-        const response = await fetch('../Data/buildablesList.json');
-        const buildings = await response.json();
-        menuContainer.innerHTML = '';
 
-        buildings.forEach(building => {
-            const buildingElement = document.createElement('div');
-            buildingElement.id = 'building-menu-element'; 
+    const response = await fetch('../Data/buildablesList.json');
+    const buildings = await response.json();
+    menuContainer.innerHTML = '';
 
-            buildingElement.innerHTML = `
-                <img id="building-menu-element-img" src="${building.image}" alt="${building.name}">
-                <p id="building-menu-element-name">${building.name}</p>
-                <p id="building-menu-element-level">lvl. ${building.level}</p>
-                <p id="building-menu-element-price">${building.price} G</p>
-                <button id="building-menu-element-button" onclick="showInfo('${building.id}')">More info</button>
-            `;
+    buildings.forEach(building => {
+        const buildingElement = document.createElement('div');
+        buildingElement.id = 'building-menu-element'; 
 
-            menuContainer.appendChild(buildingElement);
-        });
+        buildingElement.innerHTML = `
+            <img id="building-menu-element-img" src="${building.image}" alt="${building.name}">
+            <p id="building-menu-element-name">${building.name}</p>
+            <p id="building-menu-element-level">lvl. ${building.level}</p>
+            <p id="building-menu-element-price">${building.price} G</p>
+            <button id="building-menu-element-button" onclick="showInfo('${building.id}')">More info</button>
+        `;
 
-    } catch (error) {
-        console.error("Chyba pri načítaní menu:", error);
-    }
+        menuContainer.appendChild(buildingElement);
+    });
 }
 
 function showInfo(id) {
