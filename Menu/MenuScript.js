@@ -55,11 +55,9 @@ function quitGame() {
     }, 50);
 
     setTimeout(() => {
-        // 1. Najagresívnejší pokus zavrieť okno (Funguje v desktopových apkách)
         window.open('', '_self', '');
         window.close();
         
-        // 2. Ak to prehliadač zablokuje, hra sa úplne "zabije" a ostane len prázdna čierna tma
         document.documentElement.innerHTML = "";
         document.documentElement.style.backgroundColor = "black";
         window.location.replace("about:blank");

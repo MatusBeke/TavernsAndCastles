@@ -1,28 +1,91 @@
-// Plynulý fade-in po načítaní stránky
 window.onload = () => {
     document.body.style.opacity = "1";
+    loadSettings();
 };
 
 function goBack() {
-    // Plynulý fade-out pred návratom do menu
     document.body.style.opacity = "0";
     setTimeout(() => {
-        window.location.href = "MenuIndex.html"; // Uprav cestu ak treba
+        window.location.href = "MenuIndex.html"; 
     }, 1000);
 }
 
-// Logika pre toggle tlačidlo
-const toggleBtns = document.querySelectorAll('.toggle-btn');
-toggleBtns.forEach(btn => {
-    btn.addEventListener('click', function() {
-        if (this.innerText === "Off") {
-            this.innerText = "On";
-            this.style.background = "#d4af37";
-            this.style.color = "#050201";
-        } else {
-            this.innerText = "Off";
-            this.style.background = "transparent";
-            this.style.color = "#d4af37";
-        }
-    });
+// 1. Ukladanie Hlasitosti
+const volumeSlider = document.getElementById('volume-slider');
+volumeSlider.addEventListener('input', (e) => {
+    localStorage.setItem('game_volume', e.target.value);
 });
+
+// 2. Fullscreen (Celá obrazovka)
+const fullscreenBtn = document.getElementById('fullscreen-btn');
+fullscreenBtn.addEventListener('click', () => {
+    if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => {
+            console.log(`Error attempting to enable fullscreen: ${err.message}`);
+        });
+        fullscreenBtn.innerText = "Zapnuté";
+        fullscreenBtn.style.background = "#d4af37";
+        fullscreenBtn.style.color = "#050201";
+    } else {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+            fullscreenBtn.innerText = "Vypnuté";
+            fullscreenBtn.style.background = "transparent";
+            fullscreenBtn.style.color = "#d4af37";
+        }
+    }
+});
+
+// 3. Efekty a častice (Optimalizácia výkonu)
+const particlesBtn = document.getElementById('particles-btn');
+const particleContainer = document.getElementById('particle-container');
+
+particlesBtn.addEventListener('click', () => {
+    if (particlesBtn.innerText === "Zapnuté") {
+        particlesBtn.innerText = "Vypnuté";
+        particlesBtn.style.background = "transparent";
+        particlesBtn.style.color = "#d4af37";
+        particleContainer.style.opacity = "0";
+        localStorage.setItem('game_particles', 'off');
+    } else {
+        particlesBtn.innerText = "Zapnuté";
+        particlesBtn.style.background = "#d4af37";
+        particlesBtn.style.color = "#050201";
+        particleContainer.style.opacity = "1";
+        localStorage.setItem('game_particles', 'on');
+    }
+});
+
+// 4. Vymazanie postupu (Reset LocalStorage)
+const resetBtn = document.getElementById('reset-btn');
+resetBtn.addEventListener('click', () => {
+    if(confirm("Naozaj chceš zmazať všetok svoj postup? Táto akcia sa nedá vrátiť späť!")) {
+        localStorage.clear();
+        alert("Kronika bola zmazaná. Tvoj postup je preč.");
+        // Obnovenie vizuálu tlačidiel do defaultu po zmazaní pamäte
+        loadSettings(); 
+    }
+});
+
+// Načítanie nastavení pri štarte
+function loadSettings() {
+    // Hlasitosť
+    const savedVolume = localStorage.getItem('game_volume');
+    if (savedVolume !== null) {
+        volumeSlider.value = savedVolume;
+    }
+
+    // Častice
+    const savedParticles = localStorage.getItem('game_particles');
+    if (savedParticles === 'off') {
+        particlesBtn.innerText = "Vypnuté";
+        particlesBtn.style.background = "transparent";
+        particlesBtn.style.color = "#d4af37";
+        particleContainer.style.opacity = "0";
+    } else {
+        particlesBtn.innerText = "Zapnuté";
+        particlesBtn.style.background = "#d4af37";
+        particlesBtn.style.color = "#050201";
+        particleContainer.style.opacity = "1";
+    }
+}

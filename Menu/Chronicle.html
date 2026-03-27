@@ -11,7 +11,7 @@
     
     <div class="stone-bg"></div>
     
-    <div class="embers">
+    <div class="embers" id="particle-container">
         <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
     </div>
 
@@ -21,21 +21,25 @@
 
         <div class="settings-panel">
             <div class="setting-item">
-                <label>Master Volume</label>
-                <input type="range" min="1" max="100" value="50" class="medieval-slider">
+                <label>Hlasitosť hudby</label>
+                <input type="range" id="volume-slider" min="0" max="100" value="50" class="medieval-slider">
             </div>
             <div class="setting-item">
-                <label>Music Volume</label>
-                <input type="range" min="1" max="100" value="70" class="medieval-slider">
+                <label>Celá obrazovka</label>
+                <button id="fullscreen-btn" class="toggle-btn">Vypnuté</button>
             </div>
             <div class="setting-item">
-                <label>Fullscreen</label>
-                <button class="toggle-btn">Off</button>
+                <label>Vizuálne efekty (Iskry)</label>
+                <button id="particles-btn" class="toggle-btn">Zapnuté</button>
+            </div>
+            <div class="setting-item">
+                <label>Zmazať postup hry</label>
+                <button id="reset-btn" class="danger-btn">Zmazať</button>
             </div>
         </div>
 
         <button class="back-btn" onclick="goBack()">
-            <span class="icon">↶</span> Return
+            <span class="icon">↶</span> Návrat
         </button>
     </div>
 
