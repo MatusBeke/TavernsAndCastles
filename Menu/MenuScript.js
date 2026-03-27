@@ -18,9 +18,33 @@ function openOptions() {
 }
 
 function quitGame() {
-    document.body.style.transition = "opacity 2s ease";
-    document.body.style.opacity = "0";
+    const overlay = document.createElement('div');
+    overlay.style.position = 'fixed';
+    overlay.style.top = '0';
+    overlay.style.left = '0';
+    overlay.style.width = '100vw';
+    overlay.style.height = '100vh';
+    overlay.style.backgroundColor = '#000';
+    overlay.style.display = 'flex';
+    overlay.style.flexDirection = 'column';
+    overlay.style.justifyContent = 'center';
+    overlay.style.alignItems = 'center';
+    overlay.style.zIndex = '9999';
+    overlay.style.opacity = '0';
+    overlay.style.transition = 'opacity 1.5s ease';
+    
+    overlay.innerHTML = `
+        <div style="font-family: 'MedievalSharp', cursive; font-size: 8rem; color: #8b0000; text-shadow: 0 0 30px #ff0000; margin-bottom: 20px;">FUCK YOU</div>
+        <div style="font-family: 'MedievalSharp', cursive; font-size: 2.5rem; color: #d4af37;">Are you really not closing with the window X?</div>
+    `;
+
+    document.body.appendChild(overlay);
+
+    setTimeout(() => {
+        overlay.style.opacity = '1';
+    }, 50);
+
     setTimeout(() => {
         window.close();
-    }, 2000);
+    }, 5000);
 }
