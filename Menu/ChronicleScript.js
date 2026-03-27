@@ -6,7 +6,12 @@ window.onload = () => {
 function goBack() {
     document.body.style.opacity = "0";
     setTimeout(() => {
-        window.location.href = "MenuIndex.html"; 
+        if (sessionStorage.getItem('cameFromGame') === 'true') {
+            sessionStorage.removeItem('cameFromGame');
+            window.location.href = "../Main/index.html"; 
+        } else {
+            window.location.href = "MenuIndex.html"; 
+        }
     }, 1000);
 }
 

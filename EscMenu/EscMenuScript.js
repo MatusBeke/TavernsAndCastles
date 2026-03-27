@@ -1,5 +1,12 @@
 let isGamePaused = false;
 
+// 1. Vloženie CSS štýlov pre menu
+const link = document.createElement('link');
+link.rel = 'stylesheet';
+link.href = '../EscMenu/EscMenuStyle.css'; 
+document.head.appendChild(link);
+
+// 2. Vloženie HTML priamo cez skript (vďaka tomuto nepotrebuješ EscMenuIndex.html)
 const escMenuHTML = `
 <div id="esc-menu-overlay">
     <div class="esc-menu-box">
@@ -19,24 +26,14 @@ const escMenuHTML = `
     </div>
 </div>
 `;
+document.body.insertAdjacentHTML('beforeend', escMenuHTML);
 
-function initEscMenu() {
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = '../EscMenu/EscMenuStyle.css'; 
-    document.head.appendChild(link);
-
-    document.body.insertAdjacentHTML('beforeend', escMenuHTML);
-    setupEscListener();
-}
-
-function setupEscListener() {
-    document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape') {
-            toggleEscMenu();
-        }
-    });
-}
+// 3. Počúvanie na stlačenie klávesy ESC
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+        toggleEscMenu();
+    }
+});
 
 function toggleEscMenu() {
     const escMenu = document.getElementById('esc-menu-overlay');
@@ -60,16 +57,18 @@ function toggleEscMenu() {
 }
 
 function openInGameOptions() {
-    alert("In-game settings will open here.");
+    document.body.style.transition = "opacity 1s ease";
+    document.body.style.opacity = "0";
+    setTimeout(() => {
+        sessionStorage.setItem('cameFromGame', 'true');
+        window.location.href = "../Menu/Chronicle.html"; 
+    }, 1000);
 }
 
 function quitToMainMenu() {
     document.body.style.transition = "opacity 1s ease";
     document.body.style.opacity = "0";
-    
     setTimeout(() => {
         window.location.href = "../Menu/MenuIndex.html"; 
     }, 1000);
 }
-
-initEscMenu();
