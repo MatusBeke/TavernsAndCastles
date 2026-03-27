@@ -6,14 +6,13 @@ body {
     overflow: hidden;
     background-color: #000;
     font-family: 'MedievalSharp', cursive;
-    color: #f2e1c1; /* Krémová biela je lepšie čitateľná na tmavom */
+    color: #f2e1c1; 
 }
 
 #gameCanvas {
     display: block;
 }
 
-/* Hlavné menu - Zmenšený panel */
 #building-menu {
     position: absolute;
     bottom: 15px;
@@ -21,35 +20,31 @@ body {
     transform: translateX(-50%);
     display: flex;
     gap: 10px;
-    padding: 15px 25px; /* Menej miesta hore/dole, viac po stranách */
     z-index: 100;
-    
-    background-image: url('../Resources/GUI/Img_BuildingMenuElement.png'); 
-    background-size: 100% 100%;
     background-repeat: no-repeat;
-    image-rendering: pixelated; 
-    
-    filter: drop-shadow(0 5px 10px rgba(0,0,0,0.8));
+    image-rendering: pixelated;  
 }
 
-/* Karta budovy - Kompaktnejšia */
 #building-menu-element {
-    width: 100px; /* Zúžené z 140px */
+    width: 100px; 
     padding: 5px;
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
     transition: transform 0.2s ease;
+    background-image: url('../Resources/GUI/Img_BuildingMenuElement.png'); 
+    background-size: 100% 100%;
+    padding: 15px 25px;
+    filter: drop-shadow(0 5px 10px rgba(0,0,0,0.8)); 
 }
 
 #building-menu-element:hover {
     transform: scale(1.1);
 }
 
-/* Menší obrázok budovy */
 #building-menu-element-img {
-    width: 50px; /* Zmenšené z 80px */
+    width: 50px;
     height: 50px;
     object-fit: contain;
     margin-bottom: 5px;
@@ -58,13 +53,13 @@ body {
 
 /* Texty - Menší font, ale výrazný */
 #building-menu-element-name {
-    font-size: 1rem; /* Zmenšené z 1.3rem */
+    font-size: 1.3rem; 
     margin: 0;
     line-height: 1.1;
 }
 
 #building-menu-element-level {
-    font-size: 0.7rem;
+    font-size: 1rem;
     opacity: 0.7;
 }
 

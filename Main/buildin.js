@@ -79,7 +79,7 @@
         camera.y -= (mouseY - camera.y) * (camera.zoom / oldZoom - 1);
 
     }, { passive: false });
-    
+
     // Drag
     canvas.addEventListener('mousedown', (e) => {
         isDragging = true;
@@ -110,3 +110,34 @@
         initMap();
     };
 }
+
+// Funkcia na načítanie budov na stavbu z JSON súboru
+async function loadBuildingMenu() {
+    const menuContainer = document.getElementById('building-menu');
+    
+
+    const response = await fetch('../Data/buildablesList.json');
+    const buildings = await response.json();
+    menuContainer.innerHTML = '';
+
+    buildings.forEach(building => {
+        const buildingElement = document.createElement('div');
+        buildingElement.id = 'building-menu-element'; 
+
+        buildingElement.innerHTML = `
+            <img id="building-menu-element-img" src="${building.image}" alt="${building.name}">
+            <p id="building-menu-element-name">${building.name}</p>
+            <p id="building-menu-element-level">lvl. ${building.level}</p>
+            <p id="building-menu-element-price">${building.price} G</p>
+            <button id="building-menu-element-button" onclick="showInfo('${building.id}')">More info</button>
+        `;
+
+        menuContainer.appendChild(buildingElement);
+    });
+}
+
+function showInfo(id) {
+    console.log("Klikli ste na budovu s ID:", id);
+}
+
+loadBuildingMenu();
