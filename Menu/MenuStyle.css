@@ -5,83 +5,157 @@ body {
     padding: 0;
     height: 100vh;
     width: 100vw;
-    background-color: #050302; /* Úplne temné pozadie */
+    background-color: #050201;
     font-family: 'MedievalSharp', cursive;
     overflow: hidden;
     display: flex;
 }
 
-/* PRAVÁ STRANA: Obrázok na celú výšku s plynulým maskovaním */
-.menu-right-image {
+.stone-bg {
+    position: absolute;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background-image: url('https://www.transparenttextures.com/patterns/dark-matter.png');
+    opacity: 0.6;
+    z-index: 0;
+}
+
+.embers {
+    position: absolute;
+    bottom: 0; left: 0; width: 100vw; height: 100vh;
+    pointer-events: none;
+    z-index: 10; 
+}
+
+.embers i {
+    position: absolute;
+    bottom: -20px;
+    width: 4px;
+    height: 4px;
+    background: #ffaa00;
+    border-radius: 50%;
+    box-shadow: 0 0 12px 3px #ff4500;
+    z-index: 2;
+    opacity: 0;
+    animation: floatEmber 5s infinite ease-in;
+}
+
+.embers i:nth-child(1) { left: 2%; animation-delay: 0s; animation-duration: 4.5s; }
+.embers i:nth-child(2) { left: 8%; animation-delay: 2s; width: 6px; height: 6px; }
+.embers i:nth-child(3) { left: 13%; animation-delay: 4s; }
+.embers i:nth-child(4) { left: 18%; animation-delay: 1s; }
+.embers i:nth-child(5) { left: 24%; animation-delay: 5s; width: 3px; height: 3px; }
+.embers i:nth-child(6) { left: 29%; animation-delay: 3s; }
+.embers i:nth-child(7) { left: 35%; animation-delay: 6s; }
+.embers i:nth-child(8) { left: 41%; animation-delay: 2.5s; }
+.embers i:nth-child(9) { left: 46%; animation-delay: 1.5s; width: 5px; height: 5px; }
+.embers i:nth-child(10) { left: 52%; animation-delay: 3.5s; }
+.embers i:nth-child(11) { left: 58%; animation-delay: 0.5s; }
+.embers i:nth-child(12) { left: 63%; animation-delay: 4.2s; }
+.embers i:nth-child(13) { left: 68%; animation-delay: 2.1s; width: 6px; height: 6px; }
+.embers i:nth-child(14) { left: 74%; animation-delay: 5.5s; }
+.embers i:nth-child(15) { left: 79%; animation-delay: 1.8s; }
+.embers i:nth-child(16) { left: 85%; animation-delay: 3.8s; }
+.embers i:nth-child(17) { left: 91%; animation-delay: 6.2s; width: 3px; height: 3px; }
+.embers i:nth-child(18) { left: 96%; animation-delay: 0.8s; }
+.embers i:nth-child(19) { left: 50%; animation-delay: 5.1s; }
+.embers i:nth-child(20) { left: 7%; animation-delay: 3.2s; }
+
+@keyframes floatEmber {
+    0% { transform: translateY(0) scale(1); opacity: 1; }
+    100% { transform: translateY(-100vh) scale(0); opacity: 0; }
+}
+
+.menu-left-image {
     position: absolute;
     top: 0;
-    right: 0;
-    width: 65vw; /* Zaberá pravú časť a kúsok za stred */
+    left: 5vw; 
+    width: 45vw; 
     height: 100vh;
     background-image: url('../Resources/chart.png');
     background-size: contain;
     background-repeat: no-repeat;
-    background-position: center right;
-    
-    /* Vytvorí ten plynulý prechod zľava doprava (od priehľadnej po plnú) */
-    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 40%);
-    mask-image: linear-gradient(to right, transparent 0%, black 40%);
-    z-index: 1;
+    background-position: center;
+    z-index: 2;
+    filter: drop-shadow(0 0 15px rgba(255, 100, 0, 0.2));
+    -webkit-mask-image: linear-gradient(to left, transparent 0%, black 15%);
+    mask-image: linear-gradient(to left, transparent 0%, black 15%);
 }
 
-/* ĽAVÁ STRANA: Gradient a tlačidlá */
-.menu-left-content {
-    position: relative;
+.menu-right-content {
+    position: absolute;
+    right: 0;
     width: 50vw;
     height: 100vh;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding-left: 8vw; /* Odsadenie od ľavého okraja */
-    background: linear-gradient(to right, #050302 60%, transparent 100%);
-    z-index: 2;
+    align-items: flex-end;
+    padding-right: 8vw;
+    background: linear-gradient(to left, #050201 60%, rgba(5,2,1,0.5) 85%, transparent 100%);
+    z-index: 3;
 }
 
 .nav-container {
     display: flex;
     flex-direction: column;
-    gap: 40px;
-    align-items: flex-start;
+    gap: 35px;
+    align-items: flex-end;
 }
 
-/* Tlačidlá menu */
+.ornament {
+    color: #5c3a21;
+    font-size: 1.5rem;
+    letter-spacing: 5px;
+    text-shadow: 1px 1px 2px #000;
+}
+
 .menu-btn {
     font-family: 'MedievalSharp', cursive;
     background: transparent;
     border: none;
-    color: #c2a773; /* Zlatistý starý odtieň */
-    font-size: 3.2rem;
+    color: #d4af37;
+    font-size: 3rem;
     cursor: pointer;
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    text-shadow: 2px 2px 15px rgba(0,0,0,1);
+    text-shadow: 2px 2px 10px rgba(0,0,0,1);
+    display: flex;
+    align-items: center;
+    gap: 20px;
     position: relative;
-    padding-left: 0;
-    text-align: left;
 }
 
-/* Meč, ktorý sa zjaví po prejdení myšou */
-.menu-btn::before {
-    content: '⚔';
+.menu-btn::after {
+    content: '';
     position: absolute;
-    left: -45px;
-    opacity: 0;
-    color: #8b0000;
+    bottom: -5px;
+    right: 0;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(to left, #d4af37, transparent);
+    transition: 0.5s ease;
+}
+
+.icon {
+    font-size: 2.5rem;
+    opacity: 0.6;
     transition: all 0.4s ease;
-    transform: translateX(-20px);
+    color: #d4af37;
 }
 
 .menu-btn:hover {
     color: #fff;
-    transform: translateX(35px); /* Tlačidlo elegantne odskočí doprava */
-    text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+    transform: translateX(-25px);
+    text-shadow: 0 0 20px rgba(255, 170, 0, 0.8);
 }
 
-.menu-btn:hover::before {
+.menu-btn:hover::after {
+    width: 120%;
+    background: linear-gradient(to left, #ffaa00, transparent);
+}
+
+.menu-btn:hover .icon {
     opacity: 1;
-    transform: translateX(0);
+    transform: scale(1.1);
+    color: #ffaa00;
+    filter: drop-shadow(0 0 15px rgba(255, 170, 0, 0.8));
 }
