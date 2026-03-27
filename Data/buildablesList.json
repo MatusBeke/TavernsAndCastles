@@ -1,0 +1,10 @@
+[
+    {
+        "id": "house-small",
+        "name": "Small House",
+        "level": 1,
+        "price": 100,
+        "image": "../Resources/Buildables/Img_SmallHouse.png",
+        "description": "Small starter house for your citizens, usualy built outside the walls..."
+    }
+]
