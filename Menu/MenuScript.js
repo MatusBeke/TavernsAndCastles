@@ -63,3 +63,35 @@ function quitGame() {
         window.location.replace("about:blank");
     }, 4000);
 }
+
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+function playHoverSound() {
+    if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+    }
+    
+    const osc = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
+
+    // Hlbšia 'sine' vlna pre imitáciu ťažkého dreva alebo kameňa
+    osc.type = 'sine'; 
+    osc.frequency.setValueAtTime(200, audioCtx.currentTime); 
+    osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.04);
+
+    gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.04);
+
+    osc.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.04); 
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+    const menuButtons = document.querySelectorAll('button'); 
+    menuButtons.forEach(button => {
+        button.addEventListener('mouseenter', playHoverSound);
+    });
+});
