@@ -1,4 +1,3 @@
-//Generovanie mapy za pouzitia Perlin Noise a poyb kamery pomocou mysky
 {
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');

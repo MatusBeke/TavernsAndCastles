@@ -1,12 +1,10 @@
 let isGamePaused = false;
 
-// 1. Vloženie CSS štýlov pre menu
 const link = document.createElement('link');
 link.rel = 'stylesheet';
 link.href = '../EscMenu/EscMenuStyle.css'; 
 document.head.appendChild(link);
 
-// 2. Vloženie HTML priamo cez skript (vďaka tomuto nepotrebuješ EscMenuIndex.html)
 const escMenuHTML = `
 <div id="esc-menu-overlay">
     <div class="esc-menu-box">
