@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>World Chronicle - Settings</title>
+    <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="ChronicleStyle.css">
+</head>
+<body>
+    
+    <div class="stone-bg"></div>
+    
+    <div class="embers">
+        <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+    </div>
+
+    <div class="chronicle-container">
+        <h1 class="chronicle-title">World Chronicle</h1>
+        <div class="ornament">✠ ════════════ ✠</div>
+
+        <div class="settings-panel">
+            <div class="setting-item">
+                <label>Master Volume</label>
+                <input type="range" min="1" max="100" value="50" class="medieval-slider">
+            </div>
+            <div class="setting-item">
+                <label>Music Volume</label>
+                <input type="range" min="1" max="100" value="70" class="medieval-slider">
+            </div>
+            <div class="setting-item">
+                <label>Fullscreen</label>
+                <button class="toggle-btn">Off</button>
+            </div>
+        </div>
+
+        <button class="back-btn" onclick="goBack()">
+            <span class="icon">↶</span> Return
+        </button>
+    </div>
+
+    <script src="ChronicleScript.js"></script>
+</body>
+</html>

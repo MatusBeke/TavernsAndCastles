@@ -1,3 +1,4 @@
+
 function startGame() {
     document.body.style.transition = "opacity 1.5s ease, filter 1.5s ease";
     document.body.style.opacity = "0";
@@ -12,8 +13,17 @@ function openOptions() {
     const content = document.querySelector('.nav-container');
     content.style.transition = "transform 0.1s ease";
     content.style.transform = "translateX(-10px)";
+    
     setTimeout(() => { 
         content.style.transform = "translateX(0)"; 
+        
+        document.body.style.transition = "opacity 1s ease";
+        document.body.style.opacity = "0";
+        
+        setTimeout(() => {
+            window.location.href = "Chronicle.html";
+        }, 1000);
+
     }, 100);
 }
 
@@ -45,6 +55,13 @@ function quitGame() {
     }, 50);
 
     setTimeout(() => {
+        // 1. Najagresívnejší pokus zavrieť okno (Funguje v desktopových apkách)
+        window.open('', '_self', '');
         window.close();
-    }, 5000);
+        
+        // 2. Ak to prehliadač zablokuje, hra sa úplne "zabije" a ostane len prázdna čierna tma
+        document.documentElement.innerHTML = "";
+        document.documentElement.style.backgroundColor = "black";
+        window.location.replace("about:blank");
+    }, 4000);
 }

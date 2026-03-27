@@ -1,0 +1,154 @@
+@import url('https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap');
+
+body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    width: 100vw;
+    background-color: #050201;
+    font-family: 'MedievalSharp', cursive;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    opacity: 0; /* Pre plynulý fade-in pri načítaní */
+    transition: opacity 1s ease;
+}
+
+.stone-bg {
+    position: absolute;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background-image: url('https://www.transparenttextures.com/patterns/dark-matter.png');
+    opacity: 0.6;
+    z-index: 0;
+}
+
+.embers {
+    position: absolute;
+    bottom: 0; left: 0; width: 100vw; height: 100vh;
+    pointer-events: none;
+    z-index: 1; 
+}
+
+.embers i {
+    position: absolute;
+    bottom: -20px;
+    width: 4px;
+    height: 4px;
+    background: #ffaa00;
+    border-radius: 50%;
+    box-shadow: 0 0 12px 3px #ff4500;
+    opacity: 0;
+    animation: floatEmber 5s infinite ease-in;
+}
+.embers i:nth-child(even) { animation-duration: 4s; width: 6px; height: 6px; }
+.embers i:nth-child(1) { left: 10%; } .embers i:nth-child(2) { left: 20%; animation-delay: 1s; }
+.embers i:nth-child(3) { left: 30%; animation-delay: 3s; } .embers i:nth-child(4) { left: 40%; animation-delay: 2s; }
+.embers i:nth-child(5) { left: 50%; animation-delay: 4s; } .embers i:nth-child(6) { left: 60%; animation-delay: 1.5s; }
+.embers i:nth-child(7) { left: 70%; animation-delay: 5s; } .embers i:nth-child(8) { left: 80%; animation-delay: 2.5s; }
+.embers i:nth-child(9) { left: 90%; animation-delay: 0.5s; } .embers i:nth-child(10) { left: 15%; animation-delay: 3.5s; }
+
+@keyframes floatEmber {
+    0% { transform: translateY(0) scale(1); opacity: 1; }
+    100% { transform: translateY(-100vh) scale(0); opacity: 0; }
+}
+
+.chronicle-container {
+    position: relative;
+    z-index: 2;
+    background: linear-gradient(to bottom, rgba(15, 8, 5, 0.9), rgba(5, 2, 1, 0.95));
+    border: 2px solid #5c3a21;
+    border-radius: 8px;
+    padding: 50px 80px;
+    box-shadow: 0 0 50px rgba(0,0,0,1), inset 0 0 20px rgba(212, 175, 55, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 600px;
+}
+
+.chronicle-title {
+    color: #d4af37;
+    font-size: 4rem;
+    margin: 0;
+    text-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+    letter-spacing: 3px;
+}
+
+.ornament {
+    color: #5c3a21;
+    font-size: 1.5rem;
+    letter-spacing: 5px;
+    margin: 20px 0 40px 0;
+}
+
+.settings-panel {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    margin-bottom: 50px;
+}
+
+.setting-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #b3a07a;
+    font-size: 1.8rem;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+    padding-bottom: 10px;
+}
+
+.medieval-slider {
+    -webkit-appearance: none;
+    width: 200px;
+    height: 4px;
+    background: #3a2212;
+    outline: none;
+    border-radius: 2px;
+}
+
+.medieval-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    background: #d4af37;
+    cursor: pointer;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #d4af37;
+}
+
+.toggle-btn {
+    font-family: 'MedievalSharp', cursive;
+    background: transparent;
+    border: 1px solid #d4af37;
+    color: #d4af37;
+    padding: 5px 20px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.toggle-btn:hover {
+    background: #d4af37;
+    color: #050201;
+}
+
+.back-btn {
+    font-family: 'MedievalSharp', cursive;
+    background: transparent;
+    border: none;
+    color: #d4af37;
+    font-size: 2.5rem;
+    cursor: pointer;
+    transition: 0.3s;
+    text-shadow: 2px 2px 5px #000;
+}
+
+.back-btn:hover {
+    color: #ffaa00;
+    transform: scale(1.1);
+    text-shadow: 0 0 15px rgba(255, 170, 0, 0.8);
+}
