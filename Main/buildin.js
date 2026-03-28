@@ -15,13 +15,17 @@
     let landLevel = 0.75;
     let mountainLevel = 1;
     //Biomy
-    let forestLevel = 0.5;
+    let forestLevel = 0.55;
     let hillsLevel = 0.8;
 
     //Nacitavanie obrazkov
     const imgWater = new Image(); imgWater.src = '../Resources/Tiles/Img_WaterDefault.gif';
     const imgLand = new Image(); imgLand.src = '../Resources/Tiles/Img_LandDefault.png';
     const imgMountains = new Image(); imgMountains.src = '../Resources/Tiles/Img_MountainsDefault.png';
+
+    //Les
+    const imgForest1 = new Image(); imgForest1.src = '../Resources/Tiles/Img_Forest1.png';
+    const imgHills = new Image(); imgHills.src = '../Resources/Tiles/Img_Hills.png';
 
     function initMap() {
         noise.seed(Math.random());
@@ -52,10 +56,22 @@
                     img = imgWater
                 }
                 else if(n < landLevel){
-                    img = imgLand
+                    if (n < forestLevel){
+                        img = imgForest1
+                    }
+                    else{
+                        img = imgLand
+                    }
+                    
                 }
                 else if (n < mountainLevel){
-                    img = imgMountains
+                    if (n < hillsLevel){
+                        img = imgHills
+                    }
+                    else{
+                        img = imgMountains 
+                    }
+                    
                 }
                 
                 ctx.drawImage(img, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE + 1, TILE_SIZE + 1);
