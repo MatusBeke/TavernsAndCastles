@@ -25,60 +25,59 @@
 
     //Les
     const imgForest1 = new Image(); imgForest1.src = '../Resources/Tiles/Img_Forest1.png';
+    const imgForest2 = new Image(); imgForest2.src = '../Resources/Tiles/Img_Forest2.png';
+    const imgForest3 = new Image(); imgForest3.src = '../Resources/Tiles/Img_Forest3.png';
+    const imgForest4 = new Image(); imgForest4.src = '../Resources/Tiles/Img_Forest4.png';
     const imgHills = new Image(); imgHills.src = '../Resources/Tiles/Img_Hills.png';
 
     function initMap() {
-        noise.seed(Math.random());
-        const NOISE_ZOOM = 0.08;
-        for (let y = 0; y < MAP_SIZE; y++) {
-            mapData[y] = [];
-            for (let x = 0; x < MAP_SIZE; x++) {
-                let n = (noise.perlin2(x * NOISE_ZOOM, y * NOISE_ZOOM) + 1) / 2;
-                mapData[y][x] = n;
+    noise.seed(Math.random());
+    const NOISE_ZOOM = 0.08;
+    const forestImages = [imgForest1, imgForest2, imgForest3, imgForest4];
+
+    for (let y = 0; y < MAP_SIZE; y++) {
+        mapData[y] = [];
+        for (let x = 0; x < MAP_SIZE; x++) {
+            let n = (noise.perlin2(x * NOISE_ZOOM, y * NOISE_ZOOM) + 1) / 2;
+            let tileImg;
+            if (n < waterLevel) {
+                tileImg = imgWater;
+            } else if (n < landLevel) {
+                if (n < forestLevel) {
+                    tileImg = forestImages[Math.floor(Math.random() * forestImages.length)];
+                } else {
+                    tileImg = imgLand;
+                }
+            } else {
+                tileImg = (n < hillsLevel) ? imgHills : imgMountains;
+            }
+            mapData[y][x] = { n: n, img: tileImg };
+        }
+    }
+    requestAnimationFrame(draw);
+}
+
+function draw() {
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Apply camera
+    ctx.translate(Math.floor(camera.x), Math.floor(camera.y));
+    ctx.scale(camera.zoom, camera.zoom);
+    ctx.imageSmoothingEnabled = false;
+
+    for (let y = 0; y < MAP_SIZE; y++) {
+        for (let x = 0; x < MAP_SIZE; x++) {
+            // Get the pre-calculated image
+            const tile = mapData[y][x];
+            
+            if (tile.img) {
+                ctx.drawImage(tile.img, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE + 1, TILE_SIZE + 1);
             }
         }
-        requestAnimationFrame(draw);
     }
-
-    function draw() {
-        ctx.setTransform(1, 0, 0, 1, 0, 0);
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.translate(Math.floor(camera.x), Math.floor(camera.y));
-        ctx.scale(camera.zoom, camera.zoom);
-        ctx.imageSmoothingEnabled = false;
-
-        for (let y = 0; y < MAP_SIZE; y++) {
-            for (let x = 0; x < MAP_SIZE; x++) {
-                const n = mapData[y][x];
-                let img;
-                
-                if (n < waterLevel){
-                    img = imgWater
-                }
-                else if(n < landLevel){
-                    if (n < forestLevel){
-                        img = imgForest1
-                    }
-                    else{
-                        img = imgLand
-                    }
-                    
-                }
-                else if (n < mountainLevel){
-                    if (n < hillsLevel){
-                        img = imgHills
-                    }
-                    else{
-                        img = imgMountains 
-                    }
-                    
-                }
-                
-                ctx.drawImage(img, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE + 1, TILE_SIZE + 1);
-            }
-        }
-        requestAnimationFrame(draw);
-    }
+    requestAnimationFrame(draw);
+}
 
     // Zoom
     canvas.addEventListener('wheel', (e) => {
