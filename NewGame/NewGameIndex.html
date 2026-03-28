@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>New Game - Settings</title>
+    <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="NewGameStyle.css">
+</head>
+<body>
+    <div class="config-container">
+        <h1 class="config-title">Journey Preparation</h1>
+        <div class="ornament">✠ ════════════ ✠</div>
+
+        <div class="settings-scroll-area">
+            <div class="config-section">
+                <h3>Map Size</h3>
+                <div class="options-group" id="map-size">
+                    <button class="option-btn" data-value="30">Small</button>
+                    <button class="option-btn active" data-value="50">Medium</button>
+                    <button class="option-btn" data-value="80">Large</button>
+                </div>
+            </div>
+
+            <div class="config-section">
+                <h3>Difficulty</h3>
+                <div class="options-group" id="difficulty">
+                    <button class="option-btn" data-value="peaceful">Peaceful</button>
+                    <button class="option-btn active" data-value="normal">Normal</button>
+                    <button class="option-btn" data-value="hard">Hard</button>
+                </div>
+            </div>
+            
+            </div>
+
+        <div class="action-buttons">
+            <button class="action-btn back-btn" onclick="goBack()">↢</button>
+            <button class="action-btn start-btn" onclick="startWorld()">Enter World</button>
+        </div>
+    </div>
+
+    <script src="NewGameScript.js"></script>
+</body>
+</html>

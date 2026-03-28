@@ -1,0 +1,144 @@
+body {
+    margin: 0;
+    height: 100vh;
+    background-color: #050201;
+    background-image: url('https://www.transparenttextures.com/patterns/dark-matter.png');
+    font-family: 'MedievalSharp', cursive;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0; 
+    transition: opacity 1s ease;
+    overflow: hidden;
+}
+
+.config-container {
+    background: linear-gradient(to bottom, rgba(15, 8, 5, 0.95), rgba(5, 2, 1, 0.98));
+    border: 2px solid #5c3a21;
+    border-radius: 8px;
+    padding: 40px;
+    box-shadow: 0 0 50px rgba(0,0,0,1), inset 0 0 20px rgba(212, 175, 55, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 80vw;
+    height: 85vh;
+    max-width: 1200px;
+}
+
+.config-title {
+    color: #d4af37;
+    font-size: 3rem;
+    margin: 0;
+    text-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+}
+
+.ornament {
+    color: #5c3a21;
+    font-size: 1.2rem;
+    letter-spacing: 5px;
+    margin: 10px 0 20px 0;
+}
+
+/* Scrollable area for a large amount of settings */
+.settings-scroll-area {
+    flex-grow: 1;
+    width: 100%;
+    overflow-y: auto;
+    padding-right: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    scrollbar-width: thin;
+    scrollbar-color: #5c3a21 #050201;
+}
+
+/* Medieval scrollbar look */
+.settings-scroll-area::-webkit-scrollbar {
+    width: 10px;
+}
+.settings-scroll-area::-webkit-scrollbar-track {
+    background: #050201;
+    border-left: 1px solid #5c3a21;
+}
+.settings-scroll-area::-webkit-scrollbar-thumb {
+    background: #5c3a21;
+    border-radius: 5px;
+}
+.settings-scroll-area::-webkit-scrollbar-thumb:hover {
+    background: #d4af37;
+}
+
+.config-section {
+    width: 100%;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(92, 58, 33, 0.5);
+    border-radius: 5px;
+    padding: 20px 0;
+}
+
+.config-section h3 {
+    color: #b3a07a;
+    font-size: 1.5rem;
+    margin-top: 0;
+    margin-bottom: 15px;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+    padding-bottom: 5px;
+    display: inline-block;
+    width: 80%;
+}
+
+.options-group {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.option-btn {
+    font-family: 'MedievalSharp', cursive;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid #5c3a21;
+    color: #888;
+    padding: 10px 20px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.option-btn:hover {
+    border-color: #d4af37;
+    color: #d4af37;
+}
+
+.option-btn.active {
+    background: rgba(212, 175, 55, 0.2);
+    border-color: #d4af37;
+    color: #d4af37;
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+}
+
+.action-buttons {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 2px solid #5c3a21;
+}
+
+.action-btn {
+    font-family: 'MedievalSharp', cursive;
+    background: transparent;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.back-btn { color: #8b0000; }
+.back-btn:hover { color: #ff4500; text-shadow: 0 0 15px rgba(255, 69, 0, 0.8); }
+
+.start-btn { color: #d4af37; }
+.start-btn:hover { color: #fff; text-shadow: 0 0 15px rgba(255, 255, 255, 0.8); }
