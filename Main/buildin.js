@@ -6,7 +6,7 @@
     let camera = { x: 0, y: 0, zoom: 1 };
     let isDragging = false;
     let lastMouse = { x: 0, y: 0 };
-    const MAP_SIZE = 100;
+    const MAP_SIZE = 200;
     const TILE_SIZE = 128;
     let mapData = []; 
 
@@ -21,64 +21,73 @@
     //Nacitavanie obrazkov
     const imgWater = new Image(); imgWater.src = '../Resources/Tiles/Img_WaterDefault.gif';
     const imgLand = new Image(); imgLand.src = '../Resources/Tiles/Img_LandDefault.png';
-    const imgMountains = new Image(); imgMountains.src = '../Resources/Tiles/Img_MountainsDefault.png';
+    const imgMountains = new Image(); imgMountains.src = '../Resources/Tiles/Img_Mountains.png';
 
     //Les
     const imgForest1 = new Image(); imgForest1.src = '../Resources/Tiles/Img_Forest1.png';
+    const imgForest2 = new Image(); imgForest2.src = '../Resources/Tiles/Img_Forest2.png';
+    const imgForest3 = new Image(); imgForest3.src = '../Resources/Tiles/Img_Forest3.png';
+    const imgForest4 = new Image(); imgForest4.src = '../Resources/Tiles/Img_Forest4.png';
     const imgHills = new Image(); imgHills.src = '../Resources/Tiles/Img_Hills.png';
 
     function initMap() {
         noise.seed(Math.random());
         const NOISE_ZOOM = 0.08;
+        const forestImages = [imgForest1, imgForest2, imgForest3, imgForest4];
+
         for (let y = 0; y < MAP_SIZE; y++) {
             mapData[y] = [];
             for (let x = 0; x < MAP_SIZE; x++) {
                 let n = (noise.perlin2(x * NOISE_ZOOM, y * NOISE_ZOOM) + 1) / 2;
-                mapData[y][x] = n;
+                let tileImg;
+                if (n < waterLevel) {
+                    tileImg = imgWater;
+                } else if (n < landLevel) {
+                    if (n < forestLevel) {
+                        // Gnerovanie casti lesa podla sance 0 - 1
+                        let chance = Math.random();
+
+                        if (chance < 0.05) {
+                            tileImg = imgForest4; 
+                        } else if (chance < 0.30) {
+                            tileImg = imgForest1; 
+                        } else if (chance < 0.50) {
+                            tileImg = imgForest3; 
+                        } else {
+                            tileImg = imgForest2; 
+                        }
+                    } else {
+                        tileImg = imgLand;
+                    }
+                } else {
+                    tileImg = (n < hillsLevel) ? imgHills : imgMountains;
+                }
+                mapData[y][x] = { n: n, img: tileImg };
+            }
+    }
+    requestAnimationFrame(draw);
+}
+
+function draw() {
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    ctx.translate(Math.floor(camera.x), Math.floor(camera.y));
+    ctx.scale(camera.zoom, camera.zoom);
+    ctx.imageSmoothingEnabled = false;
+
+    for (let y = 0; y < MAP_SIZE; y++) {
+        for (let x = 0; x < MAP_SIZE; x++) {
+            // Get the pre-calculated image
+            const tile = mapData[y][x];
+            
+            if (tile.img) {
+                ctx.drawImage(tile.img, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE + 1, TILE_SIZE + 1);
             }
         }
-        requestAnimationFrame(draw);
     }
-
-    function draw() {
-        ctx.setTransform(1, 0, 0, 1, 0, 0);
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.translate(Math.floor(camera.x), Math.floor(camera.y));
-        ctx.scale(camera.zoom, camera.zoom);
-        ctx.imageSmoothingEnabled = false;
-
-        for (let y = 0; y < MAP_SIZE; y++) {
-            for (let x = 0; x < MAP_SIZE; x++) {
-                const n = mapData[y][x];
-                let img;
-                
-                if (n < waterLevel){
-                    img = imgWater
-                }
-                else if(n < landLevel){
-                    if (n < forestLevel){
-                        img = imgForest1
-                    }
-                    else{
-                        img = imgLand
-                    }
-                    
-                }
-                else if (n < mountainLevel){
-                    if (n < hillsLevel){
-                        img = imgHills
-                    }
-                    else{
-                        img = imgMountains 
-                    }
-                    
-                }
-                
-                ctx.drawImage(img, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE + 1, TILE_SIZE + 1);
-            }
-        }
-        requestAnimationFrame(draw);
-    }
+    requestAnimationFrame(draw);
+}
 
     // Zoom
     canvas.addEventListener('wheel', (e) => {
