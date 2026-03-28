@@ -6,7 +6,7 @@
     let camera = { x: 0, y: 0, zoom: 1 };
     let isDragging = false;
     let lastMouse = { x: 0, y: 0 };
-    const MAP_SIZE = 100;
+    const MAP_SIZE = 200;
     const TILE_SIZE = 128;
     let mapData = []; 
 
@@ -21,7 +21,7 @@
     //Nacitavanie obrazkov
     const imgWater = new Image(); imgWater.src = '../Resources/Tiles/Img_WaterDefault.gif';
     const imgLand = new Image(); imgLand.src = '../Resources/Tiles/Img_LandDefault.png';
-    const imgMountains = new Image(); imgMountains.src = '../Resources/Tiles/Img_MountainsDefault.png';
+    const imgMountains = new Image(); imgMountains.src = '../Resources/Tiles/Img_Mountains.png';
 
     //Les
     const imgForest1 = new Image(); imgForest1.src = '../Resources/Tiles/Img_Forest1.png';
