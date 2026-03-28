@@ -9,6 +9,7 @@ function startGame() {
     }, 1500);
 }
 
+
 function openOptions() {
     const content = document.querySelector('.nav-container');
     content.style.transition = "transform 0.1s ease";

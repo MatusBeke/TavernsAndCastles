@@ -21,18 +21,24 @@ volumeSlider.addEventListener('input', (e) => {
 });
 
 const fullscreenBtn = document.getElementById('fullscreen-btn');
+if (localStorage.getItem('game_fullscreen') === 'true') {
+    fullscreenBtn.innerText = "On";
+    fullscreenBtn.style.background = "#d4af37";
+    fullscreenBtn.style.color = "#050201";
+}
+
 fullscreenBtn.addEventListener('click', () => {
     if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen().catch(err => {
-            console.log(`Error attempting to enable fullscreen: ${err.message}`);
-        });
-        fullscreenBtn.innerText = "Zapnuté";
+        document.documentElement.requestFullscreen().catch(err => console.log(err));
+        localStorage.setItem('game_fullscreen', 'true');
+        fullscreenBtn.innerText = "On";
         fullscreenBtn.style.background = "#d4af37";
         fullscreenBtn.style.color = "#050201";
     } else {
         if (document.exitFullscreen) {
             document.exitFullscreen();
-            fullscreenBtn.innerText = "Vypnuté";
+            localStorage.setItem('game_fullscreen', 'false');
+            fullscreenBtn.innerText = "Off";
             fullscreenBtn.style.background = "transparent";
             fullscreenBtn.style.color = "#d4af37";
         }
