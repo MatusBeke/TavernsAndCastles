@@ -1,3 +1,4 @@
+//Generovanie mapy za pouzitia Perlin Noise a poyb kamery pomocou mysky
 {
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
@@ -5,13 +6,17 @@
     let camera = { x: 0, y: 0, zoom: 1 };
     let isDragging = false;
     let lastMouse = { x: 0, y: 0 };
-    const MAP_SIZE = 50;
+    const MAP_SIZE = 100;
     const TILE_SIZE = 128;
     let mapData = []; 
 
+    //Parametre generovania mapy cez noise
     let waterLevel = 0.4;
     let landLevel = 0.75;
     let mountainLevel = 1;
+    //Biomy
+    let forestLevel = 0.5;
+    let hillsLevel = 0.8;
 
     //Nacitavanie obrazkov
     const imgWater = new Image(); imgWater.src = '../Resources/Tiles/Img_WaterDefault.gif';
@@ -113,8 +118,6 @@
 // Funkcia na načítanie budov na stavbu z JSON súboru
 async function loadBuildingMenu() {
     const menuContainer = document.getElementById('building-menu');
-    
-
     const response = await fetch('../Data/buildablesList.json');
     const buildings = await response.json();
     menuContainer.innerHTML = '';

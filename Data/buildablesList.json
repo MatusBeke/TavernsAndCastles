@@ -15,5 +15,14 @@
         "price": 200,
         "image": "../Resources/Buildables/Img_SmallHouse.png",
         "description": "Average medieval house suitable for a peasant family! Living peasant dream!"
+    },
+
+    {
+        "id": "house-large",
+        "name": "Large House",
+        "level": 2,
+        "price": 400,
+        "image": "../Resources/Buildables/Img_SmallHouse.png",
+        "description": "Larger house, usually suitable for more than two families with three generations living simultaneously."
     }
 ]
