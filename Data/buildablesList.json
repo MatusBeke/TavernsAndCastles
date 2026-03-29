@@ -1,28 +1,10 @@
 [
     {
-        "id": "house-small",
-        "name": "Small House",
+        "id": "log-cabin",
+        "name": "Log Cabin",
         "level": 1,
-        "price": 100,
-        "image": "../Resources/Buildables/Img_SmallHouse.png",
+        "price": 50,
+        "image": "../Resources/Buildables/LogCabin/Img_LogCabin1.png",
         "description": "Small starter house for your citizens, usualy built outside the walls..."
-    },
-
-    {
-        "id": "house-medium",
-        "name": "Medium House",
-        "level": 1,
-        "price": 200,
-        "image": "../Resources/Buildables/Img_SmallHouse.png",
-        "description": "Average medieval house suitable for a peasant family! Living peasant dream!"
-    },
-
-    {
-        "id": "house-large",
-        "name": "Large House",
-        "level": 2,
-        "price": 400,
-        "image": "../Resources/Buildables/Img_SmallHouse.png",
-        "description": "Larger house, usually suitable for more than two families with three generations living simultaneously."
     }
 ]
