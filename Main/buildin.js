@@ -49,9 +49,9 @@
 
                         if (chance < 0.05) {
                             tileImg = imgForest4; 
-                        } else if (chance < 0.30) {
+                        } else if (chance < 0.20) {
                             tileImg = imgForest1; 
-                        } else if (chance < 0.50) {
+                        } else if (chance < 0.30) {
                             tileImg = imgForest3; 
                         } else {
                             tileImg = imgForest2; 
