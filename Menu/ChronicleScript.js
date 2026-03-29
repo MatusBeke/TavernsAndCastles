@@ -27,23 +27,6 @@ if (localStorage.getItem('game_fullscreen') === 'true') {
     fullscreenBtn.style.color = "#050201";
 }
 
-fullscreenBtn.addEventListener('click', () => {
-    if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen().catch(err => console.log(err));
-        localStorage.setItem('game_fullscreen', 'true');
-        fullscreenBtn.innerText = "On";
-        fullscreenBtn.style.background = "#d4af37";
-        fullscreenBtn.style.color = "#050201";
-    } else {
-        if (document.exitFullscreen) {
-            document.exitFullscreen();
-            localStorage.setItem('game_fullscreen', 'false');
-            fullscreenBtn.innerText = "Off";
-            fullscreenBtn.style.background = "transparent";
-            fullscreenBtn.style.color = "#d4af37";
-        }
-    }
-});
 
 const particlesBtn = document.getElementById('particles-btn');
 const particleContainer = document.getElementById('particle-container');

@@ -1,4 +1,3 @@
-
 function startGame() {
     document.body.style.transition = "opacity 1.5s ease, filter 1.5s ease";
     document.body.style.opacity = "0";
