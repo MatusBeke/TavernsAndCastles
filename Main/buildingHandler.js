@@ -1,5 +1,3 @@
-// buildingHandler.js
-
 let isBuildingMode = false;
 let selectedBuildingImg = null;
 
@@ -13,7 +11,6 @@ function startBuilding(imageSrc) {
 }
 
 document.getElementById('gameCanvas').addEventListener('click', (e) => {
-    // If we aren't trying to build anything, don't do anything at all
     if (!isBuildingMode) return;
 
     const canvas = e.target;
@@ -42,14 +39,11 @@ document.getElementById('gameCanvas').addEventListener('click', (e) => {
                 return; 
             }
 
-            // Swap the image to the next version (looks like a second building added)
             const newImg = new Image();
             newImg.src = `../Resources/Buildables/LogCabin/Img_LogCabin${tile.buildingLevel}.png`;
             tile.buildingImg = newImg;
-            
             console.log(`Building upgraded! Now level ${tile.buildingLevel}`);
             
-            // Exit Build Mode after "adding" to the tile
             finalizeBuild(canvas);
             return; 
         }
