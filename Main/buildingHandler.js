@@ -69,3 +69,11 @@ function finalizeBuild(canvas) {
     selectedBuildingImg = null;
     canvas.style.cursor = "default";
 }
+window.addEventListener('DOMContentLoaded', () => {
+    const realmDisplay = document.getElementById('realm-display');
+    const savedRealmName = sessionStorage.getItem('game_realmName');
+    
+    if (savedRealmName && realmDisplay) {
+        realmDisplay.innerText = savedRealmName;
+    }
+});

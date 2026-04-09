@@ -51,9 +51,13 @@ function goBack() {
 }
 
 function startWorld() {
+    const realmInput = document.getElementById('realm-name').value.trim();
+    const realmName = realmInput !== "" ? realmInput : "Unknown Realm";
+
     const selectedMapSize = document.querySelector('#map-size .active').getAttribute('data-value');
     const selectedDifficulty = document.querySelector('#difficulty .active').getAttribute('data-value');
 
+    sessionStorage.setItem('game_realmName', realmName);
     sessionStorage.setItem('game_mapSize', selectedMapSize);
     sessionStorage.setItem('game_difficulty', selectedDifficulty);
 
