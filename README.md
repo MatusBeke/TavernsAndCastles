@@ -24,7 +24,7 @@ A browser-based medieval strategy and city-building game. Step into a procedural
 The game is designed to be played directly in the browser. 
 
 **Play Online:**
-Simply visit the [GitHub Pages link](https://matusbeke.github.io/TavernsAndCastles/) (Replace with your actual link once GitHub Pages is enabled).
+Simply visit the [GitHub Pages link](https://matusbeke.github.io/TavernsAndCastles/).
 
 **Play Locally:**
 1. Clone the repository.
