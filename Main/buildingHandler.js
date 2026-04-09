@@ -1,10 +1,12 @@
 let isBuildingMode = false;
 let selectedBuildingImg = null;
+let maxBuildLevel = null;
 
-function startBuilding(imageSrc) {
+function startBuilding(imageSrc, maxLVL) {
     isBuildingMode = true;
     selectedBuildingImg = new Image();
     selectedBuildingImg.src = imageSrc;
+    maxBuildLevel = maxLVL;
     
     document.getElementById('gameCanvas').style.cursor = "crosshair";
     console.log("Build mode active");
@@ -33,8 +35,7 @@ document.getElementById('gameCanvas').addEventListener('click', (e) => {
             // Increase level (1 -> 2, 2 -> 3, etc.)
             tile.buildingLevel = (tile.buildingLevel || 1) + 1;
             
-            // If it's already max level (4), don't do anything or reset
-            if (tile.buildingLevel > 4) {
+            if (tile.buildingLevel > maxBuildLevel) {
                 console.log("Building is at maximum level.");
                 return; 
             }

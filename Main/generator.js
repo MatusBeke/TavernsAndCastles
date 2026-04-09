@@ -160,7 +160,7 @@ var camera = { x: 0, y: 0, zoom: 1 };
                 <p id="building-menu-element-name">${building.name}</p>
                 <p id="building-menu-element-level">lvl. ${building.level}</p>
                 <p id="building-menu-element-price">${building.price} G</p>
-                <button id="building-menu-element-button" onclick="startBuilding('${building.image}')">Build</button>
+                <button id="building-menu-element-button" onclick="startBuilding('${building.image}', '${building.maxBuildLevel}')">Build</button>
             `;
             menuContainer.appendChild(buildingElement);
         });

@@ -5,7 +5,17 @@
         "level": 1,
         "price": 50,
         "image": "../Resources/Buildables/LogCabin/Img_LogCabin1.png",
-        "description": "Small starter house for your citizens, usualy built outside the walls..."
-    }
+        "description": "Small starter house for your citizens, usualy built outside the walls...",
+        "maxBuildLevel": 4
+    },
 
+    {
+        "id": "log-cabin",
+        "name": "Log Cabin",
+        "level": 1,
+        "price": 50,
+        "image": "../Resources/Buildables/LogCabin/Img_LogCabin1.png",
+        "description": "Small starter house for your citizens, usualy built outside the walls...",
+        "maxBuildLevel": 6
+    }
 ]
