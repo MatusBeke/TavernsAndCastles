@@ -136,6 +136,32 @@ body {
     cursor: pointer;
     transition: 0.3s;
 }
+.medieval-input {
+    font-family: 'MedievalSharp', cursive;
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid #5c3a21;
+    color: #d4af37;
+    padding: 10px 20px;
+    font-size: 1.5rem;
+    text-align: center;
+    outline: none;
+    width: 80%;
+    max-width: 300px;
+    transition: all 0.3s ease;
+    border-radius: 3px;
+    margin-top: 10px;
+}
+
+.medieval-input:focus {
+    border-color: #d4af37;
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+    background: rgba(20, 10, 5, 0.8);
+}
+
+.medieval-input::placeholder {
+    color: #5c3a21;
+    opacity: 0.7;
+}
 
 .back-btn { color: #8b0000; }
 .back-btn:hover { color: #ff4500; text-shadow: 0 0 15px rgba(255, 69, 0, 0.8); }

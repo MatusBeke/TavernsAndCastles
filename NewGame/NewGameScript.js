@@ -26,6 +26,7 @@ window.onload = () => {
         button.addEventListener('mouseenter', playHoverSound);
     });
 
+    setupSelection('realm-name');
     setupSelection('map-size');
     setupSelection('difficulty');
 };
