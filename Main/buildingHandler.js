@@ -2,6 +2,8 @@ let isBuildingMode = false;
 let selectedBuildingImg = null;
 let maxBuildLevel = null;
 
+
+
 function startBuilding(imageSrc, maxLVL) {
     isBuildingMode = true;
     selectedBuildingImg = new Image();
@@ -34,6 +36,7 @@ document.getElementById('gameCanvas').addEventListener('click', (e) => {
         if (tile.buildingImg) {
             // Increase level
             tile.buildingLevel = (tile.buildingLevel || 1) + 1;
+            console.log(`Attempting to upgrade building ${tile.buildingImg.src} at ${gridX}, ${gridY} to level ${tile.buildingLevel}`);
             
             if (tile.buildingLevel > maxBuildLevel) {
                 console.log("Building is at maximum level.");
@@ -41,7 +44,7 @@ document.getElementById('gameCanvas').addEventListener('click', (e) => {
             }
 
             const newImg = new Image();
-            newImg.src = `../Resources/Buildables/LogCabin/Img_LogCabin${tile.buildingLevel}.png`;
+            newImg.src = tile.buildingImg.src.replace(/(\d+)(?=\.\w+$)/, tile.buildingLevel);
             tile.buildingImg = newImg;
             console.log(`Building upgraded! Now level ${tile.buildingLevel}`);
             
