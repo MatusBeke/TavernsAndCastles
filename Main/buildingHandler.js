@@ -32,7 +32,7 @@ document.getElementById('gameCanvas').addEventListener('click', (e) => {
 
         // LOGIC A: If a building already exists AND we are in Build Mode
         if (tile.buildingImg) {
-            // Increase level (1 -> 2, 2 -> 3, etc.)
+            // Increase level
             tile.buildingLevel = (tile.buildingLevel || 1) + 1;
             
             if (tile.buildingLevel > maxBuildLevel) {

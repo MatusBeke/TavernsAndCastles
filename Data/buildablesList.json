@@ -10,12 +10,12 @@
     },
 
     {
-        "id": "log-cabin",
-        "name": "Log Cabin",
+        "id": "large-log-cabin",
+        "name": "Large Log Cabin",
         "level": 1,
-        "price": 50,
-        "image": "../Resources/Buildables/LogCabin/Img_LogCabin1.png",
-        "description": "Small starter house for your citizens, usualy built outside the walls...",
-        "maxBuildLevel": 6
+        "price": 100,
+        "image": "../Resources/Buildables/LargeLogCabin/Img_LargeLogCabin1.png",
+        "description": "Larger version of the standard log cabin, offering more space for your citizens...",
+        "maxBuildLevel": 2
     }
 ]
