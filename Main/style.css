@@ -98,3 +98,32 @@ body {
     z-index: 100;
     pointer-events: none; 
 }
+#stats-hud {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    display: flex;
+    gap: 20px;
+    background: rgba(15, 8, 5, 0.85);
+    border: 2px solid #5c3a21;
+    border-radius: 5px;
+    padding: 10px 20px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.8), inset 0 0 10px rgba(212, 175, 55, 0.1);
+    z-index: 100;
+    pointer-events: none; /* Aby si mohol klikať na mapu aj cez medzery v HUD */
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'MedievalSharp', cursive;
+    color: #d4af37;
+    font-size: 1.5rem;
+    text-shadow: 2px 2px 4px #000;
+}
+
+.stat-icon {
+    font-size: 1.3rem;
+    filter: drop-shadow(0 0 2px rgba(0,0,0,1));
+}

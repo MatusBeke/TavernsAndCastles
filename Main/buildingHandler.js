@@ -77,3 +77,21 @@ window.addEventListener('DOMContentLoaded', () => {
         realmDisplay.innerText = savedRealmName;
     }
 });
+window.addEventListener('DOMContentLoaded', () => {
+    // 1. Zobrazenie názvu sveta (to už tam máš)
+    const realmDisplay = document.getElementById('realm-display');
+    const savedRealmName = sessionStorage.getItem('game_realmName');
+    
+    if (savedRealmName && realmDisplay) {
+        realmDisplay.innerText = savedRealmName;
+    }
+
+    // 2. NOVÉ: Načítanie počiatočného zlata z nastavení hry
+    const statGoldDisplay = document.getElementById('stat-gold');
+    // Ak hodnota v pamäti nie je (napríklad si preskočil menu), dáme mu základných 100
+    const startingWealth = sessionStorage.getItem('game_startingWealth') || 100; 
+    
+    if (statGoldDisplay) {
+        statGoldDisplay.innerText = startingWealth;
+    }
+});
