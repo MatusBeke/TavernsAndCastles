@@ -26,6 +26,7 @@ window.onload = () => {
         button.addEventListener('mouseenter', playHoverSound);
     });
 
+    setupSelection('save-mode');
     setupSelection('realm-name');
     setupSelection('map-size');
     setupSelection('difficulty');
@@ -56,10 +57,12 @@ function startWorld() {
 
     const selectedMapSize = document.querySelector('#map-size .active').getAttribute('data-value');
     const selectedDifficulty = document.querySelector('#difficulty .active').getAttribute('data-value');
+    const saveMode = document.querySelector('#save-mode .active').getAttribute('data-value');
 
     sessionStorage.setItem('game_realmName', realmName);
     sessionStorage.setItem('game_mapSize', selectedMapSize);
     sessionStorage.setItem('game_difficulty', selectedDifficulty);
+    sessionStorage.setItem('game_saveEnabled', saveMode);
 
     document.body.style.transition = "opacity 1.5s ease";
     document.body.style.opacity = "0";
