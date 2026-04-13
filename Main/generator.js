@@ -144,7 +144,7 @@ var camera = { x: 0, y: 0, zoom: 1 };
         };
     }
 
-    // Funkcia na načítanie budov na stavbu z JSON súboru
+// ... (zvyšok generator.js ostáva rovnaký)
     async function loadBuildingMenu() {
         const menuContainer = document.getElementById('building-menu');
         const response = await fetch('../Data/buildablesList.json');
@@ -152,6 +152,7 @@ var camera = { x: 0, y: 0, zoom: 1 };
         menuContainer.innerHTML = '';
 
         buildings.forEach(building => {
+            const popCost = building.popCost || 1; // Ak zabudneš v JSON pridať, berie 1
             const buildingElement = document.createElement('div');
             buildingElement.id = 'building-menu-element'; 
 
@@ -159,8 +160,8 @@ var camera = { x: 0, y: 0, zoom: 1 };
                 <img id="building-menu-element-img" src="${building.image}" alt="${building.name}">
                 <p id="building-menu-element-name">${building.name}</p>
                 <p id="building-menu-element-level">lvl. ${building.level}</p>
-                <p id="building-menu-element-price">${building.price} G</p>
-                <button id="building-menu-element-button" onclick="startBuilding('${building.image}', '${building.maxBuildLevel}')">Build</button>
+                <p id="building-menu-element-price">${building.price} G | ${popCost} 👥</p>
+                <button id="building-menu-element-button" onclick="startBuilding('${building.image}', ${building.maxBuildLevel}, ${building.price}, ${popCost})">Build</button>
             `;
             menuContainer.appendChild(buildingElement);
         });

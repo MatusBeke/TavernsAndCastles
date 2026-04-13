@@ -1,17 +1,56 @@
 let isBuildingMode = false;
 let selectedBuildingImg = null;
 let maxBuildLevel = null;
+let currentBuildingPrice = 0;
+let currentBuildingPopCost = 0;
 
+// Suroviny
+let currentGold = 0;
+let currentPop = 10;
+let currentWood = 50;
+let currentStone = 20;
 
+function updateHUD() {
+    const statGoldDisplay = document.getElementById('stat-gold');
+    const statPopDisplay = document.getElementById('stat-pop');
+    const statWoodDisplay = document.getElementById('stat-wood');
+    const statStoneDisplay = document.getElementById('stat-stone');
 
-function startBuilding(imageSrc, maxLVL) {
+    if (statGoldDisplay) statGoldDisplay.innerText = currentGold;
+    if (statPopDisplay) statPopDisplay.innerText = currentPop;
+    if (statWoodDisplay) statWoodDisplay.innerText = currentWood;
+    if (statStoneDisplay) statStoneDisplay.innerText = currentStone;
+}
+
+// In-game Warning namiesto alert()
+function showWarning(msg) {
+    let warningDiv = document.getElementById('game-warning');
+    if (!warningDiv) {
+        warningDiv = document.createElement('div');
+        warningDiv.id = 'game-warning';
+        document.body.appendChild(warningDiv);
+        warningDiv.style.cssText = "position:absolute; top:15%; left:50%; transform:translateX(-50%); color:#ff4500; font-family:'MedievalSharp', cursive; font-size:2rem; text-shadow:2px 2px 5px #000; pointer-events:none; opacity:0; transition:opacity 0.3s ease; z-index:1000;";
+    }
+    warningDiv.innerText = msg;
+    warningDiv.style.opacity = '1';
+    clearTimeout(warningDiv.timeoutId);
+    warningDiv.timeoutId = setTimeout(() => { warningDiv.style.opacity = '0'; }, 2000);
+}
+
+function startBuilding(imageSrc, maxLVL, price, popCost) {
+    if (currentGold < price || currentPop < popCost) {
+        showWarning("Not enough resources!");
+        return;
+    }
+
     isBuildingMode = true;
     selectedBuildingImg = new Image();
     selectedBuildingImg.src = imageSrc;
     maxBuildLevel = maxLVL;
+    currentBuildingPrice = price;
+    currentBuildingPopCost = popCost;
     
     document.getElementById('gameCanvas').style.cursor = "crosshair";
-    console.log("Build mode active");
 }
 
 document.getElementById('gameCanvas').addEventListener('click', (e) => {
@@ -32,53 +71,60 @@ document.getElementById('gameCanvas').addEventListener('click', (e) => {
     if (gridX >= 0 && gridX < MAP_SIZE && gridY >= 0 && gridY < MAP_SIZE) {
         const tile = mapData[gridY][gridX];
 
-        // LOGIC A: If a building already exists AND we are in Build Mode
         if (tile.buildingImg) {
-            // Increase level
-            tile.buildingLevel = (tile.buildingLevel || 1) + 1;
-            console.log(`Attempting to upgrade building ${tile.buildingImg.src} at ${gridX}, ${gridY} to level ${tile.buildingLevel}`);
-            
-            if (tile.buildingLevel > maxBuildLevel) {
-                console.log("Building is at maximum level.");
+            if (currentGold < currentBuildingPrice || currentPop < currentBuildingPopCost) {
+                showWarning("Not enough resources for upgrade!");
+                finalizeBuild(canvas);
+                return;
+            }
+
+            if (tile.buildingLevel >= maxBuildLevel) {
+                showWarning("Maximum level reached!");
+                finalizeBuild(canvas);
                 return; 
             }
 
+            tile.buildingLevel = (tile.buildingLevel || 1) + 1;
             const newImg = new Image();
             newImg.src = tile.buildingImg.src.replace(/(\d+)(?=\.\w+$)/, tile.buildingLevel);
             tile.buildingImg = newImg;
-            console.log(`Building upgraded! Now level ${tile.buildingLevel}`);
+            
+            currentGold -= currentBuildingPrice;
+            currentPop -= currentBuildingPopCost;
+            updateHUD();
             
             finalizeBuild(canvas);
             return; 
         }
 
-        // LOGIC B: If no building exists, place the first one
         if (selectedBuildingImg) {
+            if (currentGold < currentBuildingPrice || currentPop < currentBuildingPopCost) {
+                showWarning("Not enough resources!");
+                finalizeBuild(canvas);
+                return;
+            }
+
             tile.buildingImg = selectedBuildingImg;
             tile.buildingLevel = 1; 
-    
-            console.log(`First building placed at ${gridX}, ${gridY}`);
+            
+            currentGold -= currentBuildingPrice;
+            currentPop -= currentBuildingPopCost;
+            updateHUD();
+            
             finalizeBuild(canvas);
         }
     }
 });
 
-// Helper function to clean up after building
 function finalizeBuild(canvas) {
     isBuildingMode = false;
     selectedBuildingImg = null;
+    currentBuildingPrice = 0;
+    currentBuildingPopCost = 0;
     canvas.style.cursor = "default";
 }
+
 window.addEventListener('DOMContentLoaded', () => {
-    const realmDisplay = document.getElementById('realm-display');
-    const savedRealmName = sessionStorage.getItem('game_realmName');
-    
-    if (savedRealmName && realmDisplay) {
-        realmDisplay.innerText = savedRealmName;
-    }
-});
-window.addEventListener('DOMContentLoaded', () => {
-    // 1. Zobrazenie názvu sveta (to už tam máš)
     const realmDisplay = document.getElementById('realm-display');
     const savedRealmName = sessionStorage.getItem('game_realmName');
     
@@ -86,12 +132,6 @@ window.addEventListener('DOMContentLoaded', () => {
         realmDisplay.innerText = savedRealmName;
     }
 
-    // 2. NOVÉ: Načítanie počiatočného zlata z nastavení hry
-    const statGoldDisplay = document.getElementById('stat-gold');
-    // Ak hodnota v pamäti nie je (napríklad si preskočil menu), dáme mu základných 100
-    const startingWealth = sessionStorage.getItem('game_startingWealth') || 100; 
-    
-    if (statGoldDisplay) {
-        statGoldDisplay.innerText = startingWealth;
-    }
+    currentGold = parseInt(sessionStorage.getItem('game_startingWealth')) || 100; 
+    updateHUD();
 });
