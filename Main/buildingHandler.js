@@ -39,7 +39,7 @@ function showWarning(msg) {
 
 function startBuilding(imageSrc, maxLVL, price, popCost) {
     if (currentGold < price || currentPop < popCost) {
-        showWarning("Not enough resources!");
+        showWarning("Not enough resources or population!");
         return;
     }
 
@@ -90,7 +90,6 @@ document.getElementById('gameCanvas').addEventListener('click', (e) => {
             tile.buildingImg = newImg;
             
             currentGold -= currentBuildingPrice;
-            currentPop -= currentBuildingPopCost;
             updateHUD();
             
             finalizeBuild(canvas);
@@ -108,7 +107,6 @@ document.getElementById('gameCanvas').addEventListener('click', (e) => {
             tile.buildingLevel = 1; 
             
             currentGold -= currentBuildingPrice;
-            currentPop -= currentBuildingPopCost;
             updateHUD();
             
             finalizeBuild(canvas);
