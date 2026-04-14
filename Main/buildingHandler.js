@@ -5,10 +5,10 @@ let currentBuildingPrice = 0;
 let currentBuildingPopCost = 0;
 
 // Suroviny
-let currentGold = 0;
-let currentPop = 10;
-let currentWood = 50;
-let currentStone = 20;
+let currentGold = 100000;
+let currentPop = 1000000;
+let currentWood = 1000000;
+let currentStone = 1000000;
 
 function updateHUD() {
     const statGoldDisplay = document.getElementById('stat-gold');
@@ -130,6 +130,6 @@ window.addEventListener('DOMContentLoaded', () => {
         realmDisplay.innerText = savedRealmName;
     }
 
-    currentGold = parseInt(sessionStorage.getItem('game_startingWealth')) || 100; 
+    currentGold = parseInt(sessionStorage.getItem('game_startingWealth')) || currentGold; 
     updateHUD();
 });

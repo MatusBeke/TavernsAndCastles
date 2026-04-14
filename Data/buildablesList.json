@@ -34,9 +34,19 @@
         "name": "Farmland",
         "level": 1,
         "price": 25,
-        "popCost": 5,
+        "popCost": 0,
         "image": "../Resources/Buildables/Farmland/Img_Farmland1.png",
         "description": "Basic farmland for growing crops. Provides food for your population.",
         "maxBuildLevel": 3
+    },
+        {
+        "id": "windmill",
+        "name": "Windmill",
+        "level": 1,
+        "price": 250,
+        "popCost": 0,
+        "image": "../Resources/Buildables/Windmill/Img_Windmill.gif",
+        "description": "Generates power from the wind, providing energy for your settlement.",
+        "maxBuildLevel": 1
     }
 ]
