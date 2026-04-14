@@ -1,5 +1,15 @@
 [
     {
+        "id": "castle-keep",
+        "name": "Castle Keep",
+        "level": 1,
+        "price": 0,
+        "popCost": 0,
+        "image": "../Resources/Buildables/Castle/Img_CastleKeep.png",
+        "description": "The central structure of your castle, providing defense and housing for your population. This is the heart of your kingdom.",
+        "maxBuildLevel": 1
+    },
+    {
         "id": "log-cabin",
         "name": "Log Cabin",
         "level": 1,
@@ -20,14 +30,13 @@
         "maxBuildLevel": 2
     },
     {
-        "id": "castle-keep",
-        "name": "Castle Keep",
+        "id": "farmland",
+        "name": "Farmland",
         "level": 1,
-        "price": 0,
-        "popCost": 0,
-        "image": "../Resources/Buildables/Castle/Img_CastleKeep.png",
-        "description": "Larger version of the standard log cabin, offering more space for your citizens...",
-        "maxBuildLevel": 1
+        "price": 25,
+        "popCost": 5,
+        "image": "../Resources/Buildables/Farmland/Img_Farmland1.png",
+        "description": "Basic farmland for growing crops. Provides food for your population.",
+        "maxBuildLevel": 3
     }
-
 ]

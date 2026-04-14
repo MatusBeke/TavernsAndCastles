@@ -1,0 +1,28 @@
+{
+  "npc_names": {
+    "first_names": [
+      "Thalric", "Elowen", "Zorion", "Mirelle", "Kaelen", "Vespera", "Bramwell", "Lyraea", "Ondrake", "Sylas",
+      "Garrick", "Iolanthe", "Daxen", "Nyxos", "Faelan", "Tamsyn", "Valerius", "Kethra", "Ronan", "Isolde",
+      "Baelor", "Sariel", "Mordane", "Thistle", "Uryon", "Karys", "Haldor", "Xylia", "Zephyrin", "Eris",
+      "Caelum", "Vara", "Orin", "Lysander", "Mina", "Torin", "Elara", "Dravos", "Seraphina", "Kestrel",
+      "Aurelius", "Juno", "Baelen", "Rhiannon", "Cyrus", "Elowyn", "Gideon", "Siv", "Lorcan", "Zenobia",
+      "Kaelith", "Vora", "Throm", "Eisley", "Bax", "Ryker", "Indira", "Oryn", "Liora", "Marek",
+      "Zalthar", "Freyda", "Kaelen", "Soren", "Xavian", "Lyra", "Vaelen", "Kaelo", "Zinnia", "Thane",
+      "Elowyn", "Jareth", "Kaia", "Bael", "Nyra", "Cael", "Vesper", "Seryn", "Alys", "Tavish",
+      "Eamon", "Fiora", "Kael", "Lyrik", "Zorn", "Brea", "Doran", "Kaelis", "Niamh", "Rael",
+      "Sivren", "Taryn", "Vael", "Xylos", "Yara", "Zale", "Blythe", "Caelen", "Deryn", "Elys"
+    ],
+    "surnames": [
+      "Ironwood", "Shadowstep", "Brightweaver", "Stormborn", "Moonwhisper", "Goldhand", "Frostvein", "Blackwood", "Sunstrider", "Oakheart",
+      "Deepdelver", "Starfall", "Nightshade", "Ravenwing", "Drakeheart", "Silverglade", "Thornbush", "Windrider", "Flamebearer", "Stonekin",
+      "Cloudmender", "Ashwalker", "Grimbolt", "Lightfoot", "Evergreen", "Riverbound", "Sandsifter", "Mistwalker", "Ironbound", "Duskrunner",
+      "Dawnfield", "Winterleaf", "Amberflame", "Steelshaper", "Wildheart", "Holloway", "Swiftspells", "Blightbane", "Goldsmith", "Northstar",
+      "Crownless", "Voidwalker", "Fairweather", "Trueblood", "Highcliff", "Shadowvale", "Earthshaker", "Skydancer", "Cinderborn", "Silentcrest",
+      "Bloodfury", "Wyrmscale", "Aethelgard", "Stormpeak", "Silverleaf", "Ironfist", "Shadowbloom", "Skyshard", "Stoneforge", "Mistbound",
+      "Firebrand", "Wolfbane", "Starweaver", "Oakenhollow", "Deepstone", "Cragshaper", "Lightsworn", "Duskbane", "Ravenshadow", "Ironheart",
+      "Goldleaf", "Silverthorn", "Frostbrand", "Gravelord", "Sunforge", "Windstrider", "Shadowmoor", "Flameheart", "Earthbound", "Skycaller",
+      "Deepwinter", "Nightwarden", "Starborn", "Ironhide", "Steelwill", "Brightblade", "Thornheart", "Ashborn", "Grimward", "Soulreaper",
+      "Stormwarden", "Duskweaver", "Moonshadow", "Silvermoon", "Sunwhisper", "Ironmantle", "Stonefist", "Windcaller", "Firewalker", "Earthshaper"
+    ]
+  }
+}
