@@ -22,7 +22,7 @@ function updateHUD() {
     if (statStoneDisplay) statStoneDisplay.innerText = currentStone;
 }
 
-// In-game Warning namiesto alert()
+// In-game Warning ak je nedostatok resources
 function showWarning(msg) {
     let warningDiv = document.getElementById('game-warning');
     if (!warningDiv) {

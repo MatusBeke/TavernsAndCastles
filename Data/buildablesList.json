@@ -18,5 +18,16 @@
         "image": "../Resources/Buildables/LargeLogCabin/Img_LargeLogCabin1.png",
         "description": "Larger version of the standard log cabin, offering more space for your citizens...",
         "maxBuildLevel": 2
+    },
+    {
+        "id": "castle-keep",
+        "name": "Castle Keep",
+        "level": 1,
+        "price": 0,
+        "popCost": 0,
+        "image": "../Resources/Buildables/Castle/Img_CastleKeep.png",
+        "description": "Larger version of the standard log cabin, offering more space for your citizens...",
+        "maxBuildLevel": 1
     }
+
 ]
