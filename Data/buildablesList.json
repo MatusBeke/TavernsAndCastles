@@ -39,7 +39,7 @@
         "description": "Basic farmland for growing crops. Provides food for your population.",
         "maxBuildLevel": 3
     },
-        {
+    {
         "id": "windmill",
         "name": "Windmill",
         "level": 1,
@@ -47,6 +47,16 @@
         "popCost": 0,
         "image": "../Resources/Buildables/Windmill/Img_Windmill.gif",
         "description": "Generates power from the wind, providing energy for your settlement.",
+        "maxBuildLevel": 1
+    },
+    {
+        "id": "donjon",
+        "name": "Donjon",
+        "level": 5,
+        "price": 5000,
+        "popCost": 50,
+        "image": "../Resources/Buildables/Castle/Img_Donjon.png",
+        "description": "A fortified tower within the castle, offering enhanced defense. It serves as a last line of defense and a symbol of power.",
         "maxBuildLevel": 1
     }
 ]
