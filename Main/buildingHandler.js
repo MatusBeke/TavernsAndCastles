@@ -71,6 +71,14 @@ document.getElementById('gameCanvas').addEventListener('click', (e) => {
     if (gridX >= 0 && gridX < MAP_SIZE && gridY >= 0 && gridY < MAP_SIZE) {
         const tile = mapData[gridY][gridX];
 
+        // --- KONTROLA: Zákaz stavať na vode a v lese ---
+        if (tile.img && (tile.img.src.includes('Water') || tile.img.src.includes('Forest'))) {
+            showWarning("You cannot build here!");
+            finalizeBuild(canvas);
+            return;
+        }
+        // -----------------------------------------------
+
         if (tile.buildingImg) {
             if (currentGold < currentBuildingPrice || currentPop < currentBuildingPopCost) {
                 showWarning("Not enough resources for upgrade!");
