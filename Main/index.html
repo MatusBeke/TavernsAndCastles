@@ -11,6 +11,31 @@
     <script src="https://cdn.jsdelivr.net/gh/josephg/noisejs/perlin.js"></script>
 </head>
 <body>
+    <div id="building-info-modal">
+        <div class="modal-section" id="info-header">
+            <h2 id="info-name">Názov budovy</h2>
+        </div>
+    
+        <div id="info-middle-row">
+            <div class="modal-section" id="info-image-box">
+                <img id="info-img" src="" alt="Náhľad">
+            </div>
+            <div class="modal-section" id="info-desc-box">
+                <p id="info-desc">Popis budovy</p>
+            </div>
+        </div>
+    
+        <div class="modal-section" id="info-stats-box">
+            <p><strong>Level:</strong> <span id="info-level">1</span></p>
+            <p><strong>Health:</strong> 100/100</p>
+            <p><strong>Production:</strong> Active</p>
+        </div>
+    
+        <div class="modal-section" id="info-buttons-box">
+            <button class="info-btn sell" onclick="sellBuilding()">Sell</button>
+            <button class="info-btn exit" onclick="closeBuildingInfo()">Exit</button>
+        </div>
+    </div>
     <div id="category-bar">
         <button class="cat-btn active" onclick="loadBuildingMenu('houses')">Houses</button>
         <button class="cat-btn" onclick="loadBuildingMenu('castles')">Castles</button>
@@ -18,6 +43,7 @@
         <button class="cat-btn" onclick="loadBuildingMenu('fields')">Fields</button>
     </div>
 
+    <button id="battle-btn" onclick="startBattle()">Battle ⚔️</button>
 
     <div id="stats-container">
         <div id="permanent-stats">

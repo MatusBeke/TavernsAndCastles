@@ -130,6 +130,10 @@ var camera = { x: 0, y: 0, zoom: 1 };
             lastMouse = { x: e.clientX, y: e.clientY };
     });
 
+    function startBattle() {
+    showWarning("Your army is not ready yet, my God!");
+    }
+
     window.addEventListener('mouseup', () => isDragging = false);
 
     imgMountains.onload = () => {
@@ -163,6 +167,7 @@ var camera = { x: 0, y: 0, zoom: 1 };
         // Ak otvárame novú kategóriu
         const response = await fetch('../Data/buildablesList.json');
         const buildings = await response.json();
+        window.gameBuildings = buildings;
 
         // Najprv skryjeme aktuálne menu (ak je otvorené)
         menuContainer.classList.remove('show-menu');
