@@ -253,11 +253,11 @@ window.addEventListener('DOMContentLoaded', () => {
     const savedRealmName = sessionStorage.getItem('game_realmName');
     if (savedRealmName && realmDisplay) realmDisplay.innerText = savedRealmName;
 
-    currentGold = parseInt(sessionStorage.getItem('game_gold')) || parseInt(sessionStorage.getItem('game_startingWealth')) || 100;
-    currentPop = parseInt(sessionStorage.getItem('game_pop')) || 10;
-    currentWood = parseInt(sessionStorage.getItem('game_wood')) || 50;
-    currentStone = parseInt(sessionStorage.getItem('game_stone')) || 20;
-    currentFood = parseInt(sessionStorage.getItem('game_food')) || 100;
+    currentGold = parseInt(sessionStorage.getItem('game_gold')) || parseInt(sessionStorage.getItem('game_startingWealth')) || 100000000;
+    currentPop = parseInt(sessionStorage.getItem('game_pop')) || 1000000;
+    currentWood = parseInt(sessionStorage.getItem('game_wood')) || 5000000;
+    currentStone = parseInt(sessionStorage.getItem('game_stone')) || 20000000;
+    currentFood = parseInt(sessionStorage.getItem('game_food')) || 10000000;
     
     updateHUD();
 });
