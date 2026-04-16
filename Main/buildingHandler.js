@@ -39,25 +39,36 @@ function updateHUD() {
     }
 }
 
-function showWarning(msg) {
+function showWarning(msg, type) {
     let warningDiv = document.getElementById('game-warning') || document.createElement('div');
     warningDiv.id = 'game-warning';
     if (!document.getElementById('game-warning')) document.body.appendChild(warningDiv);
     
-    warningDiv.style.cssText = "position:absolute; top:15%; left:50%; transform:translateX(-50%); color:#ff4500; font-family:'MedievalSharp', cursive; font-size:2rem; text-shadow:2px 2px 5px #000; pointer-events:none; opacity:1; transition:opacity 0.3s ease; z-index:1000;";
+    warningDiv.style.cssText = "position:absolute; top:15%; left:50%; transform:translateX(-50%); font-family:'MedievalSharp', cursive; font-size:2rem; text-shadow:2px 2px 5px #000; pointer-events:none; opacity:1; transition:opacity 0.3s ease; z-index:1000;";
+    
+    if (type === "red") {
+        warningDiv.style.color = "#ff4500";
+    } else if (type === "yellow") {
+        warningDiv.style.color = "#ffd700";
+    } else {
+        warningDiv.style.color = "#ffffff"; 
+    }
+    
     warningDiv.innerText = msg;
     
     clearTimeout(warningDiv.timeoutId);
-    warningDiv.timeoutId = setTimeout(() => { warningDiv.style.opacity = '0'; }, 2000);
+    warningDiv.timeoutId = setTimeout(() => { 
+        warningDiv.style.opacity = '0'; 
+    }, 2000);
 }
 
 function startBattle() {
-    showWarning("Your army is not ready yet, my Lord!");
+    showWarning("Your army is not ready yet, my Lord!", "red");
 }
 
 function startBuilding(imageSrc, maxLVL, price, popCost, category) {
     if (currentGold < price || currentPop < popCost) {
-        showWarning("Not enough resources or population!");
+        showWarning("Not enough resources or population!", "red");
         return;
     }
 
@@ -100,28 +111,28 @@ document.getElementById('gameCanvas').addEventListener('click', (e) => {
         const isHillOrMountain = tile.img && (tile.img.src.includes('Hills') || tile.img.src.includes('Mountains'));
 
         if (isWaterOrForest) {
-            showWarning("You cannot build here!");
+            showWarning("You cannot build here!", "red");
             finalizeBuild(canvas);
             return;
         }
 
         if (selectedBuildingImg && !tile.buildingImg) {
             if (currentBuildingCategory === 'mines' && !isHillOrMountain) {
-                showWarning("Mines can only be built on hills!");
+                showWarning("Mines can only be built on hills!", "red");
                 finalizeBuild(canvas); return;
             } else if (currentBuildingCategory !== 'mines' && isHillOrMountain) {
-                showWarning("Only mines can be built here!");
+                showWarning("Only mines can be built here!", "red");
                 finalizeBuild(canvas); return;
             }
         }
 
         if (tile.buildingImg) {
             if (currentGold < currentBuildingPrice || currentPop < currentBuildingPopCost) {
-                showWarning("Not enough resources for upgrade!");
+                showWarning("Not enough resources for upgrade!", "red");
                 finalizeBuild(canvas); return;
             }
             if (tile.buildingLevel >= maxBuildLevel) {
-                showWarning("Maximum level reached!");
+                showWarning("Maximum level reached!", "red");
                 finalizeBuild(canvas); return; 
             }
 
@@ -138,7 +149,7 @@ document.getElementById('gameCanvas').addEventListener('click', (e) => {
 
         if (selectedBuildingImg) {
             if (currentGold < currentBuildingPrice || currentPop < currentBuildingPopCost) {
-                showWarning("Not enough resources!");
+                showWarning("Not enough resources!", "red");
                 finalizeBuild(canvas); return;
             }
 
@@ -206,7 +217,7 @@ function sellBuilding() {
     updateHUD();
     
     closeBuildingInfo();
-    showWarning("Building sold!");
+    showWarning("Building sold!" , "yellow");
 }
 // -----------------------------------------
 
@@ -246,11 +257,11 @@ window.addEventListener('DOMContentLoaded', () => {
     const savedRealmName = sessionStorage.getItem('game_realmName');
     if (savedRealmName && realmDisplay) realmDisplay.innerText = savedRealmName;
 
-    currentGold = parseInt(sessionStorage.getItem('game_gold')) || parseInt(sessionStorage.getItem('game_startingWealth')) || 100;
-    currentPop = parseInt(sessionStorage.getItem('game_pop')) || 10;
-    currentWood = parseInt(sessionStorage.getItem('game_wood')) || 50;
-    currentStone = parseInt(sessionStorage.getItem('game_stone')) || 20;
-    currentFood = parseInt(sessionStorage.getItem('game_food')) || 100;
+    currentGold = parseInt(sessionStorage.getItem('game_gold')) || parseInt(sessionStorage.getItem('game_startingWealth')) || currentGold;
+    currentPop = parseInt(sessionStorage.getItem('game_pop')) || currentPop;
+    currentWood = parseInt(sessionStorage.getItem('game_wood')) || currentWood;
+    currentStone = parseInt(sessionStorage.getItem('game_stone')) || currentStone;
+    currentFood = parseInt(sessionStorage.getItem('game_food')) || currentFood;
     
     updateHUD();
 });

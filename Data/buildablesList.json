@@ -51,7 +51,7 @@
         "price": 250,
         "popCost": 0,
         "image": "../Resources/Buildables/Windmill/Img_Windmill.png",
-        "description": "Generates power from the wind, providing energy for your settlement.",
+        "description": "Generates power from the wind, provides further processing for resources.",
         "maxBuildLevel": 1
     },
     {
