@@ -1,11 +1,17 @@
+let isBuildingMode = false;
+let selectedBuildingImg = null;
+let maxBuildLevel = null;
+let currentBuildingPrice = 0;
+let currentBuildingPopCost = 0;
+let currentBuildingCategory = null; // NOVÁ PREMENNÁ PRE KATEGÓRIU
+
 // Suroviny
 let currentGold = 100000;
 let currentPop = 1000000;
 let currentWood = 1000000;
 let currentStone = 1000000;
-let currentFood = 5000000; // Nová surovina
+let currentFood = 5000000;
 
-// Funkcia na rozbaľovanie menu (nová)
 function toggleStats(menuId) {
     const menu = document.getElementById(menuId);
     if (menu.style.display === "none") {
@@ -29,14 +35,13 @@ function updateHUD() {
     if (statPopDisplay) statPopDisplay.innerText = currentPop;
     if (statFoodDisplay) statFoodDisplay.innerText = currentFood;
 
-    // Výpočet jedla: 1 obyvateľ zje 1 jedlo za deň
     if (statDaysDisplay) {
         let daysLeft = currentPop > 0 ? Math.floor(currentFood / currentPop) : "∞";
         statDaysDisplay.innerText = daysLeft;
     }
 }
 
-// In-game Warning ak je nedostatok resources
+// In-game Warning
 function showWarning(msg) {
     let warningDiv = document.getElementById('game-warning');
     if (!warningDiv) {
@@ -51,7 +56,8 @@ function showWarning(msg) {
     warningDiv.timeoutId = setTimeout(() => { warningDiv.style.opacity = '0'; }, 2000);
 }
 
-function startBuilding(imageSrc, maxLVL, price, popCost) {
+// Pridaný parameter 'category'
+function startBuilding(imageSrc, maxLVL, price, popCost, category) {
     if (currentGold < price || currentPop < popCost) {
         showWarning("Not enough resources or population!");
         return;
@@ -63,6 +69,7 @@ function startBuilding(imageSrc, maxLVL, price, popCost) {
     maxBuildLevel = maxLVL;
     currentBuildingPrice = price;
     currentBuildingPopCost = popCost;
+    currentBuildingCategory = category; // Uloženie kategórie
     
     document.getElementById('gameCanvas').style.cursor = "crosshair";
 }
@@ -85,13 +92,35 @@ document.getElementById('gameCanvas').addEventListener('click', (e) => {
     if (gridX >= 0 && gridX < MAP_SIZE && gridY >= 0 && gridY < MAP_SIZE) {
         const tile = mapData[gridY][gridX];
 
-        // --- KONTROLA: Zákaz stavať na vode a v lese ---
-        if (tile.img && (tile.img.src.includes('Water') || tile.img.src.includes('Forest'))) {
+        // --- NOVÁ KONTROLA TERÉNU ---
+        const isWaterOrForest = tile.img && (tile.img.src.includes('Water') || tile.img.src.includes('Forest'));
+        const isHillOrMountain = tile.img && (tile.img.src.includes('Hills') || tile.img.src.includes('Mountains'));
+
+        if (isWaterOrForest) {
             showWarning("You cannot build here!");
             finalizeBuild(canvas);
             return;
         }
-        // -----------------------------------------------
+
+        // Ak staviame novú budovu (vynecháva sa to pri vylepšovaní existujúcich)
+        if (selectedBuildingImg && !tile.buildingImg) {
+            if (currentBuildingCategory === 'mines') {
+                // Bane musia byť na kopci
+                if (!isHillOrMountain) {
+                    showWarning("Mines can only be built on hills!");
+                    finalizeBuild(canvas);
+                    return;
+                }
+            } else {
+                // Ostatné budovy nesmú byť na kopci
+                if (isHillOrMountain) {
+                    showWarning("Only mines can be built here!");
+                    finalizeBuild(canvas);
+                    return;
+                }
+            }
+        }
+        // ----------------------------
 
         if (tile.buildingImg) {
             if (currentGold < currentBuildingPrice || currentPop < currentBuildingPopCost) {
@@ -141,6 +170,7 @@ function finalizeBuild(canvas) {
     selectedBuildingImg = null;
     currentBuildingPrice = 0;
     currentBuildingPopCost = 0;
+    currentBuildingCategory = null; // Vyčistenie kategórie
     canvas.style.cursor = "default";
 }
 
