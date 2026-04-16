@@ -146,36 +146,54 @@ var camera = { x: 0, y: 0, zoom: 1 };
 
     async function loadBuildingMenu(filterCategory = 'houses') {
         const menuContainer = document.getElementById('building-menu');
-        
         const clickedBtn = Array.from(document.querySelectorAll('.cat-btn')).find(btn => btn.innerText.toLowerCase() === filterCategory);
 
+        // Ak klikneme na už aktívnu kategóriu -> ZATVORENIE
         if (clickedBtn && clickedBtn.classList.contains('active')) {
-            menuContainer.innerHTML = ''; 
-            clickedBtn.classList.remove('active'); 
+            clickedBtn.classList.remove('active');
+            menuContainer.classList.remove('show-menu'); // Spustí animáciu zmiznutia
+            
+            // Vyčistíme HTML až keď animácia skončí (za 300ms)
+            setTimeout(() => {
+                menuContainer.innerHTML = ''; 
+            }, 300);
             return; 
         }
 
+        // Ak otvárame novú kategóriu
         const response = await fetch('../Data/buildablesList.json');
         const buildings = await response.json();
-        menuContainer.innerHTML = '';
 
-        document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
-        if(clickedBtn) clickedBtn.classList.add('active');
+        // Najprv skryjeme aktuálne menu (ak je otvorené)
+        menuContainer.classList.remove('show-menu');
 
-        buildings.filter(b => b.category === filterCategory).forEach(building => {
-            const popCost = building.popCost || 1;
-            const buildingElement = document.createElement('div');
-            buildingElement.id = 'building-menu-element'; 
+        // Krátka pauza, kým sa menu skryje, potom vymeníme budovy
+        setTimeout(() => {
+            menuContainer.innerHTML = '';
 
-            buildingElement.innerHTML = `
-                <img id="building-menu-element-img" src="${building.image}" alt="${building.name}">
-                <p id="building-menu-element-name">${building.name}</p>
-                <p id="building-menu-element-level">lvl. ${building.level}</p>
-                <p id="building-menu-element-price">${building.price} G | ${popCost} 👥</p>
-                <button id="building-menu-element-button" onclick="startBuilding('${building.image}', ${building.maxBuildLevel}, ${building.price}, ${popCost})">Build</button>
-            `;
-            menuContainer.appendChild(buildingElement);
-        });
+            document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
+            if(clickedBtn) clickedBtn.classList.add('active');
+
+            buildings.filter(b => b.category === filterCategory).forEach(building => {
+                const popCost = building.popCost || 1;
+                const buildingElement = document.createElement('div');
+                buildingElement.id = 'building-menu-element'; 
+
+                buildingElement.innerHTML = `
+                    <img id="building-menu-element-img" src="${building.image}" alt="${building.name}">
+                    <p id="building-menu-element-name">${building.name}</p>
+                    <p id="building-menu-element-level">lvl. ${building.level}</p>
+                    <p id="building-menu-element-price">${building.price} G | ${popCost} 👥</p>
+                    <button id="building-menu-element-button" onclick="startBuilding('${building.image}', ${building.maxBuildLevel}, ${building.price}, ${popCost})">Build</button>
+                `;
+                menuContainer.appendChild(buildingElement);
+            });
+
+            // Akonáhle sú budovy v HTML, spustíme animáciu zobrazenia
+            requestAnimationFrame(() => {
+                menuContainer.classList.add('show-menu');
+            });
+        }, 150);
     }
 
 function showInfo(id) {

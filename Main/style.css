@@ -17,12 +17,23 @@ body {
     position: absolute;
     bottom: 90px; 
     left: 50%;
-    transform: translateX(-50%);
+    
+    transform: translate(-50%, 30px);
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s ease; 
+    
     display: flex;
     gap: 10px;
     z-index: 99;
     background-repeat: no-repeat;
     image-rendering: pixelated;  
+}
+
+#building-menu.show-menu {
+    transform: translate(-50%, 0);
+    opacity: 1;
+    pointer-events: auto;
 }
 
 #building-menu-element {
