@@ -163,7 +163,6 @@ function finalizeBuild(canvas) {
     canvas.style.cursor = "default";
 }
 
-// --- NOVÉ FUNKCIE PRE INFO OKNO BUDOVY ---
 function openBuildingInfo(tile, x, y) {
     selectedTileForInfo = { tile, x, y };
     
@@ -172,8 +171,9 @@ function openBuildingInfo(tile, x, y) {
     const imgEl = document.getElementById('info-img');
     const descEl = document.getElementById('info-desc');
     const levelEl = document.getElementById('info-level');
+    const healthEl = document.getElementById('info-health');
+    const prodEl = document.getElementById('info-production');
 
-    // Nájdeme základný obrázok (level 1), aby sme v JSONe našli dáta o budove
     let baseSrc = tile.buildingSrc;
     if (tile.buildingLevel > 1) {
          baseSrc = tile.buildingSrc.replace(/(\d+)(?=\.\w+$)/, '1');
@@ -184,7 +184,14 @@ function openBuildingInfo(tile, x, y) {
     nameEl.innerText = bData ? bData.name : "Unknown Structure";
     descEl.innerText = bData ? bData.description : "No records found in the chronicles.";
     imgEl.src = tile.buildingSrc; 
-    levelEl.innerText = tile.buildingLevel || 1;
+    
+    let currentLevel = tile.buildingLevel || 1;
+    levelEl.innerText = currentLevel;
+
+    let maxHealth = bData && bData.baseHealth ? bData.baseHealth * currentLevel : 100 * currentLevel;
+    healthEl.innerText = `${maxHealth} / ${maxHealth}`;
+    
+    prodEl.innerText = bData && bData.productionText ? bData.productionText : "None";
 
     modal.style.display = 'flex';
 }
