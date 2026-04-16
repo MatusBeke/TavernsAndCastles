@@ -144,15 +144,20 @@ var camera = { x: 0, y: 0, zoom: 1 };
         };
     }
 
-// ... (zvyšok generator.js ostáva rovnaký)
-    async function loadBuildingMenu() {
+    async function loadBuildingMenu(filterCategory = 'houses') {
         const menuContainer = document.getElementById('building-menu');
         const response = await fetch('../Data/buildablesList.json');
         const buildings = await response.json();
         menuContainer.innerHTML = '';
 
-        buildings.forEach(building => {
-            const popCost = building.popCost || 1; // Ak zabudneš v JSON pridať, berie 1
+        // Zvýraznenie aktívneho tlačidla kategórie na spodnej lište
+        document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
+        const activeBtn = Array.from(document.querySelectorAll('.cat-btn')).find(btn => btn.innerText.toLowerCase() === filterCategory);
+        if(activeBtn) activeBtn.classList.add('active');
+
+        // Vykreslenie len tých budov, ktoré sedia do kategórie
+        buildings.filter(b => b.category === filterCategory).forEach(building => {
+            const popCost = building.popCost || 1;
             const buildingElement = document.createElement('div');
             buildingElement.id = 'building-menu-element'; 
 
