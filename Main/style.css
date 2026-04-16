@@ -15,12 +15,12 @@ body {
 
 #building-menu {
     position: absolute;
-    bottom: 15px;
+    bottom: 90px; 
     left: 50%;
     transform: translateX(-50%);
     display: flex;
     gap: 10px;
-    z-index: 100;
+    z-index: 99;
     background-repeat: no-repeat;
     image-rendering: pixelated;  
 }
@@ -87,6 +87,7 @@ body {
     background: #ffd700;
     color: #000;
 }
+
 #realm-display {
     position: absolute;
     top: 20px;
@@ -98,10 +99,20 @@ body {
     z-index: 100;
     pointer-events: none; 
 }
-#stats-hud {
+
+/* NOVÉ ROZBAĽOVACIE STATY A PERMANENTNÉ STATY */
+#stats-container {
     position: absolute;
     top: 20px;
     left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    z-index: 100;
+    pointer-events: none; 
+}
+
+#permanent-stats {
     display: flex;
     gap: 20px;
     background: rgba(15, 8, 5, 0.85);
@@ -109,8 +120,42 @@ body {
     border-radius: 5px;
     padding: 10px 20px;
     box-shadow: 0 0 15px rgba(0,0,0,0.8), inset 0 0 10px rgba(212, 175, 55, 0.1);
-    z-index: 100;
-    pointer-events: none; /* Aby si mohol klikať na mapu aj cez medzery v HUD */
+    pointer-events: auto;
+}
+
+.stat-group {
+    pointer-events: auto; 
+}
+
+.stat-toggle-btn {
+    font-family: 'MedievalSharp', cursive;
+    background: rgba(15, 8, 5, 0.9);
+    border: 2px solid #5c3a21;
+    color: #d4af37;
+    padding: 8px 15px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    border-radius: 3px;
+    width: 150px;
+    text-align: left;
+    box-shadow: 0 0 10px rgba(0,0,0,0.8);
+    transition: 0.3s;
+}
+
+.stat-toggle-btn:hover {
+    background: rgba(212, 175, 55, 0.2);
+}
+
+.stat-dropdown {
+    background: rgba(15, 8, 5, 0.85);
+    border: 1px solid #5c3a21;
+    border-top: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px;
+    width: 128px; 
+    box-shadow: 0 5px 15px rgba(0,0,0,0.8);
 }
 
 .stat-item {
@@ -119,14 +164,15 @@ body {
     gap: 8px;
     font-family: 'MedievalSharp', cursive;
     color: #d4af37;
-    font-size: 1.5rem;
-    text-shadow: 2px 2px 4px #000;
+    font-size: 1.2rem;
+    text-shadow: 1px 1px 2px #000;
 }
 
 .stat-icon {
     font-size: 1.3rem;
     filter: drop-shadow(0 0 2px rgba(0,0,0,1));
 }
+
 #category-bar {
     position: absolute;
     bottom: 20px;
@@ -158,12 +204,4 @@ body {
     color: #d4af37;
     box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
     background: rgba(212, 175, 55, 0.2);
-}
-#building-menu {
-    bottom: 90px; 
-    z-index: 99;
-}
-
-#category-bar {
-    z-index: 100;
 }

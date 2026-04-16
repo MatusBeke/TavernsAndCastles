@@ -1,25 +1,39 @@
-let isBuildingMode = false;
-let selectedBuildingImg = null;
-let maxBuildLevel = null;
-let currentBuildingPrice = 0;
-let currentBuildingPopCost = 0;
-
 // Suroviny
 let currentGold = 100000;
 let currentPop = 1000000;
 let currentWood = 1000000;
 let currentStone = 1000000;
+let currentFood = 5000000; // Nová surovina
+
+// Funkcia na rozbaľovanie menu (nová)
+function toggleStats(menuId) {
+    const menu = document.getElementById(menuId);
+    if (menu.style.display === "none") {
+        menu.style.display = "flex";
+    } else {
+        menu.style.display = "none";
+    }
+}
 
 function updateHUD() {
     const statGoldDisplay = document.getElementById('stat-gold');
-    const statPopDisplay = document.getElementById('stat-pop');
     const statWoodDisplay = document.getElementById('stat-wood');
     const statStoneDisplay = document.getElementById('stat-stone');
+    const statPopDisplay = document.getElementById('stat-pop');
+    const statFoodDisplay = document.getElementById('stat-food');
+    const statDaysDisplay = document.getElementById('stat-days');
 
     if (statGoldDisplay) statGoldDisplay.innerText = currentGold;
-    if (statPopDisplay) statPopDisplay.innerText = currentPop;
     if (statWoodDisplay) statWoodDisplay.innerText = currentWood;
     if (statStoneDisplay) statStoneDisplay.innerText = currentStone;
+    if (statPopDisplay) statPopDisplay.innerText = currentPop;
+    if (statFoodDisplay) statFoodDisplay.innerText = currentFood;
+
+    // Výpočet jedla: 1 obyvateľ zje 1 jedlo za deň
+    if (statDaysDisplay) {
+        let daysLeft = currentPop > 0 ? Math.floor(currentFood / currentPop) : "∞";
+        statDaysDisplay.innerText = daysLeft;
+    }
 }
 
 // In-game Warning ak je nedostatok resources

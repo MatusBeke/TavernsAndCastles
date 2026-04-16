@@ -146,16 +146,22 @@ var camera = { x: 0, y: 0, zoom: 1 };
 
     async function loadBuildingMenu(filterCategory = 'houses') {
         const menuContainer = document.getElementById('building-menu');
+        
+        const clickedBtn = Array.from(document.querySelectorAll('.cat-btn')).find(btn => btn.innerText.toLowerCase() === filterCategory);
+
+        if (clickedBtn && clickedBtn.classList.contains('active')) {
+            menuContainer.innerHTML = ''; 
+            clickedBtn.classList.remove('active'); 
+            return; 
+        }
+
         const response = await fetch('../Data/buildablesList.json');
         const buildings = await response.json();
         menuContainer.innerHTML = '';
 
-        // Zvýraznenie aktívneho tlačidla kategórie na spodnej lište
         document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
-        const activeBtn = Array.from(document.querySelectorAll('.cat-btn')).find(btn => btn.innerText.toLowerCase() === filterCategory);
-        if(activeBtn) activeBtn.classList.add('active');
+        if(clickedBtn) clickedBtn.classList.add('active');
 
-        // Vykreslenie len tých budov, ktoré sedia do kategórie
         buildings.filter(b => b.category === filterCategory).forEach(building => {
             const popCost = building.popCost || 1;
             const buildingElement = document.createElement('div');
@@ -170,7 +176,7 @@ var camera = { x: 0, y: 0, zoom: 1 };
             `;
             menuContainer.appendChild(buildingElement);
         });
-}
+    }
 
 function showInfo(id) {
     console.log("Klikli ste na budovu s ID:", id);
