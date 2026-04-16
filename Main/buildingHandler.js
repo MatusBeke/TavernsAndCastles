@@ -102,17 +102,14 @@ document.getElementById('gameCanvas').addEventListener('click', (e) => {
             return;
         }
 
-        // Ak staviame novú budovu (vynecháva sa to pri vylepšovaní existujúcich)
         if (selectedBuildingImg && !tile.buildingImg) {
             if (currentBuildingCategory === 'mines') {
-                // Bane musia byť na kopci
                 if (!isHillOrMountain) {
                     showWarning("Mines can only be built on hills!");
                     finalizeBuild(canvas);
                     return;
                 }
             } else {
-                // Ostatné budovy nesmú byť na kopci
                 if (isHillOrMountain) {
                     showWarning("Only mines can be built here!");
                     finalizeBuild(canvas);
@@ -120,7 +117,6 @@ document.getElementById('gameCanvas').addEventListener('click', (e) => {
                 }
             }
         }
-        // ----------------------------
 
         if (tile.buildingImg) {
             if (currentGold < currentBuildingPrice || currentPop < currentBuildingPopCost) {
@@ -170,7 +166,7 @@ function finalizeBuild(canvas) {
     selectedBuildingImg = null;
     currentBuildingPrice = 0;
     currentBuildingPopCost = 0;
-    currentBuildingCategory = null; // Vyčistenie kategórie
+    currentBuildingCategory = null; 
     canvas.style.cursor = "default";
 }
 
