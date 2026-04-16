@@ -6,6 +6,8 @@
         "level": 1,
         "price": 0,
         "popCost": 0,
+        "baseHealth": 1000,
+        "productionText": "Heart of Kingdom",
         "image": "../Resources/Buildables/Castle/Img_CastleKeep.png",
         "description": "The central structure of your castle, providing defense and housing for your population. This is the heart of your kingdom.",
         "maxBuildLevel": 1
@@ -17,6 +19,8 @@
         "level": 1,
         "price": 50,
         "popCost": 2,
+        "baseHealth": 100,
+        "productionText": "Provides Housing",
         "image": "../Resources/Buildables/LogCabin/Img_LogCabin1.png",
         "description": "Small starter house for your citizens, usualy built outside the walls...",
         "maxBuildLevel": 4
@@ -28,6 +32,8 @@
         "level": 1,
         "price": 100,
         "popCost": 5,
+        "baseHealth": 250,
+        "productionText": "Provides More Housing",
         "image": "../Resources/Buildables/LargeLogCabin/Img_LargeLogCabin1.png",
         "description": "Larger version of the standard log cabin, offering more space for your citizens...",
         "maxBuildLevel": 2
@@ -39,6 +45,8 @@
         "level": 1,
         "price": 25,
         "popCost": 0,
+        "baseHealth": 50,
+        "productionText": "+10 Food / Day",
         "image": "../Resources/Buildables/Farmland/Img_Farmland1.png",
         "description": "Basic farmland for growing crops. Provides food for your population.",
         "maxBuildLevel": 3
@@ -50,6 +58,8 @@
         "level": 1,
         "price": 250,
         "popCost": 0,
+        "baseHealth": 150,
+        "productionText": "+50 Food / Day",
         "image": "../Resources/Buildables/Windmill/Img_Windmill.png",
         "description": "Generates power from the wind, provides further processing for resources.",
         "maxBuildLevel": 1
@@ -61,6 +71,8 @@
         "level": 5,
         "price": 5000,
         "popCost": 50,
+        "baseHealth": 5000,
+        "productionText": "Ultimate Defense",
         "image": "../Resources/Buildables/Castle/Img_Donjon.png",
         "description": "A fortified tower within the castle, offering enhanced defense. It serves as a last line of defense and a symbol of power.",
         "maxBuildLevel": 1
@@ -72,6 +84,8 @@
         "level": 1,
         "price": 250,
         "popCost": 50,
+        "baseHealth": 300,
+        "productionText": "+20 Stone & Gold / Day",
         "image": "../Resources/Buildables/Mine/Img_Mine1.png",
         "description": "A mining operation for extracting valuable resources from the earth.",
         "maxBuildLevel": 3
