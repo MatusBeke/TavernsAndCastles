@@ -68,6 +68,7 @@
     {
         "id": "mine",
         "name": "Mine",
+        "category": "mines",
         "level": 1,
         "price": 250,
         "popCost": 50,
