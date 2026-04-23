@@ -136,6 +136,10 @@ document.getElementById('gameCanvas').addEventListener('click', (e) => {
         // --- NOVÉ: Otvorenie info okna po kliknutí na postavenú budovu ---
         if (!isBuildingMode) {
             if (tile.buildingImg) {
+                if (tile.buildingSrc && tile.buildingSrc.toLowerCase().includes('tavern')) {
+                    showWarning("Chill Daddy.", "yellow");
+                    return;
+                }
                 openBuildingInfo(tile, gridX, gridY);
             }
             return;
@@ -237,12 +241,6 @@ function finalizeBuild(canvas) {
 }
 
 function openBuildingInfo(tile, x, y) {
-    //TODO: Pridať kontrolu, či je budova tavern, a ak nie, zobraziť varovanie "Chill Daddy." a neotvárať info okno.
-    /*if (tile.buildingImg != 'tavern') {
-        showWarning("Chill Daddy.", "yellow");
-        return;
-    };*/
-    //nik
     selectedTileForInfo = { tile, x, y };
     
     const modal = document.getElementById('building-info-modal');
