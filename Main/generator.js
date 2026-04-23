@@ -152,12 +152,10 @@ var camera = { x: 0, y: 0, zoom: 1 };
         const menuContainer = document.getElementById('building-menu');
         const clickedBtn = Array.from(document.querySelectorAll('.cat-btn')).find(btn => btn.innerText.toLowerCase() === filterCategory);
 
-        // Ak klikneme na už aktívnu kategóriu -> ZATVORENIE
         if (clickedBtn && clickedBtn.classList.contains('active')) {
             clickedBtn.classList.remove('active');
-            menuContainer.classList.remove('show-menu'); // Spustí animáciu zmiznutia
+            menuContainer.classList.remove('show-menu'); 
             
-            // Vyčistíme HTML až keď animácia skončí (za 300ms)
             setTimeout(() => {
                 menuContainer.innerHTML = ''; 
             }, 300);
@@ -194,7 +192,6 @@ var camera = { x: 0, y: 0, zoom: 1 };
                 menuContainer.appendChild(buildingElement);
             });
 
-            // Akonáhle sú budovy v HTML, spustíme animáciu zobrazenia
             requestAnimationFrame(() => {
                 menuContainer.classList.add('show-menu');
             });

@@ -214,19 +214,18 @@ function closeBuildingInfo() {
 
 function sellBuilding() {
     if (!selectedTileForInfo) return;
-    
-    // Odstráni budovu z mapy
+    //TODO: OPRAVIT TOTO
+    currentGold += selectedTileForInfo.tile.buildingLevel * selectedTileForInfo.tile.buildingPrice * 0.75 || 0;
+
     selectedTileForInfo.tile.buildingImg = null;
     selectedTileForInfo.tile.buildingSrc = null;
     selectedTileForInfo.tile.buildingLevel = null;
     
-    currentGold += 25; // Pridá 25 zlatiek za predaj
     updateHUD();
     
     closeBuildingInfo();
     showWarning("Building sold!" , "yellow");
 }
-// -----------------------------------------
 
 function saveGame() {
     const realmName = sessionStorage.getItem('game_realmName') || "Unknown Realm";
