@@ -65,7 +65,7 @@ var camera = { x: 0, y: 0, zoom: 1 };
                 mapData[y][x] = { n: n, img: tileImg };
             }
         }
-
+//f
         let tavernsSpawned = 0;
         while (tavernsSpawned < 3) {
             let rx = Math.floor(Math.random() * MAP_SIZE);

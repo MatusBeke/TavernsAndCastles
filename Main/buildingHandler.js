@@ -180,7 +180,7 @@ function openBuildingInfo(tile, x, y) {
         showWarning("Chill Daddy.", "yellow");
         return;
     };*/
-
+    //nik
     selectedTileForInfo = { tile, x, y };
     
     const modal = document.getElementById('building-info-modal');
