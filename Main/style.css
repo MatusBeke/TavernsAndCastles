@@ -339,9 +339,9 @@ body {
     box-shadow: 2px 2px 5px #000;
 }
 #time-display {
-    position: absolute;
+    position: fixed;
     top: 20px;
-    left: 20px;
+    right: 20px;
     background: linear-gradient(135deg, #2b170b 0%, #170b05 100%);
     border: 3px outset #5c3a21;
     border-radius: 8px;
