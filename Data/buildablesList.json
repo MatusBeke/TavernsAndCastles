@@ -39,6 +39,19 @@
         "maxBuildLevel": 2
     },
     {
+        "id": "stone-house",
+        "name": "Stone House",
+        "category": "houses",
+        "level": 3,
+        "price": 750,
+        "popCost": 0,
+        "baseHealth": 100,
+        "productionText": "Provides Housing",
+        "image": "../Resources/Buildables/StoneHouse/Img_StoneHouse1.png",
+        "description": "Advanced housing made of stone, providing better protection and comfort for your citizens. It is more durable than a log cabin and can withstand harsher weather conditions.",
+        "maxBuildLevel": 4
+    },
+    {
         "id": "farmland",
         "name": "Farmland",
         "category": "fields",
