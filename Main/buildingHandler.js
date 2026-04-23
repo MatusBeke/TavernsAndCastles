@@ -8,12 +8,47 @@ let currentBuildingCategory = null;
 
 // Suroviny
 let currentGold = 100000;
-let currentPop = 100000;
+let currentPop = 10;
 let currentWood = 50000;
 let currentStone = 200000;
 let currentFood = 1000000;
 
 let selectedTileForInfo = null;
+
+//NPCECKA
+var activeNPCs = [];
+
+class NPC{
+    constructor(id, name, profession, homeX, homeY, health, hunger, happiness) {
+        this.id = id;
+        this.name = name;
+        this.profession = profession;
+        this.homeX = homeX;
+        this.homeY = homeY;
+        this.health = health;
+        this.hunger = hunger;
+        this.happiness = happiness;
+    }
+
+    identify() {
+        console.log(`NPC ID: ${this.id}, Name: ${this.name}, Profession: ${this.profession}, Home: (${this.homeX}, ${this.homeY})`);
+    }
+}
+
+//TODO: Dokoncit generovanie NPCS
+function createNPC(homeX, homeY) {
+    var npc = new NPC(
+        activeNPCs.length + 1, 
+        `NPC${activeNPCs.length + 1}`, 
+        "Villager", 
+        homeX, 
+        homeY, 
+        100, 
+        100, 
+        100
+    );
+    activeNPCs.push(npc);
+}
 
 function toggleStats(menuId) {
     const menu = document.getElementById(menuId);
@@ -145,6 +180,19 @@ document.getElementById('gameCanvas').addEventListener('click', (e) => {
             const newImg = new Image();
             newImg.src = tile.buildingSrc;
             tile.buildingImg = newImg;
+
+            if (selectedBuildingImg.src.includes('Cabin') || selectedBuildingImg.src.includes('House')) 
+            {
+                console.log(`Upgraded ${selectedBuildingSrc} at (${gridX}, ${gridY}) to level ${tile.buildingLevel}`);
+                createNPC(gridX, gridY);
+                currentPop += 1;
+                updateHUD();
+                
+                console.log(`Total NPCs: ${activeNPCs.length}`);
+                activeNPCs.forEach(element => {
+                    console.log(`NPC ${element.name} lives at (${element.homeX}, ${element.homeY}) with profession ${element.profession}.`);
+                });
+            }
             
             currentGold -= currentBuildingPrice;
             updateHUD();
@@ -163,6 +211,20 @@ document.getElementById('gameCanvas').addEventListener('click', (e) => {
             
             currentGold -= currentBuildingPrice;
             updateHUD();
+
+            //Generovanie NPC pri postaveni budovy
+            if (selectedBuildingImg.src.includes('Cabin') || selectedBuildingImg.src.includes('House')) 
+            {
+                console.log(`Built ${selectedBuildingSrc} at (${gridX}, ${gridY})`);
+                createNPC(gridX, gridY);
+                currentPop += 1;
+                updateHUD();
+                
+                console.log(`Total NPCs: ${activeNPCs.length}`);
+                activeNPCs.forEach(element => {
+                    console.log(`NPC ${element.name} lives at (${element.homeX}, ${element.homeY}) with profession ${element.profession}.`);
+                });
+            }
             finalizeBuild(canvas);
         }
     }
