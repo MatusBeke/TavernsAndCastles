@@ -362,3 +362,5 @@ body {
 .info-btn.sell:hover { background: linear-gradient(to bottom, #ff4500, #8b0000); color: #fff; border: 2px inset #5c3a21;}
 .info-btn.exit { background: linear-gradient(to bottom, #3d2516, #1e120b); color: #ccc; }
 .info-btn.exit:hover { background: linear-gradient(to bottom, #5c3a21, #3d2516); color: #fff; border: 2px inset #5c3a21;}
+.info-btn.upgrade { background: linear-gradient(to bottom, #ffb923, #92ac03); color: #000000; }
+.info-btn.upgrade:hover { background: linear-gradient(to bottom, #d5ff3f, #ffae00); color: #fff; border: 2px inset #5c3a21;}
