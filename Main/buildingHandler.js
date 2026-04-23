@@ -8,7 +8,7 @@ let currentBuildingCategory = null;
 
 // Suroviny
 let currentGold = 100000;
-let currentPop = 100000;
+let currentPop = 10;
 let currentWood = 50000;
 let currentStone = 200000;
 let currentFood = 1000000;
