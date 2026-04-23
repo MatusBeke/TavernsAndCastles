@@ -175,11 +175,11 @@ function finalizeBuild(canvas) {
 }
 
 function openBuildingInfo(tile, x, y) {
-
-    if (tile.buildingImg != 'tavern') {
+    //TODO: Pridať kontrolu, či je budova tavern, a ak nie, zobraziť varovanie "Chill Daddy." a neotvárať info okno.
+    /*if (tile.buildingImg != 'tavern') {
         showWarning("Chill Daddy.", "yellow");
         return;
-    };
+    };*/
 
     selectedTileForInfo = { tile, x, y };
     

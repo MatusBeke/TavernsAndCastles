@@ -338,6 +338,25 @@ body {
     transition: 0.2s;
     box-shadow: 2px 2px 5px #000;
 }
+#time-display {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: linear-gradient(135deg, #2b170b 0%, #170b05 100%);
+    border: 3px outset #5c3a21;
+    border-radius: 8px;
+    padding: 10px 20px;
+    color: #d4af37;
+    font-family: 'MedievalSharp', cursive;
+    font-size: 1.5rem;
+    z-index: 1000;
+    box-shadow: 5px 5px 15px rgba(0,0,0,0.8), inset 0 0 10px rgba(0,0,0,0.8);
+    text-shadow: 2px 2px 4px #000;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    user-select: none; 
+}
 
 .info-btn.sell { background: linear-gradient(to bottom, #8b0000, #500000); color: #d4af37; }
 .info-btn.sell:hover { background: linear-gradient(to bottom, #ff4500, #8b0000); color: #fff; border: 2px inset #5c3a21;}
