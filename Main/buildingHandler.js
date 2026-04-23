@@ -176,6 +176,19 @@ document.getElementById('gameCanvas').addEventListener('click', (e) => {
             const newImg = new Image();
             newImg.src = tile.buildingSrc;
             tile.buildingImg = newImg;
+
+            if (selectedBuildingImg.src.includes('Cabin') || selectedBuildingImg.src.includes('House')) 
+            {
+                console.log(`Upgraded ${selectedBuildingSrc} at (${gridX}, ${gridY}) to level ${tile.buildingLevel}`);
+                createNPC(gridX, gridY);
+                currentPop += 1;
+                updateHUD();
+                
+                console.log(`Total NPCs: ${activeNPCs.length}`);
+                activeNPCs.forEach(element => {
+                    console.log(`NPC ${element.name} lives at (${element.homeX}, ${element.homeY}) with profession ${element.profession}.`);
+                });
+            }
             
             currentGold -= currentBuildingPrice;
             updateHUD();
@@ -196,14 +209,18 @@ document.getElementById('gameCanvas').addEventListener('click', (e) => {
             updateHUD();
 
             //Generovanie NPC pri postaveni budovy
-            console.log(`Built ${selectedBuildingSrc} at (${gridX}, ${gridY})`);
-            createNPC(gridX, gridY);
-            currentPop += activeNPCs.length;
-            updateHUD();
-            
-            activeNPCs.forEach(element => {
-                console.log(`NPC ${element.name} lives at (${element.homeX}, ${element.homeY}) with profession ${element.profession} and health ${element.health}`);
-            });
+            if (selectedBuildingImg.src.includes('Cabin') || selectedBuildingImg.src.includes('House')) 
+            {
+                console.log(`Built ${selectedBuildingSrc} at (${gridX}, ${gridY})`);
+                createNPC(gridX, gridY);
+                currentPop += 1;
+                updateHUD();
+                
+                console.log(`Total NPCs: ${activeNPCs.length}`);
+                activeNPCs.forEach(element => {
+                    console.log(`NPC ${element.name} lives at (${element.homeX}, ${element.homeY}) with profession ${element.profession}.`);
+                });
+            }
             finalizeBuild(canvas);
         }
     }
