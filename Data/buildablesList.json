@@ -89,5 +89,18 @@
         "image": "../Resources/Buildables/Mine/Img_Mine1.png",
         "description": "A mining operation for extracting valuable resources from the earth.",
         "maxBuildLevel": 3
+    },
+    {
+        "id": "tavern",
+        "name": "Tavern",
+        "category": "special",
+        "level": 1,
+        "price": 0,
+        "popCost": 0,
+        "baseHealth": 500,
+        "productionText": "Provides Happiness",
+        "image": "../Resources/Buildables/Tavern/Img_Tavern.png",
+        "description": "A bustling tavern where travelers rest and locals gather to share stories and ale.",
+        "maxBuildLevel": 1
     }
 ]

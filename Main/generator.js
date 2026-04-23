@@ -45,7 +45,6 @@ var camera = { x: 0, y: 0, zoom: 1 };
                     tileImg = imgWater;
                 } else if (n < landLevel) {
                     if (n < forestLevel) {
-                        // Gnerovanie casti lesa podla sance 0 - 1
                         let chance = Math.random();
 
                         if (chance < 0.05) {
@@ -66,7 +65,42 @@ var camera = { x: 0, y: 0, zoom: 1 };
                 mapData[y][x] = { n: n, img: tileImg };
             }
         }
-    requestAnimationFrame(draw);
+
+        let tavernsSpawned = 0;
+        while (tavernsSpawned < 3) {
+            let rx = Math.floor(Math.random() * MAP_SIZE);
+            let ry = Math.floor(Math.random() * MAP_SIZE);
+            let tile = mapData[ry][rx];
+
+            if (tile.img === imgLand && !tile.buildingImg) {
+                const tavernImg = new Image();
+                tavernImg.src = '../Resources/Img_Tavern.png';
+                
+                tile.buildingImg = tavernImg;
+                tile.buildingSrc = tavernImg.src;
+                tile.buildingLevel = 1;
+                
+                tavernsSpawned++;
+            }
+        }
+
+        requestAnimationFrame(draw);
+    }
+
+    window.addEventListener('resize', () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        clampCamera();
+    });
+
+    function clampCamera() {
+        const minCamX = canvas.width - (MAP_SIZE * TILE_SIZE * camera.zoom);
+        const minCamY = canvas.height - (MAP_SIZE * TILE_SIZE * camera.zoom);
+
+        if (camera.x > 0) camera.x = 0; 
+        if (camera.y > 0) camera.y = 0; 
+        if (camera.x < minCamX) camera.x = minCamX; 
+        if (camera.y < minCamY) camera.y = minCamY; 
     }
 
     function draw() {
@@ -76,6 +110,8 @@ var camera = { x: 0, y: 0, zoom: 1 };
         ctx.translate(Math.floor(camera.x), Math.floor(camera.y));
         ctx.scale(camera.zoom, camera.zoom);
         ctx.imageSmoothingEnabled = false;
+
+        clampCamera();
 
         for (let y = 0; y < MAP_SIZE; y++) {
             for (let x = 0; x < MAP_SIZE; x++) {
@@ -111,6 +147,8 @@ var camera = { x: 0, y: 0, zoom: 1 };
             camera.x -= (mouseX - camera.x) * (camera.zoom / oldZoom - 1);
             camera.y -= (mouseY - camera.y) * (camera.zoom / oldZoom - 1);
 
+            clampCamera();
+
     }, { passive: false });
 
     // Drag
@@ -127,11 +165,13 @@ var camera = { x: 0, y: 0, zoom: 1 };
             camera.x += dx;
             camera.y += dy;
             
+            clampCamera();
+
             lastMouse = { x: e.clientX, y: e.clientY };
     });
 
     function startBattle() {
-    showWarning("Your army is not ready yet, my God!");
+        showWarning("Your army is not ready yet, my God!");
     }
 
     window.addEventListener('mouseup', () => isDragging = false);

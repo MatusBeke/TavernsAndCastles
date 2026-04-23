@@ -175,6 +175,12 @@ function finalizeBuild(canvas) {
 }
 
 function openBuildingInfo(tile, x, y) {
+
+    if (tile.buildingImg != 'tavern') {
+        showWarning("Chill Daddy.", "yellow");
+        return;
+    };
+
     selectedTileForInfo = { tile, x, y };
     
     const modal = document.getElementById('building-info-modal');
