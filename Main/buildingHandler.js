@@ -252,6 +252,11 @@ function closeBuildingInfo() {
     selectedTileForInfo = null;
 }
 
+//TODO: Vytvorit logiku pre upgrade button
+function upgradeBuilding() {
+    showWarning("Upgrade functionality is not implemented yet!", "yellow");
+}
+
 function sellBuilding() {
     if (!selectedTileForInfo) return;
     //TODO: OPRAVIT TOTO aby sa spravne pocitalo zlato pri predaji budovy
