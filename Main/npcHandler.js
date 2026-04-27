@@ -8,14 +8,11 @@ class NPC {
         this.homeX = homeX;
         this.homeY = homeY;
         
-        // Pozícia v hernom svete (pixelová pozícia na mape)
-        // TILE_SIZE je 128, takže stred je 64. 
-        // Odpočítame polovicu šírky obdĺžnika (10), aby bol presne v strede.
         this.x = (homeX * TILE_SIZE) + (TILE_SIZE / 2) - 10;
         this.y = (homeY * TILE_SIZE) + (TILE_SIZE / 2) - 15;
         
-        this.width = 20;
-        this.height = 30;
+        this.width = 8;
+        this.height = 16;
         
         this.health = health;
         this.hunger = hunger;
@@ -23,14 +20,22 @@ class NPC {
     }
 
     draw(ctx) {
-        // Tu nepoužívame camera.x ani camera.zoom! 
-        // Context v generator.js je už posunutý a nazoomovaný.
         ctx.fillStyle = "red";
         ctx.fillRect(this.x, this.y, this.width, this.height);
         
         ctx.strokeStyle = "white";
         ctx.lineWidth = 2;
         ctx.strokeRect(this.x, this.y, this.width, this.height);
+    }
+    //
+    //KUBOVA ROBOTKA
+    //
+    //Logika pre NPCS
+    //
+
+    //Wander - NPC sa bude nahodne pohybovat po okoli
+    wander() {
+        
     }
 }
 

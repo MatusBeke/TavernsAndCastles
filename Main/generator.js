@@ -95,6 +95,28 @@ var camera = { x: 0, y: 0, zoom: 1 };
             }
         }
 
+        // Nahodne spawnovanie nepriataleskych miest
+        let enemyCitiesSpawned = 0;
+        let randomCitiesCount = Math.floor(Math.random() * 3) + 3;
+        while (enemyCitiesSpawned < randomCitiesCount) {
+            let rx = Math.floor(Math.random() * MAP_SIZE);
+            let ry = Math.floor(Math.random() * MAP_SIZE);
+            let tile = mapData[ry][rx];
+
+            // Ak sme trafili travu a nie je tam ina budova
+            if (tile.img === imgLand && !tile.buildingImg) {
+                const keepImg = new Image();
+                keepImg.src = '../Resources/Buildables/Castle/Img_CastleKeep.png';
+                
+                tile.buildingImg = keepImg;
+                tile.buildingSrc = keepImg.src;
+                tile.buildingLevel = 1;
+                
+                enemyCitiesSpawned++;
+            }
+        }
+        
+
         // Spustenie vykreslovacej slucky
         requestAnimationFrame(draw);
     }
@@ -129,8 +151,6 @@ var camera = { x: 0, y: 0, zoom: 1 };
         ctx.imageSmoothingEnabled = false; // Aby boli pixely ostre
 
         clampCamera();
-
-
 
         // Kreslenie samotnych blokov a budov z pamate
         for (let y = 0; y < MAP_SIZE; y++) {
