@@ -13,11 +13,11 @@ var camera = { x: 0, y: 0, zoom: 1 };
     let isDragging = false;
     let lastMouse = { x: 0, y: 0 };
 
-    // Parametre generovania mapy cez noise (vyska terenu)
+    // Parametre generovania mapy cez noise
     let waterLevel = 0.4;
     let landLevel = 0.75;
     let mountainLevel = 1;
-    // Biomy (rozlozenie lesov a kopcov)
+    // Biomy
     let forestLevel = 0.55;
     let hillsLevel = 0.8;
 
