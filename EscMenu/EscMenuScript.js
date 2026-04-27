@@ -47,7 +47,7 @@ function toggleEscMenu() {
     }
 }
 
-// --- POMOCNÁ FUNKCIA: Zabraňuje opakovaniu kódu pri prechodoch medzi obrazovkami ---
+// Zabraňuje opakovaniu kódu pri prechodoch medzi obrazovkami
 function transitionTo(url, setCameFromGame = false) {
     document.body.style.transition = "opacity 1s ease";
     document.body.style.opacity = "0";
