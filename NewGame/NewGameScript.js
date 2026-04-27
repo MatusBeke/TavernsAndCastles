@@ -1,39 +1,32 @@
-const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+// Nastavenie zvuku a prehrávanie pri prejdení myšou
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)(); 
 
-function playHoverSound() {
+function playHoverSound() { 
     if (audioCtx.state === 'suspended') audioCtx.resume();
+    
     const osc = audioCtx.createOscillator();
     const gainNode = audioCtx.createGain();
+    const now = audioCtx.currentTime;
     
     osc.type = 'sine'; 
-    osc.frequency.setValueAtTime(200, audioCtx.currentTime); 
-    osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.04);
+    osc.frequency.setValueAtTime(200, now); 
+    osc.frequency.exponentialRampToValueAtTime(40, now + 0.04);
     
-    gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.04);
+    gainNode.gain.setValueAtTime(0.15, now);
+    gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
     
     osc.connect(gainNode);
     gainNode.connect(audioCtx.destination);
     
-    osc.start();
-    osc.stop(audioCtx.currentTime + 0.04); 
+    osc.start(now);
+    osc.stop(now + 0.04); 
 }
 
-window.onload = () => {
-    document.body.style.opacity = "1";
-    
-    document.querySelectorAll('button').forEach(button => {
-        button.addEventListener('mouseenter', playHoverSound);
-    });
-
-    setupSelection('save-mode');
-    setupSelection('realm-name');
-    setupSelection('map-size');
-    setupSelection('difficulty');
-};
-
-function setupSelection(groupId) {
+// Inicializácia skupiny tlačidiel (aby mohlo byť aktívne vždy len jedno)
+function setupSelection(groupId) { 
     const group = document.getElementById(groupId);
+    if (!group) return;
+    
     const buttons = group.querySelectorAll('.option-btn');
     
     buttons.forEach(btn => {
@@ -44,29 +37,38 @@ function setupSelection(groupId) {
     });
 }
 
-function goBack() {
+// Spustenie po načítaní stránky
+window.onload = () => { 
+    document.body.style.opacity = "1";
+    
+    document.querySelectorAll('button').forEach(button => {
+        button.addEventListener('mouseenter', playHoverSound);
+    });
+
+    ['save-mode', 'realm-name', 'map-size', 'difficulty'].forEach(setupSelection);
+};
+
+// Návrat do menu
+function goBack() { 
     document.body.style.opacity = "0";
-    setTimeout(() => {
-        window.location.href = "../Menu/MenuIndex.html";
-    }, 1000);
+    setTimeout(() => window.location.href = "../Menu/MenuIndex.html", 1000);
 }
 
-function startWorld() {
+// Spustenie hry a uloženie nastavení sveta do sessionStorage
+// TODO: Ukladanie nastavení do sessionStorage (aby sa načítali v hre)
+function startWorld() { 
     const realmInput = document.getElementById('realm-name').value.trim();
-    const realmName = realmInput !== "" ? realmInput : "Unknown Realm";
+    const realmName = realmInput || "Unknown Realm";
 
-    const selectedMapSize = document.querySelector('#map-size .active').getAttribute('data-value');
-    const selectedDifficulty = document.querySelector('#difficulty .active').getAttribute('data-value');
-    const saveMode = document.querySelector('#save-mode .active').getAttribute('data-value');
+    const getActiveValue = (id) => document.querySelector(`#${id} .active`)?.getAttribute('data-value');
 
     sessionStorage.setItem('game_realmName', realmName);
-    sessionStorage.setItem('game_mapSize', selectedMapSize);
-    sessionStorage.setItem('game_difficulty', selectedDifficulty);
-    sessionStorage.setItem('game_saveEnabled', saveMode);
+    sessionStorage.setItem('game_mapSize', getActiveValue('map-size'));
+    sessionStorage.setItem('game_difficulty', getActiveValue('difficulty'));
+    sessionStorage.setItem('game_saveEnabled', getActiveValue('save-mode'));
 
     document.body.style.transition = "opacity 1.5s ease";
     document.body.style.opacity = "0";
-    setTimeout(() => {
-        window.location.href = "../Main/index.html";
-    }, 1500);
+    
+    setTimeout(() => window.location.href = "../Main/index.html", 1500);
 }

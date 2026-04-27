@@ -1,97 +1,96 @@
-function startGame() {
-    document.body.style.transition = "opacity 1.5s ease, filter 1.5s ease";
-    document.body.style.opacity = "0";
-    document.body.style.filter = "brightness(0.3) blur(10px) sepia(50%)";
+// Pomocná funkcia na nahradenie setTimeout za modernejší await
+const delay = (ms) => new Promise(res => setTimeout(res, ms));
+
+// Spustenie hry s vizuálnym prechodom
+async function startGame() {
+    Object.assign(document.body.style, {
+        transition: "opacity 1.5s ease, filter 1.5s ease",
+        opacity: "0",
+        filter: "brightness(0.3) blur(10px) sepia(50%)"
+    });
     
-    setTimeout(() => {
-        window.location.href = "../Main/index.html";
-    }, 1500);
+    await delay(1500);
+    window.location.href = "../Main/index.html";
 }
 
-
-function openOptions() {
+// Animácia a prechod do kroniky (nastavení)
+async function openOptions() {
     const content = document.querySelector('.nav-container');
+    
     content.style.transition = "transform 0.1s ease";
     content.style.transform = "translateX(-10px)";
     
-    setTimeout(() => { 
-        content.style.transform = "translateX(0)"; 
-        
-        document.body.style.transition = "opacity 1s ease";
-        document.body.style.opacity = "0";
-        
-        setTimeout(() => {
-            window.location.href = "Chronicle.html";
-        }, 1000);
-
-    }, 100);
+    await delay(100);
+    content.style.transform = "translateX(0)"; 
+    
+    document.body.style.transition = "opacity 1s ease";
+    document.body.style.opacity = "0";
+    
+    await delay(1000);
+    window.location.href = "Chronicle.html";
 }
 
-function quitGame() {
+// Trolliaca obrazovka pri pokuse o ukončenie hry tlačidlom
+async function quitGame() {
     const overlay = document.createElement('div');
-    overlay.style.position = 'fixed';
-    overlay.style.top = '0';
-    overlay.style.left = '0';
-    overlay.style.width = '100vw';
-    overlay.style.height = '100vh';
-    overlay.style.backgroundColor = '#000';
-    overlay.style.display = 'flex';
-    overlay.style.flexDirection = 'column';
-    overlay.style.justifyContent = 'center';
-    overlay.style.alignItems = 'center';
-    overlay.style.zIndex = '9999';
-    overlay.style.opacity = '0';
-    overlay.style.transition = 'opacity 1.5s ease';
+    
+    Object.assign(overlay.style, {
+        position: 'fixed', top: '0', left: '0', width: '100vw', height: '100vh',
+        backgroundColor: '#000', display: 'flex', flexDirection: 'column',
+        justifyContent: 'center', alignItems: 'center', zIndex: '9999',
+        opacity: '0', transition: 'opacity 1.5s ease'
+    });
     
     overlay.innerHTML = `
-        <div style="font-family: 'MedievalSharp', cursive; font-size: 8rem; color: #8b0000; text-shadow: 0 0 30px #ff0000; margin-bottom: 20px;">FUCK YOU</div>
-        <div style="font-family: 'MedievalSharp', cursive; font-size: 2.5rem; color: #d4af37;">Are you really not closing with the window X?</div>
+        <div style="font-family: 'MedievalSharp', cursive; font-size: 8rem; color: #8b0000; text-shadow: 0 0 30px #ff0000; margin-bottom: 20px;">
+            FUCK YOU
+        </div>
+        <div style="font-family: 'MedievalSharp', cursive; font-size: 2.5rem; color: #d4af37;">
+            Are you really not closing with the window X?
+        </div>
     `;
 
     document.body.appendChild(overlay);
 
-    setTimeout(() => {
-        overlay.style.opacity = '1';
-    }, 50);
+    await delay(50);
+    overlay.style.opacity = '1';
 
-    setTimeout(() => {
-        window.open('', '_self', '');
-        window.close();
-        
-        document.documentElement.innerHTML = "";
-        document.documentElement.style.backgroundColor = "black";
-        window.location.replace("about:blank");
-    }, 4000);
+    await delay(4000);
+    window.open('', '_self', '');
+    window.close();
+    
+    document.documentElement.innerHTML = "";
+    document.documentElement.style.backgroundColor = "black";
+    window.location.replace("about:blank");
 }
 
+// Generovanie zvuku pri prejdení myšou (bez nutnosti externého audio súboru)
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
 function playHoverSound() {
-    if (audioCtx.state === 'suspended') {
-        audioCtx.resume();
-    }
+    if (audioCtx.state === 'suspended') audioCtx.resume();
     
     const osc = audioCtx.createOscillator();
     const gainNode = audioCtx.createGain();
+    const now = audioCtx.currentTime;
 
-    // Hlbšia 'sine' vlna pre imitáciu ťažkého dreva alebo kameňa
     osc.type = 'sine'; 
-    osc.frequency.setValueAtTime(200, audioCtx.currentTime); 
-    osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.04);
+    osc.frequency.setValueAtTime(200, now); 
+    osc.frequency.exponentialRampToValueAtTime(40, now + 0.04);
 
-    gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.04);
+    gainNode.gain.setValueAtTime(0.15, now);
+    gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
 
     osc.connect(gainNode);
     gainNode.connect(audioCtx.destination);
 
-    osc.start();
-    osc.stop(audioCtx.currentTime + 0.04); 
+    osc.start(now);
+    osc.stop(now + 0.04); 
 }
 
+// Priradenie zvuku všetkým tlačidlám po načítaní stránky
 window.addEventListener('DOMContentLoaded', () => {
-    const menuButtons = document.querySelectorAll('button'); 
-    menuButtons.forEach(button => {
-        button.addEventListener('mouseenter', playHoverSound);
+    document.querySelectorAll('button').forEach(btn => {
+        btn.addEventListener('mouseenter', playHoverSound);
     });
 });
