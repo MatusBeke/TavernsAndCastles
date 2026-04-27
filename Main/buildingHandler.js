@@ -1,3 +1,4 @@
+//Pomocne premenne
 let isBuildingMode = false;
 let selectedBuildingImg = null;
 let selectedBuildingSrc = null; 
@@ -6,7 +7,7 @@ let currentBuildingPrice = 0;
 let currentBuildingPopCost = 0;
 let currentBuildingCategory = null; 
 
-// Suroviny
+//Suroviny
 let currentGold = 100000;
 let currentPop = 10;
 let currentWood = 50000;
@@ -15,6 +16,7 @@ let currentFood = 1000000;
 
 let selectedTileForInfo = null;
 
+//TODO: Presunut do samostatneho suboru
 //NPCECKA
 var activeNPCs = [];
 
@@ -50,11 +52,13 @@ function createNPC(homeX, homeY) {
     activeNPCs.push(npc);
 }
 
+
 function toggleStats(menuId) {
     const menu = document.getElementById(menuId);
     menu.style.display = (menu.style.display === "none") ? "flex" : "none";
 }
 
+//Updatovanie hracskeho rozhrania pri zmene surovin, populacie a podobneho
 function updateHUD() {
     const statGoldDisplay = document.getElementById('stat-gold');
     const statWoodDisplay = document.getElementById('stat-wood');
@@ -74,6 +78,7 @@ function updateHUD() {
     }
 }
 
+//Zobrazovanie upozorneni
 function showWarning(msg, type) {
     let warningDiv = document.getElementById('game-warning') || document.createElement('div');
     warningDiv.id = 'game-warning';
@@ -97,11 +102,15 @@ function showWarning(msg, type) {
     }, 2000);
 }
 
+//TODO: Vytvorit logiku bitiek
+//Funkcia pre spracovanie bitiek 
 function startBattle() {
     showWarning("Your army is not ready yet, my Lord!", "red");
 }
 
+//Stavanie budov
 function startBuilding(imageSrc, maxLVL, price, popCost, category) {
+    //Ak nemame dostatok zlata alebo populacie, zobrazime upozornenie a nebudeme pokracovat do rezimu stavania
     if (currentGold < price || currentPop < popCost) {
         showWarning("Not enough resources or population!", "red");
         return;
@@ -119,6 +128,7 @@ function startBuilding(imageSrc, maxLVL, price, popCost, category) {
     document.getElementById('gameCanvas').style.cursor = "crosshair";
 }
 
+//Kontrolovaneie inputu od hraca (stavanie a zobrovanie info okna)
 document.getElementById('gameCanvas').addEventListener('click', (e) => {
     const canvas = e.target;
     const rect = canvas.getBoundingClientRect();
@@ -130,10 +140,10 @@ document.getElementById('gameCanvas').addEventListener('click', (e) => {
     const gridX = Math.floor(worldX / TILE_SIZE);
     const gridY = Math.floor(worldY / TILE_SIZE);
 
+
     if (gridX >= 0 && gridX < MAP_SIZE && gridY >= 0 && gridY < MAP_SIZE) {
         const tile = mapData[gridY][gridX];
         
-        // --- NOVÉ: Otvorenie info okna po kliknutí na postavenú budovu ---
         if (!isBuildingMode) {
             if (tile.buildingImg) {
                 if (tile.buildingSrc && tile.buildingSrc.toLowerCase().includes('tavern')) {
@@ -144,8 +154,8 @@ document.getElementById('gameCanvas').addEventListener('click', (e) => {
             }
             return;
         }
-        // -----------------------------------------------------------------
 
+        //Kontrola typu terenu a zobrazovanie upozorneni ak nie je splnena podmienka pre stavbu
         const isWaterOrForest = tile.img && (tile.img.src.includes('Water') || tile.img.src.includes('Forest'));
         const isHillOrMountain = tile.img && (tile.img.src.includes('Hills') || tile.img.src.includes('Mountains'));
 
@@ -155,6 +165,7 @@ document.getElementById('gameCanvas').addEventListener('click', (e) => {
             return;
         }
 
+        //Povolenie stavby iba pre Mine
         if (selectedBuildingImg && !tile.buildingImg) {
             if (currentBuildingCategory === 'mines' && !isHillOrMountain) {
                 showWarning("Mines can only be built on hills!", "red");
@@ -164,7 +175,9 @@ document.getElementById('gameCanvas').addEventListener('click', (e) => {
                 finalizeBuild(canvas); return;
             }
         }
-
+        
+        //TODO: Pridat to aby sa nedala upgradovat budova aj inou budovou
+        //upgrade logika budov
         if (tile.buildingImg) {
             if (currentGold < currentBuildingPrice || currentPop < currentBuildingPopCost) {
                 showWarning("Not enough resources for upgrade!", "red");
@@ -230,6 +243,7 @@ document.getElementById('gameCanvas').addEventListener('click', (e) => {
     }
 });
 
+//Vypnutie rezimu stavania a resetovanie pomocnych premennych
 function finalizeBuild(canvas) {
     isBuildingMode = false;
     selectedBuildingImg = null;
@@ -280,7 +294,7 @@ function closeBuildingInfo() {
 
 function sellBuilding() {
     if (!selectedTileForInfo) return;
-    //TODO: OPRAVIT TOTO
+    //TODO: OPRAVIT TOTO aby sa spravne pocitalo zlato pri predaji budovy
     currentGold += selectedTileForInfo.tile.buildingLevel * selectedTileForInfo.tile.buildingPrice * 0.75 || 0;
 
     selectedTileForInfo.tile.buildingImg = null;
@@ -293,6 +307,10 @@ function sellBuilding() {
     showWarning("Building sold!" , "yellow");
 }
 
+//
+//BEKEHO ROBOTA-------------------------------------------------------------------------------
+//
+//TODO: Vytvorit logiku ukladania a nacitavania hry
 function saveGame() {
     const realmName = sessionStorage.getItem('game_realmName') || "Unknown Realm";
     let buildingsToSave = [];
