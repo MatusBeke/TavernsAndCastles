@@ -13,7 +13,7 @@ async function startGame() {
     window.location.href = "../Main/index.html";
 }
 
-// Animácia a prechod do kroniky (nastavení)
+// Animácia a prechod do nastavení
 async function openOptions() {
     const content = document.querySelector('.nav-container');
     
@@ -27,10 +27,10 @@ async function openOptions() {
     document.body.style.opacity = "0";
     
     await delay(1000);
-    window.location.href = "Chronicle.html";
+    window.location.href = "Options.html";
 }
 
-// Trolliaca obrazovka pri pokuse o ukončenie hry tlačidlom
+// Troll
 async function quitGame() {
     const overlay = document.createElement('div');
     
@@ -64,7 +64,7 @@ async function quitGame() {
     window.location.replace("about:blank");
 }
 
-// Generovanie zvuku pri prejdení myšou (bez nutnosti externého audio súboru)
+// Generovanie zvuku pri prejdení myšou 
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
 function playHoverSound() {
@@ -88,7 +88,7 @@ function playHoverSound() {
     osc.stop(now + 0.04); 
 }
 
-// Priradenie zvuku všetkým tlačidlám po načítaní stránky
+// Priradenie zvuku všetkým tlačidlám
 window.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('button').forEach(btn => {
         btn.addEventListener('mouseenter', playHoverSound);
