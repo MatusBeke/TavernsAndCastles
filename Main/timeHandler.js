@@ -30,4 +30,3 @@ function updateTime() {
 }
 
 setInterval(updateTime, gameSpeed);
-//n
