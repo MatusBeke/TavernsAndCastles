@@ -22,7 +22,7 @@ function playHoverSound() {
     osc.stop(now + 0.04); 
 }
 
-// Inicializácia skupiny tlačidiel (aby mohlo byť aktívne vždy len jedno)
+// Inicializácia skupiny tlačidiel 
 function setupSelection(groupId) { 
     const group = document.getElementById(groupId);
     if (!group) return;
