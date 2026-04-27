@@ -13,11 +13,11 @@ var camera = { x: 0, y: 0, zoom: 1 };
     let isDragging = false;
     let lastMouse = { x: 0, y: 0 };
 
-    // Parametre generovania mapy cez noise (vyska terenu)
+    // Parametre generovania mapy cez noise
     let waterLevel = 0.4;
     let landLevel = 0.75;
     let mountainLevel = 1;
-    // Biomy (rozlozenie lesov a kopcov)
+    // Biomy
     let forestLevel = 0.55;
     let hillsLevel = 0.8;
 
@@ -130,6 +130,8 @@ var camera = { x: 0, y: 0, zoom: 1 };
 
         clampCamera();
 
+
+
         // Kreslenie samotnych blokov a budov z pamate
         for (let y = 0; y < MAP_SIZE; y++) {
             for (let x = 0; x < MAP_SIZE; x++) {
@@ -143,6 +145,12 @@ var camera = { x: 0, y: 0, zoom: 1 };
                 }
             }
         }
+
+        // Kreslenie NPCs
+        activeNPCs.forEach(npc => {
+            npc.draw(ctx);
+        });
+
         // Znovu zavolame kreslenie pre dalsi snimok
         requestAnimationFrame(draw);
     }
