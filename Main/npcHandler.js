@@ -1,28 +1,45 @@
 var activeNPCs = [];
 
-class NPC{
+class NPC {
     constructor(id, name, profession, homeX, homeY, health, hunger, happiness) {
         this.id = id;
         this.name = name;
         this.profession = profession;
         this.homeX = homeX;
         this.homeY = homeY;
+        
+        // Pozícia v hernom svete (pixelová pozícia na mape)
+        // TILE_SIZE je 128, takže stred je 64. 
+        // Odpočítame polovicu šírky obdĺžnika (10), aby bol presne v strede.
+        this.x = (homeX * TILE_SIZE) + (TILE_SIZE / 2) - 10;
+        this.y = (homeY * TILE_SIZE) + (TILE_SIZE / 2) - 15;
+        
+        this.width = 20;
+        this.height = 30;
+        
         this.health = health;
         this.hunger = hunger;
         this.happiness = happiness;
     }
 
-    identify() {
-        console.log(`NPC ID: ${this.id}, Name: ${this.name}, Profession: ${this.profession}, Home: (${this.homeX}, ${this.homeY})`);
+    draw(ctx) {
+        // Tu nepoužívame camera.x ani camera.zoom! 
+        // Context v generator.js je už posunutý a nazoomovaný.
+        ctx.fillStyle = "red";
+        ctx.fillRect(this.x, this.y, this.width, this.height);
+        
+        ctx.strokeStyle = "white";
+        ctx.lineWidth = 2;
+        ctx.strokeRect(this.x, this.y, this.width, this.height);
     }
 }
 
 //TODO: Dokoncit generovanie NPCS
-function createNPC(homeX, homeY) {
+function createNPC(homeX, homeY, profession = "Villager") {
     var npc = new NPC(
         activeNPCs.length + 1, 
         `NPC${activeNPCs.length + 1}`, 
-        "Villager", 
+        profession, 
         homeX, 
         homeY, 
         100, 
