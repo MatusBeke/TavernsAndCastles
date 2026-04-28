@@ -16,6 +16,7 @@ let currentFood = 1000000;
 
 let selectedTileForInfo = null;
 
+//Zapnutie bocnych menu
 function toggleStats(menuId) {
     const menu = document.getElementById(menuId);
     menu.style.display = (menu.style.display === "none") ? "flex" : "none";
