@@ -1,4 +1,23 @@
 var activeNPCs = [];
+let npcNamesData = {
+    npc_names: {
+        first_names: ["Villager"],
+        surnames: [""]
+    }
+}; // Default, kým sa nenačíta JSON
+
+async function loadNPCNames() {
+    try {
+        const response = await fetch('../Data/npcNames.json');
+        npcNamesData = await response.json();
+        console.log("Mená načítané úspešne");
+    } catch (error) {
+        console.error("Chyba pri načítaní mien:", error);
+    }
+}
+
+
+loadNPCNames();
 
 class NPC {
     constructor(id, name, profession, img, homeX, homeY, health, hunger, happiness) {
@@ -21,6 +40,8 @@ class NPC {
 
         this.state = "Wandering";
 
+        //Spustenie wander logiky pre NPC hned po vytvoreni 
+        //TODO: Pridat viac logiky pre NPCS a prepinanie medzi nimi
         setInterval(this.wander.bind(this), 1000);
     }
 
@@ -38,7 +59,7 @@ class NPC {
         ctx.textAlign = "center"; 
         ctx.fontFamily = "Arial"; //TODO: Pridat vlastny font 
         
-        ctx.fillText(`${this.name} (${this.profession})`, this.x + this.width / 2, this.y - 20);
+        ctx.fillText(this.name, this.x + this.width / 2, this.y - 22);
         
         ctx.font = "10px Arial";
         ctx.fillStyle = "#FFD700";
@@ -88,19 +109,34 @@ class NPC {
 
 //TODO: Dokoncit generovanie NPCS
 function createNPC(homeX, homeY, profession = "Villager", img = null) {
+    const firstNames = npcNamesData.npc_names.first_names;
+    const lastNames = npcNamesData.npc_names.surnames;
+
+    const randomFirst = firstNames[Math.floor(Math.random() * firstNames.length)];
+    const randomLast = lastNames[Math.floor(Math.random() * lastNames.length)];
+    
+    const fullName = `${randomFirst} ${randomLast}`;
+
     var npc = new NPC(
         activeNPCs.length + 1, 
-        `NPC${activeNPCs.length + 1}`, 
+        fullName, 
         profession,  
         img,
         homeX, 
         homeY, 
-        100, 
-        100, 
-        100
+        100, // health
+        100, // hunger
+        100  // happiness
     );
+
     activeNPCs.push(npc);
+    console.log(`Spawned: ${fullName} as ${profession}`);
 }
+
+//TODO: Dokoncit klikanie na NPCS - zobrazenie informacii o nich 
+document.getElementById('gameCanvas').addEventListener('click', (e) => {
+    this.idle();
+});
 
 function shouldSpawnNPC(buildingSrc) {
     const src = buildingSrc.toLowerCase();
