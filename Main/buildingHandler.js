@@ -161,7 +161,7 @@ document.getElementById('gameCanvas').addEventListener('click', (e) => {
             if (selectedBuildingImg.src.includes('Cabin') || selectedBuildingImg.src.includes('House')) 
             {
                 if (shouldSpawnNPC(selectedBuildingSrc)) {
-                    spawnNPC(gridX, gridY);
+                    createNPC(gridX, gridY);
                     currentPop += 1;
                     updateHUD();
                 }

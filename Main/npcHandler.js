@@ -1,4 +1,6 @@
 var activeNPCs = [];
+const npcList = document.getElementById("citizens-list");
+
 let npcNamesData = {
     npc_names: {
         first_names: ["Villager"],
@@ -105,6 +107,7 @@ class NPC {
         this.y = (this.homeY * TILE_SIZE) + (TILE_SIZE / 2) - 15;
         ctx.fillStyle = "transparent";
     }
+
 }
 
 //TODO: Dokoncit generovanie NPCS
@@ -131,12 +134,26 @@ function createNPC(homeX, homeY, profession = "Villager", img = null) {
 
     activeNPCs.push(npc);
     console.log(`Spawned: ${fullName} as ${profession}`);
+    updateCitizensList(fullName);
 }
 
 //TODO: Dokoncit klikanie na NPCS - zobrazenie informacii o nich 
 document.getElementById('gameCanvas').addEventListener('click', (e) => {
     this.idle();
 });
+
+//Updatovanie Citizens Listu v UI
+function updateCitizensList(npcName) {
+    const listItem = document.createElement("span");
+    listItem.id = "stat-citizen-name";
+    listItem.textContent = npcName;
+    npcList.appendChild(listItem);
+}
+
+//TODO: Urobit jedonoduchu funkciu na "raycasting" pre zobrazovanie a vypocitanie vzdialenosti NPC od domu 
+function castRay() {
+
+}
 
 function shouldSpawnNPC(buildingSrc) {
     const src = buildingSrc.toLowerCase();
