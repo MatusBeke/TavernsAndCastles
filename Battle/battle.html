@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>War Council</title>
+    <link rel="stylesheet" href="Battle.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="battle-menu-box">
+        <h2 class="battle-title">War Council</h2>
+        <div class="ornament">⚔ ══════ ⚔</div>
+        
+        <div class="battle-options">
+            <button class="battle-btn" onclick="selectBattleType('field')">Field Battle</button>
+            <button class="battle-btn" onclick="selectBattleType('protect')">Defend Realm</button>
+            <button class="battle-btn" onclick="selectBattleType('attack')">Attack Enemy</button>
+        </div>
+        
+        <button class="battle-close-btn" onclick="goBack()">Return to Map</button>
+    </div>
+
+    <script src="Battle.js"></script>
+</body>
+</html>

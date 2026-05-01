@@ -1,0 +1,69 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #050201; /* Zatiaľ tmavé pozadie, môžeš pridať obrázok */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-family: 'MedievalSharp', cursive;
+    color: #d4af37;
+    opacity: 0; /* Kvôli animácii pri načítaní */
+    transition: opacity 1s ease;
+}
+
+.battle-menu-box {
+    background: #2b1d14;
+    border: 4px solid #8b0000;
+    border-radius: 10px;
+    padding: 40px;
+    text-align: center;
+    box-shadow: 0 0 30px rgba(139, 0, 0, 0.5);
+    width: 450px;
+}
+
+.battle-title { 
+    font-size: 3rem; 
+    margin-top: 0;
+    margin-bottom: 10px; 
+    text-shadow: 2px 2px 5px #000;
+}
+
+.ornament {
+    font-size: 1.5rem;
+    color: #555;
+    margin-bottom: 30px;
+}
+
+.battle-btn, .battle-close-btn {
+    display: block;
+    width: 100%;
+    margin: 20px 0;
+    padding: 15px;
+    font-size: 1.5rem;
+    font-family: inherit;
+    background: #1a0f0a;
+    color: #d4af37;
+    border: 2px solid #d4af37;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.battle-btn:hover { 
+    background: #8b0000; 
+    color: #fff; 
+    border-color: #8b0000;
+    transform: scale(1.05);
+}
+
+.battle-close-btn { 
+    background: transparent; 
+    border-color: #555; 
+    color: #aaa; 
+    margin-top: 40px;
+}
+
+.battle-close-btn:hover { 
+    background: #444; 
+    color: #fff; 
+}
