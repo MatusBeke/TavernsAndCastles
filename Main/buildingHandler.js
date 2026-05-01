@@ -66,7 +66,7 @@ function showWarning(msg, type) {
     }, 2000);
 }
 
-//TODO: battle
+//TODO: battle mode
 function startBattle() {
     document.body.style.transition = "opacity 1s ease";
     document.body.style.opacity = "0";

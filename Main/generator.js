@@ -219,10 +219,14 @@ var camera = { x: 0, y: 0, zoom: 1 };
             lastMouse = { x: e.clientX, y: e.clientY };
     });
 
-    // Zatial nevyuzita funkcia pre boj
+    // Prechod do menu bitiek
     function startBattle() {
-        showWarning("Your army is not ready yet, my God!");
-    }
+        document.body.style.transition = "opacity 1s ease";
+        document.body.style.opacity = "0";
+        setTimeout(() => {
+            window.location.href = "../Battle/Battle.html";
+        }, 1000);
+}
 
     // Koniec tahania kamery po pusteni mysi
     window.addEventListener('mouseup', () => isDragging = false);
