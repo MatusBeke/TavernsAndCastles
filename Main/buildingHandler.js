@@ -72,10 +72,13 @@ function showWarning(msg, type) {
     }, 2000);
 }
 
-//TODO: Vytvorit logiku bitiek
-//Funkcia pre spracovanie bitiek 
+//TODO: battle mode
 function startBattle() {
-    showWarning("Your army is not ready yet, my Lord!", "red");
+    document.body.style.transition = "opacity 1s ease";
+    document.body.style.opacity = "0";
+    setTimeout(() => {
+        window.location.href = "../Battle/Battle.html";
+    }, 1000);
 }
 
 //Stavanie budov

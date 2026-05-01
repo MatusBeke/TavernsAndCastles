@@ -27,7 +27,7 @@ async function openOptions() {
     document.body.style.opacity = "0";
     
     await delay(1000);
-    window.location.href = "Options.html";
+    window.location.href = "Chronicle.html";
 }
 
 // Troll
