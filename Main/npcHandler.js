@@ -23,7 +23,7 @@ async function loadNPCNames() {
 loadNPCNames();
 
 class NPC {
-    constructor(id, name, profession, img, homeX, homeY, health, hunger, happiness) {
+    constructor(id, name, profession, img, homeX, homeY, health, hunger, happiness, workplaceX = null, workplaceY = null) {
         this.id = id;
         this.name = name;
         this.profession = profession;
@@ -40,6 +40,9 @@ class NPC {
         this.health = health;
         this.hunger = hunger;
         this.happiness = happiness;
+
+        this.workplaceX = workplaceX; //TODO: Pridat logiku pre pracoviska a pohyb medzi domom a pracoviskom
+        this.workplaceY = workplaceY;
 
         this.state = "Wandering";
 
@@ -112,7 +115,7 @@ class NPC {
 }
 
 //TODO: Dokoncit generovanie NPCS
-function createNPC(homeX, homeY, profession = "Villager", img = null) {
+function createNPC(homeX, homeY, profession = "peasant", img = null, workplaceX = null, workplaceY = null) {
     const firstNames = npcNamesData.npc_names.first_names;
     const lastNames = npcNamesData.npc_names.surnames;
 
@@ -130,11 +133,29 @@ function createNPC(homeX, homeY, profession = "Villager", img = null) {
         homeY, 
         100, // health
         100, // hunger
-        100  // happiness
+        100,  // happiness
+        workplaceX,
+        workplaceY
     );
 
+    //Pridelovanie pracoviska pre NPC
+    //Peasant
+    if (profession == "peasant") {
+         if (activeFields.length > 0) {
+            //Vybera nahodne pole z listu aktivnych poli a prideluje ho NPC ako pracovisko
+            const field = activeFields[Math.floor(Math.random() * activeFields.length)];
+            let [x, y] = field.split(',').map(Number);
+            npc.workplaceX = x;
+            npc.workplaceY = y;
+        } else {
+            npc.workplaceX = null;
+            npc.workplaceY = null;
+        }
+    }
+   
+
     activeNPCs.push(npc);
-    console.log(`Spawned: ${fullName} as ${profession}`);
+    console.log(`Spawned: ${fullName} as ${profession}, working at (${npc.workplaceX}, ${npc.workplaceY})`);
     updateCitizensList(fullName);
 }
 
