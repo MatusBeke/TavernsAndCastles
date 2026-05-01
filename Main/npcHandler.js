@@ -13,9 +13,9 @@ async function loadNPCNames() {
     try {
         const response = await fetch('../Data/npcNames.json');
         npcNamesData = await response.json();
-        console.log("Mená načítané úspešne");
+        console.log("NPCNames loaded successfully!");
     } catch (error) {
-        console.error("Chyba pri načítaní mien:", error);
+        console.error("Error loading NPCNames:", error);
     }
 }
 

@@ -5,7 +5,21 @@
             "description": "Peasants are the backbone of any medieval society, toiling in the fields and providing the essential labor that keeps the economy running. They are often seen as humble and hardworking individuals, living simple lives in rural areas. Peasants typically engage in farming, tending to livestock, and performing various manual tasks to sustain themselves and their communities. Despite their low social status, peasants play a crucial role in the functioning of medieval society, contributing to the production of food and goods that support the entire population.",
             "maxHealth": 100,
             "hungerRate": 1,
-            "image": "../Resources/NPCs/Peasant/peasant.png"
+            "image": "../Resources/NPCs/peasant.png"
+        },
+        "blacksmith": {
+            "proffesion": "blacksmith",
+            "description": "Blacksmiths are skilled craftsmen who work with metal to create tools, weapons, and other essential items for the community. They are often respected for their expertise and the vital role they play in providing the equipment needed for daily life and defense. Blacksmiths typically work in forges, heating and shaping metal to create durable goods.",
+            "maxHealth": 100,
+            "hungerRate": 1,
+            "image": "../Resources/NPCs/blacksmith.png"
+        },
+        "merchant": {
+            "proffesion": "merchant",
+            "description": "Merchants are traders who buy and sell goods, often traveling between towns and cities to conduct their business. They play a crucial role in the economy by facilitating the exchange of goods and services, bringing in exotic items from distant lands, and providing access to a variety of products for the local population.",
+            "maxHealth": 100,
+            "hungerRate": 1,
+            "image": "../Resources/NPCs/merchant.png"
         }
     }          
 }
