@@ -1,12 +1,13 @@
 var activeNPCs = [];
 const npcList = document.getElementById("citizens-list");
 
+// Default, kým sa nenačíta JSON s menami NPCs
 let npcNamesData = {
     npc_names: {
         first_names: ["Villager"],
         surnames: [""]
     }
-}; // Default, kým sa nenačíta JSON
+};
 
 async function loadNPCNames() {
     try {
@@ -139,7 +140,7 @@ function createNPC(homeX, homeY, profession = "Villager", img = null) {
 
 //TODO: Dokoncit klikanie na NPCS - zobrazenie informacii o nich 
 document.getElementById('gameCanvas').addEventListener('click', (e) => {
-    this.idle();
+
 });
 
 //Updatovanie Citizens Listu v UI

@@ -357,6 +357,7 @@ body {
     align-items: center;
     user-select: none; 
 }
+
 /* Špecifické štýly pre info tlačidlá */
 
 .info-btn.sell { background: linear-gradient(to bottom, #8b0000, #500000); color: #d4af37; }

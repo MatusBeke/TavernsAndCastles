@@ -16,6 +16,12 @@ let currentFood = 1000000;
 
 let selectedTileForInfo = null;
 
+//Workplaces pre NPCs
+var activeFields = [];
+var activeMines = [];
+var activeLumberyards = [];
+var activeQuarries = [];
+
 //Zapnutie bocnych menu
 function toggleStats(menuId) {
     const menu = document.getElementById(menuId);
@@ -184,6 +190,18 @@ document.getElementById('gameCanvas').addEventListener('click', (e) => {
             
             currentGold -= currentBuildingPrice;
             updateHUD();
+
+            if (selectedBuildingImg.src.includes('Farmland')) {
+                activeFields.push(gridX + "," + gridY);
+                console.log("New field added at (" + gridX + ", " + gridY + ")");
+                
+                console.log("Current active fields:");
+                activeFields.forEach(element => {
+                    console.log(element);
+                });
+            }
+
+                
 
             //Generovanie NPC pri postaveni budovy
             if (selectedBuildingImg.src.includes('Cabin') || selectedBuildingImg.src.includes('House')) 

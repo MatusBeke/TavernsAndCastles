@@ -1,0 +1,11 @@
+{
+    "npc_proffesions": {
+        "peasant": {
+            "proffesion": "peasant",
+            "description": "Peasants are the backbone of any medieval society, toiling in the fields and providing the essential labor that keeps the economy running. They are often seen as humble and hardworking individuals, living simple lives in rural areas. Peasants typically engage in farming, tending to livestock, and performing various manual tasks to sustain themselves and their communities. Despite their low social status, peasants play a crucial role in the functioning of medieval society, contributing to the production of food and goods that support the entire population.",
+            "maxHealth": 100,
+            "hungerRate": 1,
+            "image": "../Resources/NPCs/Peasant/peasant.png"
+        }
+    }          
+}
