@@ -53,6 +53,21 @@ class NPC {
 
     //Vykreslenie NPC
     draw(ctx) {
+        if (this.profession === "peasant") {
+            ctx.fillStyle = "#8B4513"; 
+        }
+        else if (this.profession === "blacksmith") {
+            ctx.fillStyle = "#7b7e81"; 
+        }
+        else if (this.profession === "merchant") {
+            ctx.fillStyle = "#228B22"; 
+        }
+        else if (this.profession === "guard") {
+            ctx.fillStyle = "#800000"; 
+        }
+        else {
+            ctx.fillStyle = "red"; 
+        }
         ctx.fillStyle = "red";
         ctx.fillRect(this.x, this.y, this.width, this.height);
         
@@ -161,7 +176,45 @@ function createNPC(homeX, homeY, profession = "peasant", img = null, workplaceX 
 
 //TODO: Dokoncit klikanie na NPCS - zobrazenie informacii o nich 
 document.getElementById('gameCanvas').addEventListener('click', (e) => {
+    // 1. Get canvas position on the page
+    const rect = gameCanvas.getBoundingClientRect();
+    
+    // 2. Calculate mouse coordinates relative to the canvas
+    // We use Math.floor to keep them aligned with pixel logic
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
 
+    // 3. Define a "buffer" to make clicking easier (8px wide is very small)
+    const clickBuffer = 10; 
+
+    let npcFound = false;
+
+    // 4. Iterate backwards through NPCs 
+    // (This ensures we click the one "on top" if they are overlapping)
+    for (let i = activeNPCs.length - 1; i >= 0; i--) {
+        const npc = activeNPCs[i];
+
+        // 5. Check if mouse is within the NPC's area + buffer
+        const isInsideX = mouseX >= (npc.x - clickBuffer) && 
+                          mouseX <= (npc.x + npc.width + clickBuffer);
+                          
+        const isInsideY = mouseY >= (npc.y - clickBuffer) && 
+                          mouseY <= (npc.y + npc.height + clickBuffer);
+
+        if (isInsideX && isInsideY) {
+            console.log(`Selected NPC: ${npc.name}`);
+            showNpcInfo(npc);
+            npcFound = true;
+            break; // Stop the loop once the first NPC is found
+        }
+    }
+
+    // 6. Close the modal if the player clicks the empty ground
+    if (!npcFound) {
+        // Only close if the click wasn't on the modal itself 
+        // (Handled automatically by z-index usually, but good practice)
+        closeNpcInfo();
+    }
 });
 
 //Updatovanie Citizens Listu v UI
@@ -184,4 +237,31 @@ function shouldSpawnNPC(buildingSrc) {
 
 function debugListNPCs() {
     activeNPCs.forEach(npc => npc.identify());
+}
+
+function showNpcInfo(npc) {
+    // Show the modal
+    const modal = document.getElementById('npc-info-modal');
+    modal.style.display = 'flex';
+
+    // Populate data from the NPC class
+    document.getElementById('npc-info-name').innerText = npc.name;
+    document.getElementById('npc-info-img').src = npc.img;
+    document.getElementById('npc-info-profession').innerText = `Profession: ${npc.profession}`;
+    document.getElementById('npc-info-state').innerText = `Status: ${npc.state}`;
+    
+    document.getElementById('npc-info-health').innerText = `${npc.health}/100`;
+    document.getElementById('npc-info-hunger').innerText = npc.hunger;
+    document.getElementById('npc-info-happiness').innerText = npc.happiness;
+    
+    const workText = (npc.workplaceX !== null) ? `At (${npc.workplaceX}, ${npc.workplaceY})` : "Unemployed";
+    document.getElementById('npc-info-work').innerText = workText;
+}
+
+function closeNpcInfo() {
+    document.getElementById('npc-info-modal').style.display = 'none';
+}
+
+function assignWork() {
+    console.log("Logic for assigning work goes here...");
 }

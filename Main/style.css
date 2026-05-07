@@ -358,6 +358,39 @@ body {
     user-select: none; 
 }
 
+#npc-info-modal {
+    display: none;
+    position: absolute;
+    top: 50%; 
+    left: 20px; /* Positioned on the left to avoid overlapping building modal */
+    transform: translateY(-50%);
+    width: 350px;
+    background: linear-gradient(135deg, #2b170b 0%, #170b05 100%);
+    border: 4px outset #5c3a21;
+    border-radius: 8px;
+    padding: 10px;
+    z-index: 2000;
+    flex-direction: column;
+    gap: 8px;
+    box-shadow: 10px 10px 30px rgba(0,0,0,0.9);
+}
+
+/* Specific adjustments for NPC portrait */
+#npc-info-img {
+    width: 80px;
+    height: 120px;
+    image-rendering: pixelated;
+    object-fit: contain;
+}
+
+#npc-info-desc-box {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding-left: 15px;
+}
+
 /* Špecifické štýly pre info tlačidlá */
 
 .info-btn.sell { background: linear-gradient(to bottom, #8b0000, #500000); color: #d4af37; }

@@ -9,7 +9,7 @@ let currentBuildingCategory = null;
 
 //Suroviny
 let currentGold = 100000;
-let currentPop = 10;
+let currentPop = 0;
 let currentWood = 50000;
 let currentStone = 200000;
 let currentFood = 1000000;
@@ -84,7 +84,7 @@ function startBattle() {
 //Stavanie budov
 function startBuilding(imageSrc, maxLVL, price, popCost, category) {
     //Ak nemame dostatok zlata alebo populacie, zobrazime upozornenie a nebudeme pokracovat do rezimu stavania
-    if (currentGold < price || currentPop < popCost) {
+    if (currentGold < price) {
         showWarning("Not enough resources or population!", "red");
         return;
     }
@@ -152,7 +152,7 @@ document.getElementById('gameCanvas').addEventListener('click', (e) => {
         //TODO: Pridat to aby sa nedala upgradovat budova aj inou budovou
         //upgrade logika budov
         if (tile.buildingImg) {
-            if (currentGold < currentBuildingPrice || currentPop < currentBuildingPopCost) {
+            if (currentGold < currentBuildingPrice) {
                 showWarning("Not enough resources for upgrade!", "red");
                 finalizeBuild(canvas); return;
             }
@@ -182,7 +182,7 @@ document.getElementById('gameCanvas').addEventListener('click', (e) => {
         }
 
         if (selectedBuildingImg) {
-            if (currentGold < currentBuildingPrice || currentPop < currentBuildingPopCost) {
+            if (currentGold < currentBuildingPrice) {
                 showWarning("Not enough resources!", "red");
                 finalizeBuild(canvas); return;
             }

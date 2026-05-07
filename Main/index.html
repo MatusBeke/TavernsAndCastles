@@ -39,6 +39,34 @@
         </div>
     </div>
 
+    <div id="npc-info-modal" style="display: none;">
+        <div class="modal-section" id="npc-info-header">
+            <h2 id="npc-info-name">NPC Name</h2>
+        </div>
+
+        <div id="info-middle-row">
+            <div class="modal-section" id="npc-info-image-box">
+                <img id="npc-info-img" src="" alt="NPC Portrait">
+            </div>
+            <div class="modal-section" id="npc-info-desc-box">
+                <p id="npc-info-profession">Profession: Villager</p>
+                <p id="npc-info-state">State: Wandering</p>
+            </div>
+        </div>
+
+            <div class="modal-section" id="npc-info-stats-box">
+                <p><strong>Health:</strong> <span id="npc-info-health">100/100</span></p>
+                <p><strong>Hunger:</strong> <span id="npc-info-hunger">100</span></p>
+                <p><strong>Happiness:</strong> <span id="npc-info-happiness">100</span></p>
+                <p><strong>Workplace:</strong> <span id="npc-info-work">None</span></p>
+            </div>
+
+            <div class="modal-section" id="npc-info-buttons-box">
+                <button class="info-btn upgrade" onclick="assignWork()">Assign Work</button>
+                <button class="info-btn exit" onclick="closeNpcInfo()">Dismiss</button>
+            </div>
+    </div>
+
     
 
     <div id="category-bar">
