@@ -39,33 +39,33 @@
         </div>
     </div>
 
-    <div id="npc-info-modal" style="display: none;">
-        <div class="modal-section" id="npc-info-header">
-            <h2 id="npc-info-name">NPC Name</h2>
-        </div>
-
-        <div id="info-middle-row">
-            <div class="modal-section" id="npc-info-image-box">
-                <img id="npc-info-img" src="" alt="NPC Portrait">
-            </div>
-            <div class="modal-section" id="npc-info-desc-box">
-                <p id="npc-info-profession">Profession: Villager</p>
-                <p id="npc-info-state">State: Wandering</p>
-            </div>
-        </div>
-
-            <div class="modal-section" id="npc-info-stats-box">
-                <p><strong>Health:</strong> <span id="npc-info-health">100/100</span></p>
-                <p><strong>Hunger:</strong> <span id="npc-info-hunger">100</span></p>
-                <p><strong>Happiness:</strong> <span id="npc-info-happiness">100</span></p>
-                <p><strong>Workplace:</strong> <span id="npc-info-work">None</span></p>
-            </div>
-
-            <div class="modal-section" id="npc-info-buttons-box">
-                <button class="info-btn upgrade" onclick="assignWork()">Assign Work</button>
-                <button class="info-btn exit" onclick="closeNpcInfo()">Dismiss</button>
-            </div>
+<div id="npc-info-modal" style="display: none;">
+    <div class="modal-section" id="npc-info-header">
+        <h2 id="npc-info-name">Meno NPC</h2>
     </div>
+
+    <div id="npc-info-layout">
+        <div class="modal-section" id="npc-info-image-box">
+            <img id="npc-info-img" src="" alt="NPC Portrait">
+        </div>
+        <div class="modal-section" id="npc-info-desc-box">
+            <p id="npc-info-profession">Povolanie: Dedinčan</p>
+            <p id="npc-info-state">Stav: Túla sa</p>
+        </div>
+    </div>
+
+    <div class="modal-section" id="npc-info-stats-box">
+        <p><strong>Zdravie:</strong> <span id="npc-info-health">100/100</span></p>
+        <p><strong>Hlad:</strong> <span id="npc-info-hunger">100</span></p>
+        <p><strong>Šťastie:</strong> <span id="npc-info-happiness">100</span></p>
+        <p><strong>Pracovisko:</strong> <span id="npc-info-work">Žiadne</span></p>
+    </div>
+
+    <div class="modal-section" id="npc-info-buttons-box">
+        <button class="info-btn upgrade" onclick="assignWork()">Prideliť prácu</button>
+        <button class="info-btn exit" onclick="closeNpcInfo()">Zavrieť</button>
+    </div>
+</div>
 
     
 
@@ -77,6 +77,17 @@
     </div>
 
     <button id="battle-btn" onclick="startBattle()">Battle ⚔️</button>
+
+    <div id="battle-menu-modal" style="display: none;">
+        <h2 class="battle-title">War Council</h2>
+        <div class="ornament">⚔ ══════ ⚔</div>
+        <div class="battle-options">
+            <button class="battle-btn" onclick="selectBattleType('field')">Field Battle</button>
+            <button class="battle-btn" onclick="selectBattleType('protect')">Defend Realm</button>
+            <button class="battle-btn" onclick="selectBattleType('attack')">Attack Enemy</button>
+        </div>
+        <button class="battle-close-btn" onclick="closeBattleMenu()">Close</button>
+    </div>
 
     <div id="stats-container">
         <div id="permanent-stats">

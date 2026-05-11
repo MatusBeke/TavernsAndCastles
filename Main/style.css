@@ -362,7 +362,7 @@ body {
     display: none;
     position: absolute;
     top: 50%; 
-    left: 20px; /* Positioned on the left to avoid overlapping building modal */
+    right: 20px; 
     transform: translateY(-50%);
     width: 350px;
     background: linear-gradient(135deg, #2b170b 0%, #170b05 100%);
@@ -389,6 +389,139 @@ body {
     justify-content: center;
     align-items: flex-start;
     padding-left: 15px;
+}
+
+#npc-info-modal {
+    position: fixed;
+    top: 50%;           
+    right: 20px;          
+    transform: translateY(-50%); 
+    width: 350px;
+    background: #2b1d14;
+    border: 3px solid #d4af37;
+    border-radius: 8px;
+    padding: 20px;
+    color: #f0e6d2;
+    font-family: 'MedievalSharp', cursive;
+    z-index: 3000;
+    box-shadow: -5px 0 25px rgba(0,0,0,0.8);
+    display: none; 
+    flex-direction: column;
+}
+
+#npc-info-layout {
+    display: flex;
+    gap: 15px;
+    margin: 15px 0;
+}
+
+#npc-info-image-box {
+    width: 100px;
+    height: 100px;
+    background: #000;
+    border: 1px solid #555;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#npc-info-img {
+    max-width: 90%;
+    max-height: 90%;
+}
+
+#npc-info-desc-box {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+#npc-info-stats-box {
+    border-top: 1px solid #d4af37;
+    padding-top: 10px;
+}
+
+#npc-info-buttons-box {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+}
+
+#battle-menu-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 350px;
+    background: #2b1d14;
+    border: 3px solid #8b0000;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    color: #d4af37;
+    font-family: 'MedievalSharp', cursive;
+    z-index: 3000;
+    box-shadow: 0 0 25px rgba(139, 0, 0, 0.8);
+    display: none;
+    flex-direction: column;
+}
+
+#battle-menu-modal .battle-title {
+    font-size: 2.5rem;
+    margin: 0 0 10px 0;
+    text-shadow: 2px 2px 5px #000;
+}
+
+#battle-menu-modal .ornament {
+    font-size: 1.5rem;
+    color: #555;
+    margin-bottom: 20px;
+}
+
+#battle-menu-modal .battle-btn,
+#battle-menu-modal .battle-close-btn {
+    display: block;
+    width: 100%;
+    margin: 10px 0;
+    padding: 10px;
+    font-size: 1.2rem;
+    font-family: inherit;
+    background: #1a0f0a;
+    color: #d4af37;
+    border: 2px solid #d4af37;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+#battle-menu-modal .battle-btn:hover {
+    background: #8b0000;
+    color: #fff;
+    border-color: #8b0000;
+}
+
+#battle-menu-modal .battle-close-btn {
+    background: transparent;
+    border-color: #555;
+    color: #aaa;
+    margin-top: 20px;
+}
+
+#battle-menu-modal .battle-close-btn:hover {
+    background: #444;
+    color: #fff;
+}
+
+/* Pridaj toto na koniec súboru style.css */
+@keyframes popIn {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.7);
+    }
+    100% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
 }
 
 /* Špecifické štýly pre info tlačidlá */

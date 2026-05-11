@@ -219,14 +219,26 @@ var camera = { x: 0, y: 0, zoom: 1 };
             lastMouse = { x: e.clientX, y: e.clientY };
     });
 
-    // Prechod do menu bitiek
+
+
+// Nahraď svoje funkcie v JavaScripte (generator.js) týmto kódom:
     function startBattle() {
-        document.body.style.transition = "opacity 1s ease";
-        document.body.style.opacity = "0";
-        setTimeout(() => {
-            window.location.href = "../Battle/Battle.html";
-        }, 1000);
-}
+        const modal = document.getElementById('battle-menu-modal');
+        modal.style.display = 'flex';
+        // Spustí peknú "bounce" animáciu pri každom otvorení
+        modal.style.animation = 'popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards';
+    }
+
+    function closeBattleMenu() {
+        const modal = document.getElementById('battle-menu-modal');
+        modal.style.animation = 'none'; // Resetne animáciu, aby fungovala aj nabudúce
+        modal.style.display = 'none';
+    }
+
+    function selectBattleType(type) {
+        console.log("Hráč si vybral bitku: " + type);
+        // Logika bitky pôjde sem
+    }
 
     // Koniec tahania kamery po pusteni mysi
     window.addEventListener('mouseup', () => isDragging = false);

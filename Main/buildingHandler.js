@@ -74,12 +74,18 @@ function showWarning(msg, type) {
 
 //TODO: battle mode
 function startBattle() {
-    document.body.style.transition = "opacity 1s ease";
-    document.body.style.opacity = "0";
-    setTimeout(() => {
-        window.location.href = "../Battle/Battle.html";
-    }, 1000);
+    document.getElementById('battle-menu-modal').style.display = 'flex';
 }
+
+function closeBattleMenu() {
+    document.getElementById('battle-menu-modal').style.display = 'none';
+}
+
+function selectBattleType(type) {
+    console.log("Hráč si vybral bitku typu: " + type);
+}
+
+
 
 //Stavanie budov
 function startBuilding(imageSrc, maxLVL, price, popCost, category) {
