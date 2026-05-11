@@ -242,20 +242,20 @@ body {
     transform: scale(1.05);
 }
 #building-info-modal {
-    display: none;
-    position: absolute;
-    top: 50%; 
-    right: 20px;
-    transform: translateY(-50%);
-    width: 400px;
-    background: linear-gradient(135deg, #2b170b 0%, #170b05 100%);
-    border: 4px outset #5c3a21;
+    position: fixed;
+    top: 50%;
+    left: 20px; /* 20px od ľavého okraja */
+    transform: translateY(-50%); /* Len vertikálne centrovanie */
+    width: 350px;
+    background: #2b1d14;
+    border: 3px solid #d4af37;
     border-radius: 8px;
-    padding: 10px;
+    padding: 20px;
+    color: #f0e6d2;
+    font-family: 'MedievalSharp', cursive;
     z-index: 2000;
-    flex-direction: column;
-    gap: 8px;
-    box-shadow: 10px 10px 30px rgba(0,0,0,0.9), inset 0 0 20px rgba(0,0,0,0.8);
+    box-shadow: 5px 0 25px rgba(0,0,0,0.8); /* Tieň posunutý doprava */
+    display: none;
 }
 
 .modal-section {
@@ -359,20 +359,22 @@ body {
 }
 
 #npc-info-modal {
-    display: none;
-    position: absolute;
-    top: 50%; 
-    right: 20px; 
-    transform: translateY(-50%);
+    position: fixed;
+    top: 50%;
+    right: 20px; /* 20px od pravého okraja */
+    left: auto; /* Zrušíme akékoľvek centrovanie zľava */
+    transform: translateY(-50%); /* Len vertikálne centrovanie */
     width: 350px;
-    background: linear-gradient(135deg, #2b170b 0%, #170b05 100%);
-    border: 4px outset #5c3a21;
+    background: #2b1d14;
+    border: 3px solid #d4af37;
     border-radius: 8px;
-    padding: 10px;
-    z-index: 2000;
+    padding: 20px;
+    color: #f0e6d2;
+    font-family: 'MedievalSharp', cursive;
+    z-index: 3000;
+    box-shadow: -5px 0 25px rgba(0,0,0,0.8); /* Tieň posunutý doľava */
+    display: none;
     flex-direction: column;
-    gap: 8px;
-    box-shadow: 10px 10px 30px rgba(0,0,0,0.9);
 }
 
 /* Specific adjustments for NPC portrait */
