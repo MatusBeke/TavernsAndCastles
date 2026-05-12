@@ -176,45 +176,7 @@ function createNPC(homeX, homeY, profession = "peasant", img = null, workplaceX 
 
 //TODO: Dokoncit klikanie na NPCS - zobrazenie informacii o nich 
 document.getElementById('gameCanvas').addEventListener('click', (e) => {
-    // 1. Get canvas position on the page
-    const rect = gameCanvas.getBoundingClientRect();
-    
-    // 2. Calculate mouse coordinates relative to the canvas
-    // We use Math.floor to keep them aligned with pixel logic
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
 
-    // 3. Define a "buffer" to make clicking easier (8px wide is very small)
-    const clickBuffer = 10; 
-
-    let npcFound = false;
-
-    // 4. Iterate backwards through NPCs 
-    // (This ensures we click the one "on top" if they are overlapping)
-    for (let i = activeNPCs.length - 1; i >= 0; i--) {
-        const npc = activeNPCs[i];
-
-        // 5. Check if mouse is within the NPC's area + buffer
-        const isInsideX = mouseX >= (npc.x - clickBuffer) && 
-                          mouseX <= (npc.x + npc.width + clickBuffer);
-                          
-        const isInsideY = mouseY >= (npc.y - clickBuffer) && 
-                          mouseY <= (npc.y + npc.height + clickBuffer);
-
-        if (isInsideX && isInsideY) {
-            console.log(`Selected NPC: ${npc.name}`);
-            showNpcInfo(npc);
-            npcFound = true;
-            break; // Stop the loop once the first NPC is found
-        }
-    }
-
-    // 6. Close the modal if the player clicks the empty ground
-    if (!npcFound) {
-        // Only close if the click wasn't on the modal itself 
-        // (Handled automatically by z-index usually, but good practice)
-        closeNpcInfo();
-    }
 });
 
 //Updatovanie Citizens Listu v UI
