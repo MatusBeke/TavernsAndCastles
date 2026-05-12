@@ -180,6 +180,12 @@ var camera = { x: 0, y: 0, zoom: 1 };
                     // Kontrola, či už ubehlo 10 sekúnd
                     if (progress >= 1) {
                         tile.isClearing = false;
+                        if (tile.clearingSound)
+                        {
+                            tile.clearingSound.pause();
+                            tile.clearingSound.currentTime = 0;
+                            tile.clearingSound = null;
+                        }
                         const landImg = new Image();
                         landImg.src = '../Resources/Tiles/Img_LandDefault.png';
                         tile.img = landImg;

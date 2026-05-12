@@ -136,6 +136,13 @@ document.getElementById('gameCanvas').addEventListener('click', (e) => {
             tile.clearStartTime = Date.now();
             tile.clearDuration = 10000;
 
+            const chopSound = new Audio('../Resources/SFX/SFX_ChoppingWood.mp3');
+            chopSound.loop = true; // Bude sekať stále dokola počas 10s
+            chopSound.volume = 0.4; 
+            chopSound.play();
+            
+            tile.clearingSound = chopSound;
+
             showWarning("Clearing forest...", "yellow");
             return;
         }
