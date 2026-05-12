@@ -136,17 +136,59 @@ function createNPC(homeX, homeY, profession = "peasant", img = null, workplaceX 
         workplaceY
     );
 
-    if (profession == "peasant") {
-         if (typeof activeFields !== 'undefined' && activeFields.length > 0) {
+    //Pridelovanie pracovnych miest pre NPCs
+    //Peasant
+    if (profession == "peasant") 
+    {
+        if (typeof activeFields !== 'undefined' && activeFields.length > 0) 
+        {
             const field = activeFields[Math.floor(Math.random() * activeFields.length)];
             let [x, y] = field.split(',').map(Number);
             npc.workplaceX = x;
             npc.workplaceY = y;
-        } else {
+        } 
+        else 
+        {
+            npc.workplaceX = null;
+            npc.workplaceY = null;
+        }
+    }//Lumberman
+    else if (profession == "lumberman") 
+    {
+        if (typeof activeLumberyards !== 'undefined' && activeLumberyards.length > 0) 
+        {
+            const lumberyard = activeLumberyards[Math.floor(Math.random() * activeLumberyards.length)];
+            let [x, y] = lumberyard.split(',').map(Number);
+            npc.workplaceX = x;
+            npc.workplaceY = y;
+        }
+        else 
+        {
+            npc.workplaceX = null;
+            npc.workplaceY = null;
+        }
+    }//Miner
+    else if (profession == "miner")
+    {
+        if (typeof activeMines !== 'undefined' && activeMines.length > 0)
+        {
+            const mine = activeMines[Math.floor(Math.random() * activeMines.length)];
+            let [x, y] = mine.split(',').map(Number);
+            npc.workplaceX = x;
+            npc.workplaceY = y;
+        }
+        else
+        {
             npc.workplaceX = null;
             npc.workplaceY = null;
         }
     }
+    else
+    {
+        npc.workplaceX = null;
+        npc.workplaceY = null;
+    }
+
 
     activeNPCs.push(npc);
     console.log(`Spawned: ${fullName} as ${profession}, working at (${npc.workplaceX}, ${npc.workplaceY})`);
@@ -212,13 +254,13 @@ function showNpcInfo(npc) {
     modal.style.display = 'flex'; 
 
     document.getElementById('npc-info-name').innerText = npc.name;
-    document.getElementById('npc-info-profession').innerText = `Povolanie: ${npc.profession}`;
-    document.getElementById('npc-info-state').innerText = `Stav: ${npc.state}`;
+    document.getElementById('npc-info-profession').innerText = `Proffesion: ${npc.profession}`;
+    document.getElementById('npc-info-state').innerText = `State: ${npc.state}`;
     document.getElementById('npc-info-health').innerText = `${npc.health}/100`;
     document.getElementById('npc-info-hunger').innerText = npc.hunger;
     document.getElementById('npc-info-happiness').innerText = npc.happiness;
     
-    const workText = (npc.workplaceX !== null) ? `Súradnice: [${npc.workplaceX}, ${npc.workplaceY}]` : "Nezamestnaný";
+    const workText = (npc.workplaceX !== null) ? `Workplace: [${npc.workplaceX}, ${npc.workplaceY}]` : "Unemployed";
     document.getElementById('npc-info-work').innerText = workText;
 
     if (npc.img) {

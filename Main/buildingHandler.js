@@ -107,7 +107,7 @@ function startBuilding(imageSrc, maxLVL, price, popCost, category) {
     document.getElementById('gameCanvas').style.cursor = "crosshair";
 }
 
-//Kontrolovaneie inputu od hraca (stavanie a zobrovanie info okna)
+//Kontrolovaneie inputu od hraca (stavanie, zobrovanie info okna, tazenie lesa...)
 document.getElementById('gameCanvas').addEventListener('click', (e) => {
     const canvas = e.target;
     const rect = canvas.getBoundingClientRect();
@@ -122,6 +122,21 @@ document.getElementById('gameCanvas').addEventListener('click', (e) => {
 
     if (gridX >= 0 && gridX < MAP_SIZE && gridY >= 0 && gridY < MAP_SIZE) {
         const tile = mapData[gridY][gridX];
+
+        // Logika na tazenie lesa
+        if (!isBuildingMode && tile.img && tile.img.src.includes('Forest') && (activeLumberyards.length > 0)) {
+            
+            const landImg = new Image();
+            landImg.src = '../Resources/Tiles/Img_LandDefault.png'; 
+
+            tile.img = landImg;
+
+            currentWood += 50; 
+            updateHUD();
+            
+            showWarning("Forest cut down!", "yellow");
+            return;
+        }
         
         if (!isBuildingMode) {
             if (tile.buildingImg) {
@@ -146,10 +161,10 @@ document.getElementById('gameCanvas').addEventListener('click', (e) => {
 
         //Povolenie stavby iba pre Mine
         if (selectedBuildingImg && !tile.buildingImg) {
-            if (currentBuildingCategory === 'mines' && !isHillOrMountain) {
+            if (selectedBuildingImg.src.includes('Mine') && !isHillOrMountain) {
                 showWarning("Mines can only be built on hills!", "red");
                 finalizeBuild(canvas); return;
-            } else if (currentBuildingCategory !== 'mines' && isHillOrMountain) {
+            } else if (!selectedBuildingImg.src.includes('Mine') && isHillOrMountain) {
                 showWarning("Only mines can be built here!", "red");
                 finalizeBuild(canvas); return;
             }
@@ -200,7 +215,9 @@ document.getElementById('gameCanvas').addEventListener('click', (e) => {
             currentGold -= currentBuildingPrice;
             updateHUD();
 
-            if (selectedBuildingImg.src.includes('Farmland')) {
+
+            //Pridanie pracovnych miest pre NPCs
+            if (selectedBuildingImg.src.includes('Farmland')) { //Farmy
                 activeFields.push(gridX + "," + gridY);
                 console.log("New field added at (" + gridX + ", " + gridY + ")");
                 
@@ -209,8 +226,24 @@ document.getElementById('gameCanvas').addEventListener('click', (e) => {
                     console.log(element);
                 });
             }
+            else if (selectedBuildingImg.src.includes('Lumberyard')) {  //Lumberyardy
+                activeLumberyards.push(gridX + "," + gridY);
+                console.log("New lumberyard added at (" + gridX + ", " + gridY + ")");
 
-                
+                console.log("Current active lumberyards:");
+                activeLumberyards.forEach(element => {
+                    console.log(element);
+                });
+            }
+            else if (selectedBuildingImg.src.includes('Mine')) {  //Mines
+                activeMines.push(gridX + "," + gridY);
+                console.log("New mine added at (" + gridX + ", " + gridY + ")");
+
+                console.log("Current active mines:");
+                activeMines.forEach(element => {
+                    console.log(element);
+                });
+            }
 
             //Generovanie NPC pri postaveni budovy
             if (selectedBuildingImg.src.includes('Cabin') || selectedBuildingImg.src.includes('House')) 
@@ -349,6 +382,7 @@ function processProduction() {
         // Tu poistíme to hľadanie: pozeráme sa na 'src', 'type' aj 'name'
         const type = (building.src || building.type || building.name || "").toLowerCase();
 
+        //HOLY AI
         // Podľa toho, aké máš v hre budovy, si tieto slová ('mine', 'farm'...) prípadne prelož, ak ich máš po slovensky
         if (type.includes('mine') || type.includes('bana')) {
             resources.stone += 2;

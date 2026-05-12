@@ -44,8 +44,9 @@ body {
     align-items: center;
     text-align: center;
     transition: transform 0.2s ease;
-    background-image: url('../Resources/GUI/Img_BuildingMenuElement.png'); 
+    /*background-image: url('../Resources/GUI/Img_BuildingMenuElement.png'); */
     background-size: 100% 100%;
+    background-color: rgba(15, 8, 5, 0.85);
     padding: 15px 25px;
     filter: drop-shadow(0 5px 10px rgba(0,0,0,0.8)); 
 }

@@ -115,5 +115,18 @@
         "image": "../Resources/Buildables/Tavern/Img_Tavern.png",
         "description": "A bustling tavern where travelers rest and locals gather to share stories and ale.",
         "maxBuildLevel": 1
+    },
+    {
+        "id": "lumberyard",
+        "name": "Lumberyard",
+        "category": "mines",
+        "level": 1,
+        "price": 0,
+        "popCost": 0,
+        "baseHealth": 200,
+        "productionText": "+20 Wood / Day",
+        "image": "../Resources/Buildables/Lumberyard/Img_Lumberyard.png",
+        "description": "A facility for processing timber, providing a steady supply of wood for your settlements.",
+        "maxBuildLevel": 1
     }
 ]
