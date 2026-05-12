@@ -128,5 +128,31 @@
         "image": "../Resources/Buildables/Lumberyard/Img_Lumberyard.png",
         "description": "A facility for processing timber, providing a steady supply of wood for your settlements.",
         "maxBuildLevel": 1
+    },
+    {
+        "id": "sawmill",
+        "name": "Sawmill",
+        "category": "mines",
+        "level": 1,
+        "price": 0,
+        "popCost": 0,
+        "baseHealth": 300,
+        "productionText": "Turns wood into planks",
+        "image": "../Resources/Buildables/Sawmill/Img_Sawmill.png",
+        "description": "A facility that processes raw timber from the lumberyard into usable planks for construction and crafting.",
+        "maxBuildLevel": 1
+    },
+    {
+        "id": "foundry",
+        "name": "Foundry",
+        "category": "mines",
+        "level": 1,
+        "price": 0,
+        "popCost": 0,
+        "baseHealth": 600,
+        "productionText": "+20 Ingots / Day",
+        "image": "../Resources/Buildables/Foundry/Img_Foundry.png",
+        "description": "A facility for processing raw materials into useful items.",
+        "maxBuildLevel": 1
     }
 ]
