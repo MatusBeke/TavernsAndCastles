@@ -125,16 +125,18 @@ document.getElementById('gameCanvas').addEventListener('click', (e) => {
 
         // Logika na tazenie lesa
         if (!isBuildingMode && tile.img && tile.img.src.includes('Forest') && (activeLumberyards.length > 0)) {
-            
-            const landImg = new Image();
-            landImg.src = '../Resources/Tiles/Img_LandDefault.png'; 
+            // Ak sa už dlaždica rúbe, nerobíme nič
+            if (tile.isClearing) return;
 
-            tile.img = landImg;
+            const lumberedLand = new Image();
+            lumberedLand.src = '../Resources/Tiles/Img_Forest4.png'; // Obrázok rúbaniska
 
-            currentWood += 50; 
-            updateHUD();
-            
-            showWarning("Forest cut down!", "yellow");
+            tile.img = lumberedLand;
+            tile.isClearing = true;
+            tile.clearStartTime = Date.now();
+            tile.clearDuration = 10000;
+
+            showWarning("Clearing forest...", "yellow");
             return;
         }
         

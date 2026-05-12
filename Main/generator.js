@@ -160,6 +160,35 @@ var camera = { x: 0, y: 0, zoom: 1 };
                 if (tile.img) {
                     ctx.drawImage(tile.img, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE + 1, TILE_SIZE + 1);
                 }
+                // Logika progress baru pri tazeni lesa
+                if (tile.isClearing) {
+                    const now = Date.now();
+                    const elapsed = now - tile.clearStartTime;
+                    const progress = Math.min(elapsed / tile.clearDuration, 1);
+
+                    // Vykreslenie slidera nad tile
+                    const barWidth = TILE_SIZE * 0.8;
+                    const barHeight = 10;
+                    const barX = x * TILE_SIZE + (TILE_SIZE - barWidth) / 2;
+                    const barY = y * TILE_SIZE + 10;
+
+                    ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+                    ctx.fillRect(barX, barY, barWidth, barHeight);
+                    ctx.fillStyle = "#d9ff00";
+                    ctx.fillRect(barX, barY, barWidth * progress, barHeight);
+
+                    // Kontrola, či už ubehlo 10 sekúnd
+                    if (progress >= 1) {
+                        tile.isClearing = false;
+                        const landImg = new Image();
+                        landImg.src = '../Resources/Tiles/Img_LandDefault.png';
+                        tile.img = landImg;
+                        
+                        currentWood += 50;
+                        updateHUD();
+                    }
+                }
+
                 if (tile.buildingImg) {
                     ctx.drawImage(tile.buildingImg, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
                 }
