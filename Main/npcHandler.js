@@ -19,7 +19,6 @@ async function loadNPCNames() {
     }
 }
 
-
 loadNPCNames();
 
 class NPC {
@@ -41,17 +40,14 @@ class NPC {
         this.hunger = hunger;
         this.happiness = happiness;
 
-        this.workplaceX = workplaceX; //TODO: Pridat logiku pre pracoviska a pohyb medzi domom a pracoviskom
+        this.workplaceX = workplaceX; 
         this.workplaceY = workplaceY;
 
         this.state = "Wandering";
 
-        //Spustenie wander logiky pre NPC hned po vytvoreni 
-        //TODO: Pridat viac logiky pre NPCS a prepinanie medzi nimi
         setInterval(this.wander.bind(this), 1000);
     }
 
-    //Vykreslenie NPC
     draw(ctx) {
         if (this.profession === "peasant") {
             ctx.fillStyle = "#8B4513"; 
@@ -68,7 +64,6 @@ class NPC {
         else {
             ctx.fillStyle = "red"; 
         }
-        ctx.fillStyle = "red";
         ctx.fillRect(this.x, this.y, this.width, this.height);
         
         ctx.strokeStyle = "white";
@@ -78,7 +73,7 @@ class NPC {
         ctx.fillStyle = "white";     
         ctx.font = "bold 12px Arial"; 
         ctx.textAlign = "center"; 
-        ctx.fontFamily = "Arial"; //TODO: Pridat vlastny font 
+        ctx.fontFamily = "Arial"; 
         
         ctx.fillText(this.name, this.x + this.width / 2, this.y - 22);
         
@@ -86,13 +81,7 @@ class NPC {
         ctx.fillStyle = "#FFD700";
         ctx.fillText(`State: ${this.state}`, this.x + this.width / 2, this.y - 8);
     }
-    //
-    //KUBOVA ROBOTKA
-    //
-    //Logika pre NPCS
-    //
 
-    //Wander - NPC sa bude nahodne pohybovat po okoli
     wander() {
         this.state = "Wandering";
         const moveRange = 32; 
@@ -107,29 +96,23 @@ class NPC {
         this.y = Math.max(0, Math.min(this.y, MAP_SIZE * TILE_SIZE));
     }
 
-    //ReturnHome - NPC sa vrati do svojho domu
     returnHome() {
         this.state = "Returning Home";
         this.x = (this.homeX * TILE_SIZE) + (TILE_SIZE / 2) - 10;
         this.y = (this.homeY * TILE_SIZE) + (TILE_SIZE / 2) - 15;
     }
 
-    //Idle - NPC sa nebude pohybovat a bude stat na mieste
     idle() {
         this.state = "Idle";
     }
 
-    //InHome - NPC sa nachadza v dome
     inHome() {
         this.state = "In Home";
         this.x = (this.homeX * TILE_SIZE) + (TILE_SIZE / 2) - 10;
         this.y = (this.homeY * TILE_SIZE) + (TILE_SIZE / 2) - 15;
-        ctx.fillStyle = "transparent";
     }
-
 }
 
-//TODO: Dokoncit generovanie NPCS
 function createNPC(homeX, homeY, profession = "peasant", img = null, workplaceX = null, workplaceY = null) {
     const firstNames = npcNamesData.npc_names.first_names;
     const lastNames = npcNamesData.npc_names.surnames;
@@ -146,18 +129,15 @@ function createNPC(homeX, homeY, profession = "peasant", img = null, workplaceX 
         img,
         homeX, 
         homeY, 
-        100, // health
-        100, // hunger
-        100,  // happiness
+        100, 
+        100, 
+        100,  
         workplaceX,
         workplaceY
     );
 
-    //Pridelovanie pracoviska pre NPC
-    //Peasant
     if (profession == "peasant") {
-         if (activeFields.length > 0) {
-            //Vybera nahodne pole z listu aktivnych poli a prideluje ho NPC ako pracovisko
+         if (typeof activeFields !== 'undefined' && activeFields.length > 0) {
             const field = activeFields[Math.floor(Math.random() * activeFields.length)];
             let [x, y] = field.split(',').map(Number);
             npc.workplaceX = x;
@@ -167,19 +147,45 @@ function createNPC(homeX, homeY, profession = "peasant", img = null, workplaceX 
             npc.workplaceY = null;
         }
     }
-   
 
     activeNPCs.push(npc);
     console.log(`Spawned: ${fullName} as ${profession}, working at (${npc.workplaceX}, ${npc.workplaceY})`);
     updateCitizensList(fullName);
 }
 
-//TODO: Dokoncit klikanie na NPCS - zobrazenie informacii o nich 
 document.getElementById('gameCanvas').addEventListener('click', (e) => {
+    const rect = gameCanvas.getBoundingClientRect();
+    
+    const screenX = e.clientX - rect.left;
+    const screenY = e.clientY - rect.top;
 
+    if (typeof camera === 'undefined') return;
+
+    const worldX = (screenX - camera.x) / camera.zoom;
+    const worldY = (screenY - camera.y) / camera.zoom;
+
+    const clickBuffer = 10; 
+    let npcFound = false;
+
+    for (let i = activeNPCs.length - 1; i >= 0; i--) {
+        const npc = activeNPCs[i];
+
+        const isInsideX = worldX >= (npc.x - clickBuffer) && worldX <= (npc.x + npc.width + clickBuffer);
+        const isInsideY = worldY >= (npc.y - clickBuffer) && worldY <= (npc.y + npc.height + clickBuffer);
+
+        if (isInsideX && isInsideY) {
+            console.log(`Selected NPC: ${npc.name}`);
+            showNpcInfo(npc);
+            npcFound = true;
+            break; 
+        }
+    }
+
+    if (!npcFound) {
+        closeNpcInfo();
+    }
 });
 
-//Updatovanie Citizens Listu v UI
 function updateCitizensList(npcName) {
     const listItem = document.createElement("span");
     listItem.id = "stat-citizen-name";
@@ -187,7 +193,6 @@ function updateCitizensList(npcName) {
     npcList.appendChild(listItem);
 }
 
-//TODO: Urobit jedonoduchu funkciu na "raycasting" pre zobrazovanie a vypocitanie vzdialenosti NPC od domu 
 function castRay() {
 
 }
@@ -202,26 +207,28 @@ function debugListNPCs() {
 }
 
 function showNpcInfo(npc) {
-    // Show the modal
     const modal = document.getElementById('npc-info-modal');
-    modal.style.display = 'flex';
+    if (!modal) return;
+    modal.style.display = 'flex'; 
 
-    // Populate data from the NPC class
     document.getElementById('npc-info-name').innerText = npc.name;
-    document.getElementById('npc-info-img').src = npc.img;
-    document.getElementById('npc-info-profession').innerText = `Profession: ${npc.profession}`;
-    document.getElementById('npc-info-state').innerText = `Status: ${npc.state}`;
-    
+    document.getElementById('npc-info-profession').innerText = `Povolanie: ${npc.profession}`;
+    document.getElementById('npc-info-state').innerText = `Stav: ${npc.state}`;
     document.getElementById('npc-info-health').innerText = `${npc.health}/100`;
     document.getElementById('npc-info-hunger').innerText = npc.hunger;
     document.getElementById('npc-info-happiness').innerText = npc.happiness;
     
-    const workText = (npc.workplaceX !== null) ? `At (${npc.workplaceX}, ${npc.workplaceY})` : "Unemployed";
+    const workText = (npc.workplaceX !== null) ? `Súradnice: [${npc.workplaceX}, ${npc.workplaceY}]` : "Nezamestnaný";
     document.getElementById('npc-info-work').innerText = workText;
+
+    if (npc.img) {
+        document.getElementById('npc-info-img').src = npc.img;
+    }
 }
 
 function closeNpcInfo() {
-    document.getElementById('npc-info-modal').style.display = 'none';
+    const modal = document.getElementById('npc-info-modal');
+    if (modal) modal.style.display = 'none';
 }
 
 function assignWork() {

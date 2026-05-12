@@ -11,61 +11,61 @@
     <script src="https://cdn.jsdelivr.net/gh/josephg/noisejs/perlin.js"></script>
 </head>
 <body>
-    <div id="building-info-modal">
-        <div class="modal-section" id="info-header">
-            <h2 id="info-name">Building name</h2>
+<div id="building-info-modal">
+    <div class="modal-section" id="info-header">
+        <h2 id="info-name">Building name</h2>
+    </div>
+
+    <div id="info-middle-row">
+        <div class="modal-section" id="info-image-box">
+            <img id="info-img" src="" alt="Náhľad">
         </div>
-    
-        <div id="info-middle-row">
-            <div class="modal-section" id="info-image-box">
-                <img id="info-img" src="" alt="Náhľad">
-            </div>
-            <div class="modal-section" id="info-desc-box">
-                <p id="info-desc">Building description</p>
-            </div>
-        </div>
-    
-        <div class="modal-section" id="info-stats-box">
-            <p><strong>Level:</strong> <span id="info-level">1</span></p>
-            <p><strong>Health:</strong> <span id="info-health">100/100</span></p>
-            <p><strong>People inside:</strong> <span id="info-people">0</span></p>
-            <p><strong>Production:</strong> <span id="info-production">Active</span></p>
-        </div>
-    
-        <div class="modal-section" id="info-buttons-box">
-            <button class="info-btn upgrade" onclick="upgradeBuilding()">Upgrade</button>
-            <button class="info-btn sell" onclick="sellBuilding()">Sell</button>
-            <button class="info-btn exit" onclick="closeBuildingInfo()">Exit</button>
+        <div class="modal-section" id="info-desc-box">
+            <p id="info-desc">Building description</p>
         </div>
     </div>
 
-    <div id="npc-info-modal" style="display: none;">
-        <div class="modal-section" id="npc-info-header">
-            <h2 id="npc-info-name">NPC Name</h2>
-        </div>
-
-        <div id="info-middle-row">
-            <div class="modal-section" id="npc-info-image-box">
-                <img id="npc-info-img" src="" alt="NPC Portrait">
-            </div>
-            <div class="modal-section" id="npc-info-desc-box">
-                <p id="npc-info-profession">Profession: Villager</p>
-                <p id="npc-info-state">State: Wandering</p>
-            </div>
-        </div>
-
-            <div class="modal-section" id="npc-info-stats-box">
-                <p><strong>Health:</strong> <span id="npc-info-health">100/100</span></p>
-                <p><strong>Hunger:</strong> <span id="npc-info-hunger">100</span></p>
-                <p><strong>Happiness:</strong> <span id="npc-info-happiness">100</span></p>
-                <p><strong>Workplace:</strong> <span id="npc-info-work">None</span></p>
-            </div>
-
-            <div class="modal-section" id="npc-info-buttons-box">
-                <button class="info-btn upgrade" onclick="assignWork()">Assign Work</button>
-                <button class="info-btn exit" onclick="closeNpcInfo()">Dismiss</button>
-            </div>
+    <div class="modal-section" id="info-stats-box">
+        <p><strong>Level:</strong> <span id="info-level">1</span></p>
+        <p><strong>Health:</strong> <span id="info-health">100/100</span></p>
+        <p><strong>People inside:</strong> <span id="info-people">0</span></p>
+        <p><strong>Production:</strong> <span id="info-production">Active</span></p>
     </div>
+
+    <div class="modal-section" id="info-buttons-box">
+        <button class="info-btn upgrade" onclick="upgradeBuilding()">Upgrade</button>
+        <button class="info-btn sell" onclick="sellBuilding()">Sell</button>
+        <button class="info-btn exit" onclick="closeBuildingInfo()">Exit</button>
+    </div>
+</div>
+
+<div id="npc-info-modal" style="display: none;">
+    <div class="modal-section" id="npc-info-header">
+        <h2 id="npc-info-name">Meno NPC</h2>
+    </div>
+
+    <div id="npc-info-layout">
+        <div class="modal-section" id="npc-info-image-box">
+            <img id="npc-info-img" src="" alt="NPC Portrait">
+        </div>
+        <div class="modal-section" id="npc-info-desc-box">
+            <p id="npc-info-profession">Povolanie: Dedinčan</p>
+            <p id="npc-info-state">Stav: Túla sa</p>
+        </div>
+    </div>
+
+    <div class="modal-section" id="npc-info-stats-box">
+        <p><strong>Zdravie:</strong> <span id="npc-info-health">100/100</span></p>
+        <p><strong>Hlad:</strong> <span id="npc-info-hunger">100</span></p>
+        <p><strong>Šťastie:</strong> <span id="npc-info-happiness">100</span></p>
+        <p><strong>Pracovisko:</strong> <span id="npc-info-work">Žiadne</span></p>
+    </div>
+
+    <div class="modal-section" id="npc-info-buttons-box">
+        <button class="info-btn upgrade" onclick="assignWork()">Prideliť prácu</button>
+        <button class="info-btn exit" onclick="closeNpcInfo()">Zavrieť</button>
+    </div>
+</div>
 
     
 
@@ -78,6 +78,17 @@
 
     <button id="battle-btn" onclick="startBattle()">Battle ⚔️</button>
 
+    <div id="battle-menu-modal" style="display: none;">
+        <h2 class="battle-title">War Council</h2>
+        <div class="ornament">⚔ ══════ ⚔</div>
+        <div class="battle-options">
+            <button class="battle-btn" onclick="selectBattleType('field')">Field Battle</button>
+            <button class="battle-btn" onclick="selectBattleType('protect')">Defend Realm</button>
+            <button class="battle-btn" onclick="selectBattleType('attack')">Attack Enemy</button>
+        </div>
+        <button class="battle-close-btn" onclick="closeBattleMenu()">Close</button>
+    </div>
+
     <div id="stats-container">
         <div id="permanent-stats">
             <div class="stat-item" title="Gold"><span class="stat-icon"><img src="../Resources/GUI/Img_Gold.png" style="width: 20px; height: 20px; vertical-align: middle;"></span> <span id="stat-gold">0</span></div>
@@ -89,6 +100,7 @@
             <div id="resources-list" class="stat-dropdown" style="display: none;">
                 <div class="stat-item" title="Wood"><span class="stat-icon"><img src="../Resources/GUI/Img_Resources.png" style="width: 20px; height: 20px; vertical-align: middle;"></span> <span id="stat-wood">0</span></div>
                 <div class="stat-item" title="Stone"><span class="stat-icon"><img src="../Resources/GUI/Img_Resources.png" style="width: 20px; height: 20px; vertical-align: middle;"></span> <span id="stat-stone">0</span></div>
+                <div class="stat-item" title="Coal"><span class="stat-icon">⛏️</span> <span id="stat-coal">0</span></div>
             </div>
         </div>
 

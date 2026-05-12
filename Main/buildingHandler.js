@@ -74,12 +74,18 @@ function showWarning(msg, type) {
 
 //TODO: battle mode
 function startBattle() {
-    document.body.style.transition = "opacity 1s ease";
-    document.body.style.opacity = "0";
-    setTimeout(() => {
-        window.location.href = "../Battle/Battle.html";
-    }, 1000);
+    document.getElementById('battle-menu-modal').style.display = 'flex';
 }
+
+function closeBattleMenu() {
+    document.getElementById('battle-menu-modal').style.display = 'none';
+}
+
+function selectBattleType(type) {
+    console.log("Hráč si vybral bitku typu: " + type);
+}
+
+
 
 //Stavanie budov
 function startBuilding(imageSrc, maxLVL, price, popCost, category) {
@@ -326,6 +332,59 @@ function saveGame() {
     allSaves[realmName] = saveData; 
     localStorage.setItem('taverns_saves', JSON.stringify(allSaves));
 }
+
+let resources = {
+    gold: 0,
+    wood: 0,
+    stone: 0,
+    food: 0,
+    coal: 0
+};
+
+function processProduction() {
+    // Ak nemáš vytvorené pole budov, script sa radšej zastaví, než by mal padnúť
+    if (typeof activeBuildings === 'undefined') return;
+
+    activeBuildings.forEach(building => {
+        // Tu poistíme to hľadanie: pozeráme sa na 'src', 'type' aj 'name'
+        const type = (building.src || building.type || building.name || "").toLowerCase();
+
+        // Podľa toho, aké máš v hre budovy, si tieto slová ('mine', 'farm'...) prípadne prelož, ak ich máš po slovensky
+        if (type.includes('mine') || type.includes('bana')) {
+            resources.stone += 2;
+            resources.coal += 100; // +100 uhlia z bane
+        } else if (type.includes('lumber') || type.includes('sawmill') || type.includes('wood')) {
+            resources.wood += 3;
+        } else if (type.includes('farm') || type.includes('field') || type.includes('pole')) {
+            resources.food += 5;
+        } else if (type.includes('market') || type.includes('tavern')) {
+            resources.gold += 2;
+        }
+    });
+
+    updateResourceUI();
+}
+
+function updateResourceUI() {
+    const uiMap = {
+        'stat-gold': resources.gold,
+        'stat-wood': resources.wood,
+        'stat-stone': resources.stone,
+        'stat-food': resources.food,
+        'stat-coal': resources.coal
+    };
+
+    for (const [id, value] of Object.entries(uiMap)) {
+        const el = document.getElementById(id);
+        if (el) el.innerText = value;
+    }
+}
+
+// 10 000 milisekúnd = 10 sekúnd
+setInterval(processProduction, 10000);
+
+// Spustí produkciu surovín každých 5 sekúnd (5000 ms)
+setInterval(processProduction, 5000);
 
 setInterval(saveGame, 15000);
 
