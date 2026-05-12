@@ -51,6 +51,19 @@
         "description": "Advanced housing made of stone, providing better protection and comfort for your citizens. It is more durable than a log cabin and can withstand harsher weather conditions.",
         "maxBuildLevel": 4
     },
+        {
+        "id": "town-house",
+        "name": "Town House",
+        "category": "houses",
+        "level": 5,
+        "price": 1550,
+        "popCost": 0,
+        "baseHealth": 200,
+        "productionText": "Provides Housing",
+        "image": "../Resources/Buildables/TownHouse/Img_TownHouse1.png",
+        "description": "A large and elegant residence for your wealthier citizens, offering superior comfort and status. It is a symbol of prosperity and can accommodate more inhabitants than a stone house.",
+        "maxBuildLevel": 4
+    },
     {
         "id": "farmland",
         "name": "Farmland",

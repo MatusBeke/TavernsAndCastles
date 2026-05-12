@@ -123,9 +123,9 @@ document.getElementById('gameCanvas').addEventListener('click', (e) => {
     if (gridX >= 0 && gridX < MAP_SIZE && gridY >= 0 && gridY < MAP_SIZE) {
         const tile = mapData[gridY][gridX];
 
+        //TODO: Pridat maximalnu vzdialenost od lumberyardu pre tazenie lesa, aby sa nedalo tazit les na druhom konci mapy
         // Logika na tazenie lesa
         if (!isBuildingMode && tile.img && tile.img.src.includes('Forest') && (activeLumberyards.length > 0)) {
-            // Ak sa už dlaždica rúbe, nerobíme nič
             if (tile.isClearing) return;
 
             const lumberedLand = new Image();
@@ -137,7 +137,7 @@ document.getElementById('gameCanvas').addEventListener('click', (e) => {
             tile.clearDuration = 10000;
 
             const chopSound = new Audio('../Resources/SFX/SFX_ChoppingWood.mp3');
-            chopSound.loop = true; // Bude sekať stále dokola počas 10s
+            chopSound.loop = true; 
             chopSound.volume = 0.4; 
             chopSound.play();
             
