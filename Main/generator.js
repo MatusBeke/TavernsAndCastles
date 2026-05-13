@@ -201,7 +201,11 @@ var camera = { x: 0, y: 0, zoom: 1 };
             }
         }
 
-        // Kreslenie NPCs
+        // Kreslenie a update NPCs
+        activeNPCs.forEach(npc => {
+            npc.update(); 
+        });
+
         activeNPCs.forEach(npc => {
             npc.draw(ctx);
         });
