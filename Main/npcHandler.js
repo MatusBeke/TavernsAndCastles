@@ -45,17 +45,41 @@ class NPC {
 
         this.state = "Wandering";
 
-        setInterval(this.wander.bind(this), 1000);
+        this.lastUpdate = Date.now();
+
+        //setInterval(this.wander.bind(this), 1000);
+
     }
+
+    update() {
+    const teraz = Date.now();
+
+    // Časová kontrola - NPC sa pohne len raz za 1 sekundu (1000ms)
+    if (teraz - this.lastUpdate > 1000) {
+        
+        if (currentHour >= 20 || currentHour < 6) {
+            // NOC: Choď domov
+            this.inHome();
+        } else {
+            // DEŇ: Ak bol doma, vyjde von, inak sa túla
+            if (this.state === "In Home") {
+                this.state = "Wandering";
+            }
+            this.wander();
+        }
+
+        this.lastUpdate = teraz;
+    }
+}
 
     draw(ctx) {
         if (this.profession === "peasant") {
             ctx.fillStyle = "#8B4513"; 
         }
-        else if (this.profession === "blacksmith") {
+        else if (this.profession === "miner") {
             ctx.fillStyle = "#7b7e81"; 
         }
-        else if (this.profession === "merchant") {
+        else if (this.profession === "lumberman") {
             ctx.fillStyle = "#228B22"; 
         }
         else if (this.profession === "guard") {

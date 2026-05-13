@@ -201,13 +201,38 @@ var camera = { x: 0, y: 0, zoom: 1 };
             }
         }
 
-        // Kreslenie NPCs
+        // Kreslenie a update NPCs
+        activeNPCs.forEach(npc => {
+            npc.update(); 
+        });
+
         activeNPCs.forEach(npc => {
             npc.draw(ctx);
         });
 
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+
+        // Podmienka pre noc
+        if (typeof currentHour !== 'undefined' && (currentHour >= 20 || currentHour < 6)) {
+            ctx.save();     
+            let opacity = getNightIntensity();
+            ctx.fillStyle = `rgba(0, 0, 40, ${opacity})`;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);     
+            ctx.restore();
+        }
+        
+
         // Znovu zavolame kreslenie pre dalsi snimok
         requestAnimationFrame(draw);
+    }
+
+    //Plynuly prechod medzi dnom a nocou podla aktualneho casu
+    function getNightIntensity() {
+        if (currentHour === 18) return 0.1;
+        if (currentHour === 19) return 0.3;
+        if (currentHour >= 20 || currentHour < 5) return 0.55; // Uplna noc
+        if (currentHour === 5) return 0.2;
+        return 0; // Deň
     }
 
     // Zoomovanie kamery kolieskom mysi
