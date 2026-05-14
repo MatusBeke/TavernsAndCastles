@@ -1,6 +1,8 @@
 var activeNPCs = [];
 const npcList = document.getElementById("citizens-list");
 
+let jobs = ["peasant", "miner", "lumberman", "guard"];
+
 // Default, kým sa nenačíta JSON s menami NPCs
 let npcNamesData = {
     npc_names: {
@@ -54,15 +56,29 @@ class NPC {
     update() {
     const teraz = Date.now();
 
-    // Časová kontrola - NPC sa pohne len raz za 1 sekundu (1000ms)
+    // Časová kontrola pre aktualizáciu stavu NPC
     if (teraz - this.lastUpdate > 1000) {
         
-        if (currentHour >= 20 || currentHour < 6) {
-            // NOC: Choď domov
+        if (currentHour >= 20 || currentHour < 6) 
+        {
             this.inHome();
-        } else {
-            // DEŇ: Ak bol doma, vyjde von, inak sa túla
-            if (this.state === "In Home") {
+        }
+        else if(currentHour >= 7 && currentHour < 16)
+        {
+            if (this.workplaceX !== null && this.workplaceY !== null) 
+            {
+                this.work();
+            }
+            else 
+            {
+                this.state = "Wandering";
+                this.wander();
+            }
+        } 
+        else 
+        {
+            if (this.state === "In Home") 
+            {
                 this.state = "Wandering";
             }
             this.wander();
@@ -135,7 +151,18 @@ class NPC {
         this.x = (this.homeX * TILE_SIZE) + (TILE_SIZE / 2) - 10;
         this.y = (this.homeY * TILE_SIZE) + (TILE_SIZE / 2) - 15;
     }
+
+    work(){
+        this.state = "Working";
+        const randomOffsetX = Math.random() * (TILE_SIZE - 20);
+        const randomOffsetY = Math.random() * (TILE_SIZE - 20);
+        if (this.workplaceX !== null && this.workplaceY !== null) {
+            this.x = (this.workplaceX * TILE_SIZE) + randomOffsetX;
+            this.y = (this.workplaceY * TILE_SIZE) + randomOffsetY;
+        }
+    }
 }
+
 
 function createNPC(homeX, homeY, profession = "peasant", img = null, workplaceX = null, workplaceY = null) {
     const firstNames = npcNamesData.npc_names.first_names;
@@ -146,10 +173,13 @@ function createNPC(homeX, homeY, profession = "peasant", img = null, workplaceX 
     
     const fullName = `${randomFirst} ${randomLast}`;
 
+    const randomProfession = jobs[Math.floor(Math.random() * jobs.length)];
+
+
     var npc = new NPC(
         activeNPCs.length + 1, 
         fullName, 
-        profession,  
+        profession = randomProfession,  
         img,
         homeX, 
         homeY, 

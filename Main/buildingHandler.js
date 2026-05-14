@@ -384,25 +384,18 @@ let resources = {
 };
 
 function processProduction() {
-    // Ak nemáš vytvorené pole budov, script sa radšej zastaví, než by mal padnúť
     if (typeof activeBuildings === 'undefined') return;
 
     activeBuildings.forEach(building => {
-        // Tu poistíme to hľadanie: pozeráme sa na 'src', 'type' aj 'name'
         const type = (building.src || building.type || building.name || "").toLowerCase();
-
-        //HOLY AI
-        // Podľa toho, aké máš v hre budovy, si tieto slová ('mine', 'farm'...) prípadne prelož, ak ich máš po slovensky
         if (type.includes('mine') || type.includes('bana')) {
             resources.stone += 2;
-            resources.coal += 100; // +100 uhlia z bane
+            resources.coal += 100;
         } else if (type.includes('lumber') || type.includes('sawmill') || type.includes('wood')) {
             resources.wood += 3;
         } else if (type.includes('farm') || type.includes('field') || type.includes('pole')) {
             resources.food += 5;
-        } else if (type.includes('market') || type.includes('tavern')) {
-            resources.gold += 2;
-        }
+        } 
     });
 
     updateResourceUI();
