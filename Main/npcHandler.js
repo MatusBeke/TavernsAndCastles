@@ -2,6 +2,7 @@ var activeNPCs = [];
 const npcList = document.getElementById("citizens-list");
 
 let jobs = ["peasant", "miner", "lumberman", "guard"];
+let selectedNPC = null;
 
 // Default, kým sa nenačíta JSON s menami NPCs
 let npcNamesData = {
@@ -191,62 +192,15 @@ function createNPC(homeX, homeY, profession = "peasant", img = null, workplaceX 
     );
 
     //Pridelovanie pracovnych miest pre NPCs
-    //Peasant
-    if (profession == "peasant") 
-    {
-        if (typeof activeFields !== 'undefined' && activeFields.length > 0) 
-        {
-            const field = activeFields[Math.floor(Math.random() * activeFields.length)];
-            let [x, y] = field.split(',').map(Number);
-            npc.workplaceX = x;
-            npc.workplaceY = y;
-        } 
-        else 
-        {
-            npc.workplaceX = null;
-            npc.workplaceY = null;
-        }
-    }//Lumberman
-    else if (profession == "lumberman") 
-    {
-        if (typeof activeLumberyards !== 'undefined' && activeLumberyards.length > 0) 
-        {
-            const lumberyard = activeLumberyards[Math.floor(Math.random() * activeLumberyards.length)];
-            let [x, y] = lumberyard.split(',').map(Number);
-            npc.workplaceX = x;
-            npc.workplaceY = y;
-        }
-        else 
-        {
-            npc.workplaceX = null;
-            npc.workplaceY = null;
-        }
-    }//Miner
-    else if (profession == "miner")
-    {
-        if (typeof activeMines !== 'undefined' && activeMines.length > 0)
-        {
-            const mine = activeMines[Math.floor(Math.random() * activeMines.length)];
-            let [x, y] = mine.split(',').map(Number);
-            npc.workplaceX = x;
-            npc.workplaceY = y;
-        }
-        else
-        {
-            npc.workplaceX = null;
-            npc.workplaceY = null;
-        }
-    }
-    else
-    {
-        npc.workplaceX = null;
-        npc.workplaceY = null;
-    }
-
+    selectedNPC = npc; 
+    assignWork(); 
+    selectedNPC = null;
 
     activeNPCs.push(npc);
     console.log(`Spawned: ${fullName} as ${profession}, working at (${npc.workplaceX}, ${npc.workplaceY})`);
     updateCitizensList(fullName);
+
+    
 }
 
 document.getElementById('gameCanvas').addEventListener('click', (e) => {
@@ -303,6 +257,7 @@ function debugListNPCs() {
 }
 
 function showNpcInfo(npc) {
+    selectedNPC = npc;
     const modal = document.getElementById('npc-info-modal');
     if (!modal) return;
     modal.style.display = 'flex'; 
@@ -327,6 +282,46 @@ function closeNpcInfo() {
     if (modal) modal.style.display = 'none';
 }
 
+//Priradovanie robotky NPCs, podľa ich profesie, k dostupným pracoviskám v hre
 function assignWork() {
-    console.log("Logic for assigning work goes here...");
+    const npc = selectedNPC;
+    const profession = npc.profession;
+
+    if (profession === "peasant") {
+        if (typeof activeFields !== 'undefined' && activeFields.length > 0) {
+            const field = activeFields[Math.floor(Math.random() * activeFields.length)];
+            let [x, y] = field.split(',').map(Number);
+            npc.workplaceX = x;
+            npc.workplaceY = y;
+        }
+    } 
+    else if (profession === "lumberman") {
+        if (typeof activeLumberyards !== 'undefined' && activeLumberyards.length > 0) {
+            const lumberyard = activeLumberyards[Math.floor(Math.random() * activeLumberyards.length)];
+            let [x, y] = lumberyard.split(',').map(Number);
+            npc.workplaceX = x;
+            npc.workplaceY = y;
+        }
+    }
+    else if (profession === "miner") {
+        if (typeof activeMines !== 'undefined' && activeMines.length > 0) {
+            const mine = activeMines[Math.floor(Math.random() * activeMines.length)];
+            let [x, y] = mine.split(',').map(Number);
+            npc.workplaceX = x;
+            npc.workplaceY = y;
+        }
+    }
+
+    console.log(`Práca priradená pre ${npc.name} na súradnice: ${npc.workplaceX}, ${npc.workplaceY}`);
+    
+    showNpcInfo(npc);
+}
+
+function changeWork()
+{
+    const npc = selectedNPC;
+    const profession = npc.profession;
+
+    npc.profession = jobs[Math.floor(Math.random() * jobs.length)];
+    assignWork();
 }
