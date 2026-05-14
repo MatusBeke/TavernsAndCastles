@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Battle - Taverns & Castles</title>
+    <link rel="stylesheet" href="battle.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/gh/josephg/noisejs/perlin.js"></script>
+</head>
+<body>
+    <div id="battle-ui">
+        <div id="battle-stats">
+            <span id="army-count">Your Army: 0</span>
+            <span class="vs">⚔️ VS ⚔️</span>
+            <span id="enemy-count">Enemy: 0</span>
+        </div>
+        <div id="battle-status">Phase: <span id="phase-text">Preparation</span></div>
+        <button id="retreat-btn" onclick="retreat()">Retreat</button>
+    </div>
+
+    <div id="army-setup-modal">
+        <h2>Prepare for Battle</h2>
+        <p>How many soldiers will you send?</p>
+        <input type="number" id="troop-input" min="1" max="100" value="10">
+        <p>Available: <span id="max-troops">100</span></p>
+        <br>
+        <button onclick="confirmArmy()">To Battle!</button>
+    </div>
+
+    <canvas id="battleCanvas"></canvas>
+
+    <script src="battle.js"></script>
+</body>
+</html>

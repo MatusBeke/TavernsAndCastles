@@ -1,0 +1,116 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #110b08;
+    color: #d4af37;
+    font-family: 'MedievalSharp', cursive;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh;
+}
+
+#battle-ui {
+    width: 100%;
+    background: linear-gradient(to bottom, #2b1d14, #0a0503);
+    border-bottom: 3px solid #8b0000;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-sizing: border-box;
+    box-shadow: 0 4px 15px rgba(139, 0, 0, 0.5);
+    z-index: 10;
+}
+
+#battle-stats {
+    font-size: 1.5rem;
+    text-shadow: 2px 2px 4px #000;
+}
+
+.vs {
+    color: #ff3333;
+    margin: 0 20px;
+}
+
+#battle-status {
+    font-size: 1.2rem;
+}
+
+#retreat-btn {
+    background: #1a0f0a;
+    color: #d4af37;
+    border: 2px solid #8b0000;
+    padding: 8px 15px;
+    font-family: inherit;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: 0.2s;
+    border-radius: 4px;
+}
+
+#retreat-btn:hover {
+    background: #8b0000;
+    color: #fff;
+    box-shadow: 0 0 10px #ff0000;
+}
+
+#battleCanvas {
+    flex: 1;
+    width: 100%;
+    background: #223322;
+    image-rendering: pixelated;
+}
+/* --- ARMY SETUP MODAL --- */
+#army-setup-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: linear-gradient(to bottom, #2b1d14, #0a0503);
+    border: 3px solid #8b0000;
+    padding: 30px;
+    text-align: center;
+    border-radius: 8px;
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.9), inset 0 0 15px rgba(139, 0, 0, 0.5);
+    z-index: 2000;
+    display: none; /* Skryté v základe, JS to zapne */
+}
+
+#army-setup-modal h2 {
+    margin-top: 0;
+    color: #ff3333;
+    text-shadow: 2px 2px 4px #000;
+}
+
+#army-setup-modal input {
+    font-family: 'MedievalSharp', cursive;
+    font-size: 1.5rem;
+    width: 100px;
+    text-align: center;
+    background: #110b08;
+    color: #d4af37;
+    border: 2px solid #8b0000;
+    margin: 10px 0;
+    padding: 5px;
+}
+
+#army-setup-modal button {
+    background: #1a0f0a;
+    color: #d4af37;
+    border: 2px solid #8b0000;
+    padding: 10px 25px;
+    font-family: inherit;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: 0.2s;
+    margin-top: 15px;
+    text-transform: uppercase;
+}
+
+#army-setup-modal button:hover {
+    background: #8b0000;
+    color: #fff;
+    box-shadow: 0 0 15px rgba(255, 51, 51, 0.6);
+}

@@ -281,12 +281,10 @@ var camera = { x: 0, y: 0, zoom: 1 };
 
 
 
-// Nahraď svoje funkcie v JavaScripte (generator.js) týmto kódom:
     function startBattle() {
-        const modal = document.getElementById('battle-menu-modal');
-        modal.style.display = 'flex';
-        // Spustí peknú "bounce" animáciu pri každom otvorení
-        modal.style.animation = 'popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards';
+        console.log("Starting Field Battle...");
+        // Rovno otvorí Field bitku v novom okne
+        window.open('../Battle/battle.html?type=field', '_blank');
     }
 
     function closeBattleMenu() {
