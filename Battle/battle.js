@@ -5,12 +5,20 @@ const ctx = canvas.getContext('2d');
 let battlePhase = "field"; 
 let playerArmy = [];
 let enemyArmy = [];
+let isFighting = false; 
 
-// --- MAP & CAMERA VARIABLES ---
+// --- CONSTANTS ---
+const NPC_W = 10; 
+const NPC_H = 15; 
 const MAP_SIZE = 25; 
 const TILE_SIZE = 128;
 let mapData = []; 
 let camera = { x: 0, y: 0, zoom: 1 }; 
+let minZoom = 1; // Minimálny zoom, aby neboli čierne okraje
+
+// --- CAMERA CONTROLS ---
+let isDragging = false;
+let lastMouse = { x: 0, y: 0 };
 
 // --- IMAGES ---
 const imgLand = new Image(); imgLand.src = '../Resources/Tiles/Img_LandDefault.png';
@@ -25,16 +33,75 @@ function resizeCanvas() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight - document.getElementById('battle-ui').offsetHeight;
     
-    // Použitie Math.min zabezpečí, že celá mapa sa vždy zmestí na obrazovku
     const scaleX = canvas.width / (MAP_SIZE * TILE_SIZE);
     const scaleY = canvas.height / (MAP_SIZE * TILE_SIZE);
-    camera.zoom = Math.min(scaleX, scaleY); 
+    minZoom = Math.max(scaleX, scaleY); // Zabezpečí, že mapa vždy zakryje celú obrazovku
     
-    // Pevné uzamknutie kamery presne na stred mapy
+    camera.zoom = minZoom; 
+    
+    centerCamera();
+}
+
+function centerCamera() {
     camera.x = (canvas.width / 2) - ((MAP_SIZE * TILE_SIZE * camera.zoom) / 2);
     camera.y = (canvas.height / 2) - ((MAP_SIZE * TILE_SIZE * camera.zoom) / 2);
+    clampCamera();
 }
+
+function clampCamera() {
+    const mapPixelWidth = MAP_SIZE * TILE_SIZE * camera.zoom;
+    const mapPixelHeight = MAP_SIZE * TILE_SIZE * camera.zoom;
+
+    const minCamX = canvas.width - mapPixelWidth;
+    const minCamY = canvas.height - mapPixelHeight;
+
+    if (camera.x > 0) camera.x = 0;
+    if (camera.y > 0) camera.y = 0;
+    if (camera.x < minCamX) camera.x = minCamX;
+    if (camera.y < minCamY) camera.y = minCamY;
+}
+
 window.addEventListener('resize', resizeCanvas);
+
+// --- MOUSE EVENTS ---
+canvas.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    const zoomSpeed = 0.1;
+    const oldZoom = camera.zoom;
+
+    if (e.deltaY < 0) {
+        camera.zoom += zoomSpeed;
+        if (camera.zoom > 3) camera.zoom = 3; // Maximálne priblíženie
+    } else {
+        camera.zoom -= zoomSpeed;
+        if (camera.zoom < minZoom) camera.zoom = minZoom; // Zastaví odďaľovanie
+    }
+
+    const mouseX = e.clientX;
+    const mouseY = e.clientY - document.getElementById('battle-ui').offsetHeight;
+    
+    camera.x -= (mouseX - camera.x) * (camera.zoom / oldZoom - 1);
+    camera.y -= (mouseY - camera.y) * (camera.zoom / oldZoom - 1);
+
+    clampCamera();
+}, { passive: false });
+
+canvas.addEventListener('mousedown', (e) => {
+    isDragging = true;
+    lastMouse = { x: e.clientX, y: e.clientY };
+});
+
+window.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+    const dx = e.clientX - lastMouse.x;
+    const dy = e.clientY - lastMouse.y;
+    camera.x += dx;
+    camera.y += dy;
+    clampCamera();
+    lastMouse = { x: e.clientX, y: e.clientY };
+});
+
+window.addEventListener('mouseup', () => isDragging = false);
 
 function initBattle() {
     const urlParams = new URLSearchParams(window.location.search);
@@ -60,10 +127,8 @@ function generateBattleMap() {
         for (let x = 0; x < MAP_SIZE; x++) {
             let n = (noise.perlin2(x * NOISE_ZOOM, y * NOISE_ZOOM) + 1) / 2;
             let tileImg = imgLand; 
-            
             let distanceToCenter = Math.sqrt(Math.pow(x - centerPoint, 2) + Math.pow(y - centerPoint, 2));
 
-            // Lesy len na okrajoch
             if (distanceToCenter > 6 && n < 0.5) {
                 let chance = Math.random();
                 if (chance < 0.05) tileImg = imgForest4; 
@@ -71,11 +136,9 @@ function generateBattleMap() {
                 else if (chance < 0.30) tileImg = imgForest3; 
                 else tileImg = imgForest2; 
             }
-
             mapData[y][x] = { img: tileImg };
         }
     }
-
     requestAnimationFrame(drawLoop);
 }
 
@@ -84,68 +147,37 @@ function spawnArmies(playerCount, enemyCount) {
     playerArmy = [];
     enemyArmy = [];
 
-    const minZ = TILE_SIZE * 4; // Bezpečný okraj zhora/zdola
+    const minZ = TILE_SIZE * 4; 
     const maxZ = TILE_SIZE * (MAP_SIZE - 4);
 
-    // Hráč: Ľavá strana mapy (od 2. do 8. bloku)
     const playerMinX = TILE_SIZE * 2;
-    const playerMaxX = TILE_SIZE * 8;
+    const playerMaxX = TILE_SIZE * 6;
 
     for(let i = 0; i < playerCount; i++) {
         playerArmy.push({
             x: playerMinX + Math.random() * (playerMaxX - playerMinX),
-            y: minZ + Math.random() * (maxZ - minZ)
+            y: minZ + Math.random() * (maxZ - minZ),
+            hp: 100,
+            speed: 2 + Math.random() * 2,
+            damage: 1 + Math.random() * 2
         });
     }
 
-    // Nepriateľ: Pravá strana mapy
-    const enemyMinX = TILE_SIZE * (MAP_SIZE - 8);
+    const enemyMinX = TILE_SIZE * (MAP_SIZE - 6);
     const enemyMaxX = TILE_SIZE * (MAP_SIZE - 2);
 
     for(let i = 0; i < enemyCount; i++) {
         enemyArmy.push({
             x: enemyMinX + Math.random() * (enemyMaxX - enemyMinX),
-            y: minZ + Math.random() * (maxZ - minZ)
+            y: minZ + Math.random() * (maxZ - minZ),
+            hp: 100,
+            speed: 2 + Math.random() * 2,
+            damage: 1 + Math.random() * 2
         });
     }
 }
 
-// --- RENDERING LOOP ---
-function drawLoop() {
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
-    ctx.translate(Math.floor(camera.x), Math.floor(camera.y));
-    ctx.scale(camera.zoom, camera.zoom);
-    ctx.imageSmoothingEnabled = false; 
-
-    // Vykreslenie mapy
-    for (let y = 0; y < MAP_SIZE; y++) {
-        for (let x = 0; x < MAP_SIZE; x++) {
-            const tile = mapData[y][x];
-            if (tile.img) {
-                ctx.drawImage(tile.img, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE + 1, TILE_SIZE + 1);
-            }
-        }
-    }
-
-    // Vykreslenie hráčovej armády (naľavo)
-    playerArmy.forEach(unit => {
-        ctx.drawImage(imgPeasant, unit.x, unit.y, TILE_SIZE / 2, TILE_SIZE / 2); // Zmenšené na 50% veľkosti bloku
-    });
-
-    // Vykreslenie nepriateľa (napravo) + zafarbenie na červeno nech sa odlíšia
-    enemyArmy.forEach(unit => {
-        ctx.save();
-        ctx.filter = 'sepia(1) hue-rotate(-50deg) saturate(3)'; // Červenkastý filter
-        ctx.drawImage(imgPeasant, unit.x, unit.y, TILE_SIZE / 2, TILE_SIZE / 2);
-        ctx.restore();
-    });
-
-    requestAnimationFrame(drawLoop);
-}
-
-// --- BATTLE LOGIC ---
+// --- BATTLE UI LOGIC ---
 function confirmArmy() {
     let troopCount = parseInt(document.getElementById('troop-input').value);
     
@@ -161,38 +193,105 @@ function confirmArmy() {
     if (enemyCount < 1) enemyCount = 1;
     document.getElementById('enemy-count').innerText = "Enemy: " + enemyCount;
     
-    console.log("Army ready. Starting phase: " + battlePhase);
-
-    // Naspawnujeme armády podla zadaných počtov
     spawnArmies(troopCount, enemyCount);
 
-    if (battlePhase === "field") runFieldBattle();
-    else if (battlePhase === "attack") runAttack();
-    else if (battlePhase === "defend") runDefend();
+    document.getElementById('start-clash-btn').style.display = 'block';
 }
 
-function runFieldBattle() {
-    console.log("⚔️ Field battle started!");
-    
-    setTimeout(() => {
-        let isVictory = Math.random() > 0.5; 
-        
-        if (isVictory) {
+function startClash() {
+    document.getElementById('start-clash-btn').style.display = 'none';
+    isFighting = true; 
+}
+
+// --- ACTUAL COMBAT LOGIC ---
+function updateCombat() {
+    processArmyActions(playerArmy, enemyArmy);
+    processArmyActions(enemyArmy, playerArmy);
+
+    playerArmy = playerArmy.filter(u => u.hp > 0);
+    enemyArmy = enemyArmy.filter(u => u.hp > 0);
+
+    document.getElementById('army-count').innerText = "Your Army: " + playerArmy.length;
+    document.getElementById('enemy-count').innerText = "Enemy: " + enemyArmy.length;
+
+    if (enemyArmy.length === 0 && playerArmy.length > 0) {
+        isFighting = false;
+        setTimeout(() => {
             alert("Victory! The enemy is falling back to their Castle Keep. Moving to ATTACK phase!");
             window.location.href = "battle.html?type=attack"; 
-        } else {
+        }, 1000);
+    } else if (playerArmy.length === 0 && enemyArmy.length > 0) {
+        isFighting = false;
+        setTimeout(() => {
             alert("Defeat! The enemy broke through your lines. Moving to DEFEND phase!");
-            window.location.href = "battle.html?type=defend";
+            window.location.href = "battle.html?type=defend"; 
+        }, 1000);
+    }
+}
+
+function processArmyActions(attackers, defenders) {
+    if (defenders.length === 0) return;
+
+    attackers.forEach(unit => {
+        let closest = null;
+        let minDist = Infinity;
+        
+        defenders.forEach(def => {
+            let dist = Math.hypot(def.x - unit.x, def.y - unit.y);
+            if (dist < minDist) {
+                minDist = dist;
+                closest = def;
+            }
+        });
+
+        if (closest) {
+            if (minDist > 15) { 
+                let dx = closest.x - unit.x;
+                let dy = closest.y - unit.y;
+                let length = Math.hypot(dx, dy);
+                unit.x += (dx / length) * unit.speed;
+                unit.y += (dy / length) * unit.speed;
+            } else {
+                closest.hp -= unit.damage;
+            }
         }
-    }, 3000); // 3 sekundy na obzretie poľa, potom vyskočí výsledok
+    });
 }
 
-function runAttack() {
-    console.log("🔥 Attacking the Castle Keep!");
-}
+// --- RENDERING LOOP ---
+function drawLoop() {
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    ctx.translate(Math.floor(camera.x), Math.floor(camera.y));
+    ctx.scale(camera.zoom, camera.zoom);
+    ctx.imageSmoothingEnabled = false; 
 
-function runDefend() {
-    console.log("🛡️ Defending the city!");
+    for (let y = 0; y < MAP_SIZE; y++) {
+        for (let x = 0; x < MAP_SIZE; x++) {
+            const tile = mapData[y][x];
+            if (tile.img) {
+                ctx.drawImage(tile.img, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE + 1, TILE_SIZE + 1);
+            }
+        }
+    }
+
+    if (isFighting) {
+        updateCombat();
+    }
+
+    playerArmy.forEach(unit => {
+        ctx.drawImage(imgPeasant, unit.x, unit.y, NPC_W, NPC_H);
+    });
+
+    enemyArmy.forEach(unit => {
+        ctx.save();
+        ctx.filter = 'sepia(1) hue-rotate(-50deg) saturate(3)'; 
+        ctx.drawImage(imgPeasant, unit.x, unit.y, NPC_W, NPC_H);
+        ctx.restore();
+    });
+
+    requestAnimationFrame(drawLoop);
 }
 
 function retreat() {
@@ -201,7 +300,6 @@ function retreat() {
     }
 }
 
-// Počkáme, kým sa načítajú základné obrázky, až potom spustíme bitku
 let loadedImages = 0;
 function onImageLoad() {
     loadedImages++;
