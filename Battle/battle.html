@@ -27,10 +27,18 @@
     <div id="army-setup-modal">
         <h2>Prepare for Battle</h2>
         <p>How many soldiers will you send?</p>
-        <input type="number" id="troop-input" min="1" max="100" value="10">
-        <p>Available: <span id="max-troops">100</span></p>
+        <input type="number" id="troop-input" min="1" max="400" value="50">
+        <p>Available: <span id="max-troops">400</span></p>
         <br>
         <button onclick="confirmArmy()">To Battle!</button>
+    </div>
+    
+    <div id="fx-container"></div>
+
+    <div id="ability-bar">
+        <button class="ability-btn" id="btn-explosion" onclick="castExplosion()">
+            💥 Explosion
+        </button>
     </div>
 
     <canvas id="battleCanvas"></canvas>

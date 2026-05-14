@@ -7,14 +7,26 @@ let playerArmy = [];
 let enemyArmy = [];
 let isFighting = false; 
 
-// --- CONSTANTS ---
+// --- CONSTANTS & ROLES ---
 const NPC_W = 10; 
 const NPC_H = 15; 
 const MAP_SIZE = 25; 
 const TILE_SIZE = 128;
 let mapData = []; 
 let camera = { x: 0, y: 0, zoom: 1 }; 
-let minZoom = 1; // Minimálny zoom, aby neboli čierne okraje
+let minZoom = 1; 
+
+// Štatistiky pre jednotlivé roly (hp, rýchlosť, poškodenie, dostrel, vizuálna veľkosť)
+const ROLES = {
+    MILITIA: { name: 'Militia', hp: 60, speed: 2.5, damage: 2, range: 15, sizeScale: 0.9 },
+    GUARDS: { name: 'Guards', hp: 120, speed: 1.5, damage: 4, range: 15, sizeScale: 1.1 },
+    MEN_AT_ARMS: { name: 'Men-at-Arms', hp: 100, speed: 2.0, damage: 5, range: 15, sizeScale: 1.1 },
+    RANGED: { name: 'Ranged', hp: 50, speed: 2.0, damage: 3, range: 120, sizeScale: 1.0 }, // Útočia z diaľky
+    KNIGHT: { name: 'Knight', hp: 150, speed: 1.8, damage: 8, range: 18, sizeScale: 1.3 },
+    CAVALRY: { name: 'Cavalry', hp: 130, speed: 4.5, damage: 6, range: 20, sizeScale: 1.8 }, // Rýchli a veľkí
+    WAR_MACHINE: { name: 'War-Machine', hp: 300, speed: 0.5, damage: 15, range: 150, sizeScale: 2.5 }, // Pomalí, veľkí, útok z diaľky
+    KING: { name: 'King', hp: 500, speed: 1.2, damage: 12, range: 20, sizeScale: 1.5 } // Boss
+};
 
 // --- CAMERA CONTROLS ---
 let isDragging = false;
@@ -28,17 +40,18 @@ const imgForest3 = new Image(); imgForest3.src = '../Resources/Tiles/Img_Forest3
 const imgForest4 = new Image(); imgForest4.src = '../Resources/Tiles/Img_Forest4.png';
 const imgPeasant = new Image(); imgPeasant.src = '../Resources/NPCs/peasant.png';
 
-// --- INITIALIZATION ---
 function resizeCanvas() {
     canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight - document.getElementById('battle-ui').offsetHeight;
+    // Odpočítame horný aj dolný panel
+    const topUI = document.getElementById('battle-ui').offsetHeight;
+    const botUI = document.getElementById('ability-bar').offsetHeight;
+    canvas.height = window.innerHeight - topUI - botUI;
     
     const scaleX = canvas.width / (MAP_SIZE * TILE_SIZE);
     const scaleY = canvas.height / (MAP_SIZE * TILE_SIZE);
-    minZoom = Math.max(scaleX, scaleY); // Zabezpečí, že mapa vždy zakryje celú obrazovku
+    minZoom = Math.max(scaleX, scaleY); 
     
     camera.zoom = minZoom; 
-    
     centerCamera();
 }
 
@@ -71,10 +84,10 @@ canvas.addEventListener('wheel', (e) => {
 
     if (e.deltaY < 0) {
         camera.zoom += zoomSpeed;
-        if (camera.zoom > 3) camera.zoom = 3; // Maximálne priblíženie
+        if (camera.zoom > 3) camera.zoom = 3; 
     } else {
         camera.zoom -= zoomSpeed;
-        if (camera.zoom < minZoom) camera.zoom = minZoom; // Zastaví odďaľovanie
+        if (camera.zoom < minZoom) camera.zoom = minZoom; 
     }
 
     const mouseX = e.clientX;
@@ -143,37 +156,48 @@ function generateBattleMap() {
 }
 
 // --- SPAWN ARMIES ---
+function getRandomRole() {
+    // Vráti náhodnú rolu okrem Kráľa (Kráľ sa spawnuje vždy len 1x garantovane)
+    const roleKeys = Object.keys(ROLES).filter(k => k !== 'KING');
+    const randomKey = roleKeys[Math.floor(Math.random() * roleKeys.length)];
+    return ROLES[randomKey];
+}
+
+function createUnit(minX, maxX, minZ, maxZ, roleDef) {
+    return {
+        x: minX + Math.random() * (maxX - minX),
+        y: minZ + Math.random() * (maxZ - minZ),
+        role: roleDef.name,
+        hp: roleDef.hp,
+        maxHp: roleDef.hp,
+        speed: roleDef.speed + (Math.random() * 0.4 - 0.2), // Drobná odchýlka rýchlosti
+        damage: roleDef.damage,
+        range: roleDef.range,
+        sizeScale: roleDef.sizeScale
+    };
+}
+
 function spawnArmies(playerCount, enemyCount) {
     playerArmy = [];
     enemyArmy = [];
 
     const minZ = TILE_SIZE * 4; 
     const maxZ = TILE_SIZE * (MAP_SIZE - 4);
-
     const playerMinX = TILE_SIZE * 2;
     const playerMaxX = TILE_SIZE * 6;
-
-    for(let i = 0; i < playerCount; i++) {
-        playerArmy.push({
-            x: playerMinX + Math.random() * (playerMaxX - playerMinX),
-            y: minZ + Math.random() * (maxZ - minZ),
-            hp: 100,
-            speed: 2 + Math.random() * 2,
-            damage: 1 + Math.random() * 2
-        });
-    }
-
     const enemyMinX = TILE_SIZE * (MAP_SIZE - 6);
     const enemyMaxX = TILE_SIZE * (MAP_SIZE - 2);
 
-    for(let i = 0; i < enemyCount; i++) {
-        enemyArmy.push({
-            x: enemyMinX + Math.random() * (enemyMaxX - enemyMinX),
-            y: minZ + Math.random() * (maxZ - minZ),
-            hp: 100,
-            speed: 2 + Math.random() * 2,
-            damage: 1 + Math.random() * 2
-        });
+    // Hráč: 1x King, zvyšok náhodné roly
+    playerArmy.push(createUnit(playerMinX, playerMaxX, minZ, maxZ, ROLES.KING));
+    for(let i = 1; i < playerCount; i++) {
+        playerArmy.push(createUnit(playerMinX, playerMaxX, minZ, maxZ, getRandomRole()));
+    }
+
+    // Nepriateľ: 1x King, zvyšok náhodné roly
+    enemyArmy.push(createUnit(enemyMinX, enemyMaxX, minZ, maxZ, ROLES.KING));
+    for(let i = 1; i < enemyCount; i++) {
+        enemyArmy.push(createUnit(enemyMinX, enemyMaxX, minZ, maxZ, getRandomRole()));
     }
 }
 
@@ -186,11 +210,18 @@ function confirmArmy() {
         return;
     }
     
+    // Obmedzenie na 400
+    if (troopCount > 400) {
+        troopCount = 400;
+        document.getElementById('troop-input').value = 400;
+    }
+    
     document.getElementById('army-setup-modal').style.display = 'none';
     document.getElementById('army-count').innerText = "Your Army: " + troopCount; 
     
-    let enemyCount = troopCount + Math.floor(Math.random() * 10 - 5);
+    let enemyCount = troopCount + Math.floor(Math.random() * 20 - 10);
     if (enemyCount < 1) enemyCount = 1;
+    if (enemyCount > 400) enemyCount = 400;
     document.getElementById('enemy-count').innerText = "Enemy: " + enemyCount;
     
     spawnArmies(troopCount, enemyCount);
@@ -245,14 +276,17 @@ function processArmyActions(attackers, defenders) {
         });
 
         if (closest) {
-            if (minDist > 15) { 
+            // Ak je mimo dosah, beží k cieľu
+            if (minDist > unit.range) { 
                 let dx = closest.x - unit.x;
                 let dy = closest.y - unit.y;
                 let length = Math.hypot(dx, dy);
                 unit.x += (dx / length) * unit.speed;
                 unit.y += (dy / length) * unit.speed;
             } else {
-                closest.hp -= unit.damage;
+                // Ak je v dosahu (Range), zastaví sa a útočí
+                // Násobíme 0.1, lebo sa to volá 60-krát za sekundu (aby nezomreli hneď)
+                closest.hp -= unit.damage * 0.1;
             }
         }
     });
@@ -280,14 +314,20 @@ function drawLoop() {
         updateCombat();
     }
 
+    // Vykreslenie tvojej armády s dynamickou veľkosťou podľa roly
     playerArmy.forEach(unit => {
-        ctx.drawImage(imgPeasant, unit.x, unit.y, NPC_W, NPC_H);
+        const w = NPC_W * unit.sizeScale;
+        const h = NPC_H * unit.sizeScale;
+        ctx.drawImage(imgPeasant, unit.x - w/2, unit.y - h/2, w, h);
     });
 
+    // Vykreslenie nepriateľa s červeným filtrom a dynamickou veľkosťou
     enemyArmy.forEach(unit => {
+        const w = NPC_W * unit.sizeScale;
+        const h = NPC_H * unit.sizeScale;
         ctx.save();
         ctx.filter = 'sepia(1) hue-rotate(-50deg) saturate(3)'; 
-        ctx.drawImage(imgPeasant, unit.x, unit.y, NPC_W, NPC_H);
+        ctx.drawImage(imgPeasant, unit.x - w/2, unit.y - h/2, w, h);
         ctx.restore();
     });
 
@@ -306,6 +346,41 @@ function onImageLoad() {
     if (loadedImages === 2) {
         initBattle();
     }
+}
+// --- ABILITIES ---
+function castExplosion() {
+    if (!isFighting) {
+        alert("Wait for the battle to start!");
+        return;
+    }
+    
+    const btn = document.getElementById('btn-explosion');
+    btn.disabled = true; // Zablokuje tlačidlo (cooldown)
+    
+    // 1. Znížime HP všetkým nepriateľom na polovicu
+    enemyArmy.forEach(enemy => {
+        enemy.hp /= 2;
+    });
+    
+    console.log("🔥 EXPLOSION CASTED! Enemy HP halved!");
+
+    // 2. Vytvorenie a vykreslenie GIFu
+    const fxContainer = document.getElementById('fx-container');
+    const explosionImg = document.createElement('img');
+    
+    // Pridáme náhodný string za URL, aby prehliadač prehral GIF odznova a nenačítaval statickú kópiu
+    explosionImg.src = '../Resources/Abilities/Explosion.gif?' + new Date().getTime(); 
+    explosionImg.className = 'explosion-gif';
+    
+    fxContainer.appendChild(explosionImg);
+    
+    // 3. Po určitom čase GIF zmažeme a znovu povolíme abilitu (cooldown)
+    setTimeout(() => {
+        fxContainer.innerHTML = ''; // Zmaže výbuch
+        
+        // Ak chceš abilitu použiť viackrát za bitku, odkomentuj ďalší riadok, inak zostane použitá len 1x.
+        // btn.disabled = false; 
+    }, 2000); // 2 sekundy (2000 ms) - uprav podľa toho, aký dlhý máš ten GIF
 }
 
 imgLand.onload = onImageLoad;
