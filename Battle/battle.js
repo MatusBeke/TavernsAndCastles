@@ -6,6 +6,7 @@ let battlePhase = "field";
 let playerArmy = [];
 let enemyArmy = [];
 let isFighting = false; 
+let isTargetingExplosion = false;
 
 // --- CONSTANTS & ROLES ---
 const NPC_W = 10; 
@@ -113,6 +114,62 @@ window.addEventListener('mousemove', (e) => {
     clampCamera();
     lastMouse = { x: e.clientX, y: e.clientY };
 });
+
+// Nový event pre kliknutie (vyhodenie ability)
+canvas.addEventListener('click', (e) => {
+    if (isTargetingExplosion) {
+        // Vypočítame reálnu pozíciu na mape (musíme zohľadniť zoom a posun kamery)
+        const rect = canvas.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+
+        // Toto sú presné súradnice v tvojom hernom svete
+        const worldX = (mouseX / camera.zoom) - (camera.x / camera.zoom);
+        const worldY = (mouseY / camera.zoom) - (camera.y / camera.zoom);
+
+        // Odpálime výbuch!
+        executeExplosion(worldX, worldY, e.clientX, e.clientY);
+        
+        // Vypneme zameriavanie
+        isTargetingExplosion = false;
+        canvas.classList.remove('targeting-mode');
+    }
+});
+
+// Samotné vykonanie výbuchu na zadaných súradniciach
+function executeExplosion(worldX, worldY, screenX, screenY) {
+    const btn = document.getElementById('btn-explosion');
+    btn.disabled = true; // Zablokuje tlačidlo
+    
+    // 1. Znížime HP nepriateľom, ktorí sú blízko (v okruhu napr. 200 pixelov)
+    const explosionRadius = 200; 
+    enemyArmy.forEach(enemy => {
+        let dist = Math.hypot(enemy.x - worldX, enemy.y - worldY);
+        if (dist <= explosionRadius) {
+            enemy.hp /= 2; // Polovica HP dole
+        }
+    });
+
+    console.log("🔥 BOOM na súradniciach X:" + Math.floor(worldX) + " Y:" + Math.floor(worldY));
+
+    // 2. Vykreslenie GIFu presne tam, kde si klikol myšou
+    const fxContainer = document.getElementById('fx-container');
+    const explosionImg = document.createElement('img');
+    
+    explosionImg.src = '../Resources/Abilities/Explosion.gif?' + new Date().getTime(); 
+    explosionImg.className = 'explosion-gif';
+    explosionImg.style.left = screenX + 'px';
+    explosionImg.style.top = screenY + 'px';
+    
+    fxContainer.appendChild(explosionImg);
+    
+    // 3. Zmazanie GIFu po dvoch sekundách
+    setTimeout(() => {
+        if (fxContainer.contains(explosionImg)) {
+            fxContainer.removeChild(explosionImg);
+        }
+    }, 2000); 
+}
 
 window.addEventListener('mouseup', () => isDragging = false);
 
@@ -374,13 +431,22 @@ function castExplosion() {
     
     fxContainer.appendChild(explosionImg);
     
-    // 3. Po určitom čase GIF zmažeme a znovu povolíme abilitu (cooldown)
     setTimeout(() => {
-        fxContainer.innerHTML = ''; // Zmaže výbuch
+        fxContainer.innerHTML = ''; 
         
-        // Ak chceš abilitu použiť viackrát za bitku, odkomentuj ďalší riadok, inak zostane použitá len 1x.
-        // btn.disabled = false; 
-    }, 2000); // 2 sekundy (2000 ms) - uprav podľa toho, aký dlhý máš ten GIF
+        btn.disabled = false; 
+    }, 500); // 2 sekundy (2000 ms) - uprav podľa toho, aký dlhý máš ten GIF
+}
+// --- ABILITIES ---
+function castExplosion() {
+    if (!isFighting) {
+        alert("Wait for the battle to start!");
+        return;
+    }
+    
+    isTargetingExplosion = true;
+    canvas.classList.add('targeting-mode'); // Zmení myšku na zameriavač
+    console.log("Klikni na mapu, kam chceš hodiť výbuch!");
 }
 
 imgLand.onload = onImageLoad;

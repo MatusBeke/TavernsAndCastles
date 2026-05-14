@@ -184,14 +184,19 @@ body {
     height: 100%;
     pointer-events: none; /* Aby si mohol klikať cez výbuch na mapu */
     z-index: 50; 
-    display: flex;
-    justify-content: flex-end; /* Posunie výbuch napravo nad nepriateľov */
-    align-items: center;
+    overflow: hidden;
 }
 
 .explosion-gif {
-    width: 500px; /* Ak je výbuch malý, tu mu pridaj veľkosť */
-    margin-right: 15%; /* Posunie ho trochu od pravého okraja */
+    position: absolute;
+    width: 125px; /* 4x menšie ako predtým (500 / 4) */
+    height: 125px;
+    transform: translate(-50%, -50%); /* Vycentruje GIF presne na stred kliknutia */
+}
+
+/* Zmení kurzor na zameriavač, keď klikneš na abilitu */
+.targeting-mode {
+    cursor: crosshair !important;
 }
 
 @keyframes pulse {
