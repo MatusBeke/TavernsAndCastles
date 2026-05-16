@@ -197,18 +197,34 @@ document.getElementById('gameCanvas').addEventListener('click', (e) => {
             newImg.src = tile.buildingSrc;
             tile.buildingImg = newImg;
 
-            if (selectedBuildingImg.src.includes('Cabin') || selectedBuildingImg.src.includes('House')) 
-            {
-                if (shouldSpawnNPC(selectedBuildingSrc)) {
-                    createNPC(gridX, gridY);
-                    currentPop += 1;
+            if (bSrc.includes('Cabin') || bSrc.includes('House')) {
+                if (shouldSpawnNPC(bSrc)) {
+                    let spawnCount = 0;
+
+                    if (bSrc.includes('Large Log Cabin')) {
+                        spawnCount = 4;
+                    } else if (bSrc.includes('Town House')) {
+                        spawnCount = 6;
+                    } else if (bSrc.includes('Stone House')) {
+                        spawnCount = 2;
+                    } else if (bSrc.includes('Log Cabin')) {
+                        spawnCount = 1;
+                    }
+
+                    // Loop to spawn the correct amount
+                    for (let i = 0; i < spawnCount; i++) {
+                        createNPC(gridX, gridY);
+                    }
+                    
+                    currentPop += spawnCount;
                     updateHUD();
                 }
             }
             
             currentGold -= currentBuildingPrice;
             updateHUD();
-            finalizeBuild(canvas); return; 
+            finalizeBuild(canvas);
+            return; 
         }
 
         if (selectedBuildingImg) {
