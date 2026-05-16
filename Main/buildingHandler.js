@@ -197,28 +197,18 @@ document.getElementById('gameCanvas').addEventListener('click', (e) => {
             newImg.src = tile.buildingSrc;
             tile.buildingImg = newImg;
 
-            if (bSrc.includes('Cabin') || bSrc.includes('House')) {
-                if (shouldSpawnNPC(bSrc)) {
-                    let spawnCount = 0;
-
-                    if (bSrc.includes('Large Log Cabin')) {
-                        spawnCount = 4;
-                    } else if (bSrc.includes('Town House')) {
-                        spawnCount = 6;
-                    } else if (bSrc.includes('Stone House')) {
-                        spawnCount = 2;
-                    } else if (bSrc.includes('Log Cabin')) {
-                        spawnCount = 1;
-                    }
-
-                    // Loop to spawn the correct amount
-                    for (let i = 0; i < spawnCount; i++) {
-                        createNPC(gridX, gridY);
-                    }
-                    
-                    currentPop += spawnCount;
+            if (selectedBuildingImg.src.includes('Cabin') || selectedBuildingImg.src.includes('House')) 
+            {
+                console.log(`Built ${selectedBuildingSrc} at (${gridX}, ${gridY})`);
+                if (shouldSpawnNPC(selectedBuildingSrc)) {
+                    createNPC(gridX, gridY);
+                    currentPop += 1;
                     updateHUD();
                 }
+                console.log(`Total NPCs: ${activeNPCs.length}`);
+                activeNPCs.forEach(element => {
+                    console.log(`NPC ${element.name} lives at (${element.homeX}, ${element.homeY}) with profession ${element.profession}.`);
+                });
             }
             
             currentGold -= currentBuildingPrice;
@@ -274,7 +264,34 @@ document.getElementById('gameCanvas').addEventListener('click', (e) => {
             if (selectedBuildingImg.src.includes('Cabin') || selectedBuildingImg.src.includes('House')) 
             {
                 console.log(`Built ${selectedBuildingSrc} at (${gridX}, ${gridY})`);
-                if (shouldSpawnNPC(selectedBuildingSrc)) {
+                if (selectedBuildingImg.src.includes('StoneHouse')) {
+                    createNPC(gridX, gridY);
+                    createNPC(gridX, gridY);
+                    currentPop += 2;
+                    updateHUD();
+                }
+                else if (selectedBuildingImg.src.includes('LargeLogCabin'))
+                {
+                    createNPC(gridX, gridY);
+                    createNPC(gridX, gridY);
+                    createNPC(gridX, gridY);
+                    createNPC(gridX, gridY);
+                    currentPop += 4;
+                    updateHUD();
+                }
+                else if (selectedBuildingImg.src.includes('TownHouse'))
+                {
+                    createNPC(gridX, gridY);
+                    createNPC(gridX, gridY);
+                    createNPC(gridX, gridY);
+                    createNPC(gridX, gridY);
+                    createNPC(gridX, gridY);
+                    createNPC(gridX, gridY);
+                    currentPop += 6;
+                    updateHUD();
+                }
+                else 
+                {
                     createNPC(gridX, gridY);
                     currentPop += 1;
                     updateHUD();
