@@ -13,6 +13,8 @@ var camera = { x: 0, y: 0, zoom: 1 };
     let isDragging = false;
     let lastMouse = { x: 0, y: 0 };
 
+    let lastTime = performance.now();
+
     // Parametre generovania mapy cez noise
     let waterLevel = 0.4;
     let landLevel = 0.75;
@@ -140,91 +142,121 @@ var camera = { x: 0, y: 0, zoom: 1 };
     }
 
     // Hlavna vykreslovacia funkcia (kresli mapu kazdy fram/snimok)
-    function draw() {
-        // Resetovanie platna pred novym kreslenim
-        ctx.setTransform(1, 0, 0, 1, 0, 0);
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
-        // Aplikovanie pozicie a zoomu kamery
-        ctx.translate(Math.floor(camera.x), Math.floor(camera.y));
-        ctx.scale(camera.zoom, camera.zoom);
-        ctx.imageSmoothingEnabled = false; // Aby boli pixely ostre
+    function draw(timestamp) {
+            // Vypočítame delta čas v sekundách (napr. 0.016 pre 60 FPS)
+            let deltaTime = (timestamp - lastTime) / 1000;
+            lastTime = timestamp;
 
-        clampCamera();
+            // Ochrana pred obrovským skokom (napr. ak hráč minimalizuje prehliadač alebo prepne kartu)
+            if (deltaTime > 0.1) deltaTime = 0.1;
 
-        // Kreslenie samotnych blokov a budov z pamate
-        for (let y = 0; y < MAP_SIZE; y++) {
-            for (let x = 0; x < MAP_SIZE; x++) {
-                const tile = mapData[y][x];
-                
-                if (tile.img) {
-                    ctx.drawImage(tile.img, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE + 1, TILE_SIZE + 1);
-                }
-                // Logika progress baru pri tazeni lesa
-                if (tile.isClearing) {
-                    const now = Date.now();
-                    const elapsed = now - tile.clearStartTime;
-                    const progress = Math.min(elapsed / tile.clearDuration, 1);
+            // Resetovanie platna pred novym kreslenim
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Aplikovanie pozicie a zoomu kamery
+            ctx.translate(Math.floor(camera.x), Math.floor(camera.y));
+            ctx.scale(camera.zoom, camera.zoom);
+            ctx.imageSmoothingEnabled = false; // Aby boli pixely ostre
 
-                    // Vykreslenie slidera nad tile
-                    const barWidth = TILE_SIZE * 0.8;
-                    const barHeight = 10;
-                    const barX = x * TILE_SIZE + (TILE_SIZE - barWidth) / 2;
-                    const barY = y * TILE_SIZE + 10;
+            clampCamera();
 
-                    ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
-                    ctx.fillRect(barX, barY, barWidth, barHeight);
-                    ctx.fillStyle = "#d9ff00";
-                    ctx.fillRect(barX, barY, barWidth * progress, barHeight);
+            // Kreslenie samotnych blokov a budov z pamate
+            for (let y = 0; y < MAP_SIZE; y++) {
+                for (let x = 0; x < MAP_SIZE; x++) {
+                    const tile = mapData[y][x];
+                    
+                    if (tile.img) {
+                        ctx.drawImage(tile.img, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE + 1, TILE_SIZE + 1);
+                    }
+                    // Logika progress baru pri tazeni lesa
+                    if (tile.isClearing) {
+                        const now = Date.now();
+                        const elapsed = now - tile.clearStartTime;
+                        const progress = Math.min(elapsed / tile.clearDuration, 1);
 
-                    // Kontrola, či už ubehlo 10 sekúnd
-                    if (progress >= 1) {
-                        tile.isClearing = false;
-                        if (tile.clearingSound)
-                        {
-                            tile.clearingSound.pause();
-                            tile.clearingSound.currentTime = 0;
-                            tile.clearingSound = null;
+                        // Vykreslenie slidera nad tile
+                        const barWidth = TILE_SIZE * 0.8;
+                        const barHeight = 10;
+                        const barX = x * TILE_SIZE + (TILE_SIZE - barWidth) / 2;
+                        const barY = y * TILE_SIZE + 10;
+
+                        ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+                        ctx.fillRect(barX, barY, barWidth, barHeight);
+                        ctx.fillStyle = "#d9ff00";
+                        ctx.fillRect(barX, barY, barWidth * progress, barHeight);
+
+                        // Kontrola, či už ubehlo 10 sekúnd
+                        if (progress >= 1) {
+                            tile.isClearing = false;
+                            if (tile.clearingSound) {
+                                tile.clearingSound.pause();
+                                tile.clearingSound.currentTime = 0;
+                                tile.clearingSound = null;
+                            }
+                            const landImg = new Image();
+                            landImg.src = '../Resources/Tiles/Img_LandDefault.png';
+                            tile.img = landImg;
+                            
+                            currentWood += 50;
+                            updateHUD();
                         }
-                        const landImg = new Image();
-                        landImg.src = '../Resources/Tiles/Img_LandDefault.png';
-                        tile.img = landImg;
-                        
-                        currentWood += 50;
-                        updateHUD();
+                    }
+
+                    if (tile.buildingImg) {
+                        ctx.drawImage(tile.buildingImg, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
                     }
                 }
-
-                if (tile.buildingImg) {
-                    ctx.drawImage(tile.buildingImg, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-                }
             }
+
+            // --- ZMENA TU: Aktualizácia a vykreslenie NPCs s odovzdaním deltaTime ---
+            activeNPCs.forEach(npc => {
+                npc.update(deltaTime); // <--- Odovzdávame delta čas pre plynulý posun
+            });
+
+            activeNPCs.forEach(npc => {
+                npc.draw(ctx);
+            });
+
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
+
+            // Podmienka pre noc
+            if (typeof currentHour !== 'undefined' && (currentHour >= 20 || currentHour < 6)) {
+                ctx.save();     
+                let opacity = getNightIntensity();
+                ctx.fillStyle = `rgba(0, 0, 40, ${opacity})`;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);     
+                ctx.restore();
+            }
+            
+            // Znovu zavolame kreslenie pre dalsi snimok
+            requestAnimationFrame(draw);
         }
 
-        // Kreslenie a update NPCs
-        activeNPCs.forEach(npc => {
-            npc.update(); 
-        });
-
-        activeNPCs.forEach(npc => {
-            npc.draw(ctx);
-        });
-
-        ctx.setTransform(1, 0, 0, 1, 0, 0);
-
-        // Podmienka pre noc
-        if (typeof currentHour !== 'undefined' && (currentHour >= 20 || currentHour < 6)) {
-            ctx.save();     
-            let opacity = getNightIntensity();
-            ctx.fillStyle = `rgba(0, 0, 40, ${opacity})`;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);     
-            ctx.restore();
-        }
-        
-
-        // Znovu zavolame kreslenie pre dalsi snimok
-        requestAnimationFrame(draw);
+    //Plynuly prechod medzi dnom a nocou podla aktualneho casu
+    function getNightIntensity() {
+        if (currentHour === 18) return 0.1;
+        if (currentHour === 19) return 0.3;
+        if (currentHour >= 20 || currentHour < 5) return 0.55; // Uplna noc
+        if (currentHour === 5) return 0.2;
+        return 0; // Deň
     }
+
+    // ... (ostatné event listenery na wheel, mousedown, mousemove zostávajú rovnaké) ...
+
+    // Ked sa nacita prvy zakladny obrazok mapy, inicializujeme ju
+    imgMountains.onload = () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        // Vycentrovanie kamery presne na stred mapy pri starte
+        camera.x = (canvas.width / 2) - (MAP_SIZE * TILE_SIZE / 2);
+        camera.y = (canvas.height / 2) - (MAP_SIZE * TILE_SIZE / 2);
+
+        // --- ZMENA TU: Resetujeme čas tesne pred spustením slučky ---
+        lastTime = performance.now(); 
+        initMap();
+    };
 
     //Plynuly prechod medzi dnom a nocou podla aktualneho casu
     function getNightIntensity() {
