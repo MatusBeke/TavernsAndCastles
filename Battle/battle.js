@@ -1,5 +1,6 @@
 const canvas = document.getElementById('battleCanvas');
 const ctx = canvas.getContext('2d');
+const sfxExplosion = new Audio('../Resources/SFX/SFX_Explosion.mp3');
 
 // --- BATTLE VARIABLES ---
 let battlePhase = "field";
@@ -32,16 +33,16 @@ const imgCavalry = new Image(); imgCavalry.src = '../Resources/NPCs/NPC_Cavalry.
 const imgKing = new Image(); imgKing.src = '../Resources/NPCs/NPC_King.png';
 const imgWarMachine = new Image(); imgWarMachine.src = '../Resources/NPCs/NPC_Guard.png'; 
 
-// Pridané špecifické w (šírka) a h (výška) pre každú rolu
+// Rýchlosť (speed) je znížená 10-násobne
 const ROLES = {
-    MILITIA: { name: 'Militia', hp: 60, speed: 2.5, damage: 2, range: 15, img: imgMilitia, w: 7.5, h: 15 },
-    GUARDS: { name: 'Guards', hp: 120, speed: 1.5, damage: 4, range: 15, img: imgGuard, w: 7.5, h: 15 },
-    MEN_AT_ARMS: { name: 'Men-at-Arms', hp: 100, speed: 2.0, damage: 5, range: 15, img: imgMenAtArms, w: 7.5, h: 15 },
-    RANGED: { name: 'Ranged', hp: 50, speed: 2.0, damage: 3, range: 120, img: imgRanged, w: 7.5, h: 15 },
-    KNIGHT: { name: 'Knight', hp: 150, speed: 1.8, damage: 8, range: 18, img: imgKnight, w: 7.5, h: 15 },
-    CAVALRY: { name: 'Cavalry', hp: 130, speed: 4.5, damage: 6, range: 20, img: imgCavalry, w: 30, h: 30 }, // Zmenené na 64x64
-    WAR_MACHINE: { name: 'War-Machine', hp: 300, speed: 0.5, damage: 15, range: 150, img: imgWarMachine, w: 7.5, h: 15 },
-    KING: { name: 'King', hp: 500, speed: 1.2, damage: 12, range: 20, img: imgKing, w: 7.5, h: 15 }
+    MILITIA: { name: 'Militia', hp: 60, speed: 0.25, damage: 2, range: 15, img: imgMilitia, w: 7.5, h: 15 },
+    GUARDS: { name: 'Guards', hp: 120, speed: 0.15, damage: 4, range: 15, img: imgGuard, w: 7.5, h: 15 },
+    MEN_AT_ARMS: { name: 'Men-at-Arms', hp: 100, speed: 0.20, damage: 5, range: 15, img: imgMenAtArms, w: 7.5, h: 15 },
+    RANGED: { name: 'Ranged', hp: 50, speed: 0.20, damage: 3, range: 120, img: imgRanged, w: 7.5, h: 15 },
+    KNIGHT: { name: 'Knight', hp: 150, speed: 0.18, damage: 8, range: 18, img: imgKnight, w: 7.5, h: 15 },
+    CAVALRY: { name: 'Cavalry', hp: 130, speed: 0.45, damage: 6, range: 20, img: imgCavalry, w: 30, h: 30 }, 
+    WAR_MACHINE: { name: 'War-Machine', hp: 300, speed: 0.05, damage: 15, range: 150, img: imgWarMachine, w: 7.5, h: 15 },
+    KING: { name: 'King', hp: 500, speed: 0.12, damage: 12, range: 20, img: imgKing, w: 7.5, h: 15 }
 };
 
 // --- CAMERA CONTROLS ---
@@ -195,13 +196,15 @@ function createUnit(minX, maxX, minZ, maxZ, roleDef) {
         role: roleDef.name,
         hp: roleDef.hp,
         maxHp: roleDef.hp,
-        speed: roleDef.speed + (Math.random() * 0.4 - 0.2),
+        // Odchýlka rýchlosti znížená kvôli menšej základnej rýchlosti
+        speed: roleDef.speed + (Math.random() * 0.04 - 0.02), 
         damage: roleDef.damage,
         range: roleDef.range,
         img: roleDef.img,
-        w: roleDef.w, // Priradenie šírky podľa roly
-        h: roleDef.h, // Priradenie výšky podľa roly
-        cooldown: 0
+        w: roleDef.w, 
+        h: roleDef.h, 
+        cooldown: 0,
+        target: null 
     };
 }
 
@@ -291,46 +294,89 @@ function updateCombat() {
     }
 }
 
+function findBestTarget(unit, defenders) {
+    let bestTarget = null;
+    let bestScore = -Infinity;
+
+    defenders.forEach(def => {
+        let distSq = (unit.x - def.x) ** 2 + (unit.y - def.y) ** 2;
+        let dist = Math.sqrt(distSq);
+        
+        let score = -dist; 
+
+        if (unit.role === 'Cavalry' && def.role === 'Ranged') score += 500; 
+        if (unit.role === 'War-Machine' && (def.role === 'King' || def.role === 'Cavalry')) score += 800; 
+        if (unit.role === 'Men-at-Arms' && def.role === 'Guards') score += 200; 
+
+        if (score > bestScore) {
+            bestScore = score;
+            bestTarget = def;
+        }
+    });
+
+    return bestTarget;
+}
+
 function processArmyActions(attackers, defenders) {
     if (defenders.length === 0) return;
 
     attackers.forEach(unit => {
-        let closest = null;
-        let minDist = Infinity;
-        
-        defenders.forEach(def => {
-            let dist = Math.hypot(def.x - unit.x, def.y - unit.y);
-            if (dist < minDist) {
-                minDist = dist;
-                closest = def;
+        if (!unit.target || unit.target.hp <= 0) {
+            unit.target = findBestTarget(unit, defenders);
+        }
+
+        let sepX = 0, sepY = 0;
+        let neighbors = 0;
+        attackers.forEach(friend => {
+            if (friend !== unit) {
+                let dx = unit.x - friend.x;
+                let dy = unit.y - friend.y;
+                let distSq = dx*dx + dy*dy;
+                if (distSq < 225) { 
+                    sepX += dx * 0.05;
+                    sepY += dy * 0.05;
+                    neighbors++;
+                }
             }
         });
 
-        if (closest) {
-            if (minDist > unit.range) {
-                let dx = closest.x - unit.x;
-                let dy = closest.y - unit.y;
+        if (unit.target) {
+            let dist = Math.hypot(unit.target.x - unit.x, unit.target.y - unit.y);
+
+            if (dist > unit.range) {
+                let dx = unit.target.x - unit.x;
+                let dy = unit.target.y - unit.y;
                 let length = Math.hypot(dx, dy);
-                unit.x += (dx / length) * unit.speed;
-                unit.y += (dy / length) * unit.speed;
+                
+                unit.x += (dx / length) * unit.speed + sepX;
+                unit.y += (dy / length) * unit.speed + sepY;
             } else {
                 if (unit.cooldown <= 0) {
+                    let damageMultiplier = 0.8 + (Math.random() * 0.4); 
+                    let isCrit = Math.random() < 0.1;
+                    if (isCrit) damageMultiplier *= 1.5;
+
+                    let finalDamage = unit.damage * damageMultiplier;
+
                     if (unit.range > 20) {
                         projectiles.push({
                             x: unit.x,
                             y: unit.y,
-                            target: closest,
-                            damage: unit.damage,
-                            speed: 6,
+                            target: unit.target,
+                            damage: finalDamage,
+                            speed: 1.5, // Znížená rýchlosť projektilov
                             isBoulder: unit.role === 'War-Machine'
                         });
                     } else {
-                        closest.hp -= unit.damage;
+                        unit.target.hp -= finalDamage;
                     }
-                    unit.cooldown = 60; 
+                    
+                    // Zvýšený cooldown pre pomalšie bitky (cca 1.5 až 2.5 sekundy pauza)
+                    unit.cooldown = 100 + Math.random() * 50; 
                 }
             }
         }
+        
         if (unit.cooldown > 0) unit.cooldown--;
     });
 }
@@ -358,7 +404,7 @@ function updateProjectiles() {
     }
 }
 
-//ABILITIES LOGIC
+// --- ABILITIES LOGIC ---
 function castExplosion() {
     if (!isFighting) {
         alert("Wait for the battle to start!");
@@ -374,6 +420,9 @@ function executeExplosion(worldX, worldY, screenX, screenY) {
         btn.disabled = true;
         btn.innerText = "RECHARGING...";
     }
+
+    sfxExplosion.currentTime = 0; 
+    sfxExplosion.play();
     
     const explosionRadius = 200;
     enemyArmy.forEach(enemy => {
@@ -408,7 +457,7 @@ function executeExplosion(worldX, worldY, screenX, screenY) {
     }, 5000);
 }
 
-//RENDERING LOOP
+// --- RENDERING LOOP ---
 function drawLoop() {
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -432,7 +481,6 @@ function drawLoop() {
 
     function drawHP(unit, w, h, color) {
         const hpPercent = Math.max(unit.hp / unit.maxHp, 0);
-        // Prispôsobí šírku HP baru veľkosti jednotky
         const barW = w > 20 ? w : w * 1.5; 
         const barH = 3;
         const barX = unit.x - barW / 2;
@@ -445,7 +493,6 @@ function drawLoop() {
     }
 
     playerArmy.forEach(unit => {
-        // Vykresľovanie používa dynamickú výšku a šírku každej roly (unit.w a unit.h)
         ctx.drawImage(unit.img, unit.x - unit.w/2, unit.y - unit.h/2, unit.w, unit.h);
         drawHP(unit, unit.w, unit.h, "#00ff00");
     });
