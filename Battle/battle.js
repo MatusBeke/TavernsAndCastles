@@ -397,7 +397,7 @@ function executeExplosion(worldX, worldY, screenX, screenY) {
             if (fxContainer.contains(explosionImg)) {
                 fxContainer.removeChild(explosionImg);
             }
-        }, 2000);
+        }, 450);
     }
 
     setTimeout(() => {
