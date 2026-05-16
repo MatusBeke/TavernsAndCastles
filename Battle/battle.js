@@ -402,6 +402,7 @@ function executeExplosion(worldX, worldY, screenX, screenY) {
 }
 
 // --- RENDERING LOOP ---
+// --- RENDERING LOOP ---
 function drawLoop() {
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -424,11 +425,26 @@ function drawLoop() {
         updateCombat();
     }
 
+    // Pomocná funkcia na vykreslenie HP baru nad hlavou
+    function drawHP(unit, w, h, color) {
+        const hpPercent = Math.max(unit.hp / unit.maxHp, 0); // Zabezpečí, že HP nejde do mínusu
+        const barW = w * 1.5; // Bar bude o kúsok širší ako samotná postava
+        const barH = 3; // Hrúbka baru
+        const barX = unit.x - barW / 2;
+        const barY = unit.y - h / 2 - 6; // Posunuté 6 pixelov nad hlavu
+
+        ctx.fillStyle = "#333"; // Tmavé pozadie baru (chýbajúce HP)
+        ctx.fillRect(barX, barY, barW, barH);
+        ctx.fillStyle = color; // Aktuálne HP
+        ctx.fillRect(barX, barY, barW * hpPercent, barH);
+    }
+
     // Vykreslenie tvojej armády
     playerArmy.forEach(unit => {
         const w = NPC_W * unit.sizeScale;
         const h = NPC_H * unit.sizeScale;
         ctx.drawImage(imgPeasant, unit.x - w/2, unit.y - h/2, w, h);
+        drawHP(unit, w, h, "#00ff00"); // Zelený bar
     });
 
     // Vykreslenie nepriateľa
@@ -439,6 +455,7 @@ function drawLoop() {
         ctx.filter = 'sepia(1) hue-rotate(-50deg) saturate(3)';
         ctx.drawImage(imgPeasant, unit.x - w/2, unit.y - h/2, w, h);
         ctx.restore();
+        drawHP(unit, w, h, "#ff0000"); // Červený bar
     });
 
     // Vykreslenie projektilov (Šípy a balvany)
