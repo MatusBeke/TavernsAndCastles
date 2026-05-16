@@ -4,6 +4,23 @@ const npcList = document.getElementById("citizens-list");
 let jobs = ["peasant", "miner", "lumberman", "guard"];
 let selectedNPC = null;
 
+let peasantImage = "../Resources/NPCs/NPC_Peasant.png";
+let minerImage = "../Resources/NPCs/NPC_Miner.png";
+let lumbermanImage = "../Resources/NPCs/NPC_Lumberman.png";
+let guardImage = "../Resources/NPCs/NPC_Guard.png";
+
+const npcImages = {
+    "peasant": new Image(),
+    "miner": new Image(),
+    "lumberman": new Image(),
+    "guard": new Image()
+};
+
+npcImages["peasant"].src = peasantImage;
+npcImages["miner"].src = minerImage;
+npcImages["lumberman"].src = lumbermanImage;
+npcImages["guard"].src = guardImage;
+
 // Default, kým sa nenačíta JSON s menami NPCs
 let npcNamesData = {
     npc_names: {
@@ -90,31 +107,31 @@ class NPC {
 }
 
     draw(ctx) {
-        if (this.profession === "peasant") {
-            ctx.fillStyle = "#8B4513"; 
-        }
-        else if (this.profession === "miner") {
-            ctx.fillStyle = "#7b7e81"; 
-        }
-        else if (this.profession === "lumberman") {
-            ctx.fillStyle = "#228B22"; 
-        }
-        else if (this.profession === "guard") {
-            ctx.fillStyle = "#800000"; 
-        }
-        else {
-            ctx.fillStyle = "red"; 
-        }
-        ctx.fillRect(this.x, this.y, this.width, this.height);
-        
-        ctx.strokeStyle = "white";
-        ctx.lineWidth = 2;
-        ctx.strokeRect(this.x, this.y, this.width, this.height);
+        // Find the preloaded image based on the NPC's profession
+        const npcImgAsset = npcImages[this.profession];
 
+        // If the image is loaded, draw it. Otherwise, use your old color box as a fallback
+        if (npcImgAsset && npcImgAsset.complete && npcImgAsset.naturalWidth !== 0) {
+            ctx.drawImage(npcImgAsset, this.x, this.y, this.width, this.height);
+        } else {
+            // Fallback colors
+            if (this.profession === "peasant") { ctx.fillStyle = "#8B4513"; }
+            else if (this.profession === "miner") { ctx.fillStyle = "#7b7e81"; }
+            else if (this.profession === "lumberman") { ctx.fillStyle = "#228B22"; }
+            else if (this.profession === "guard") { ctx.fillStyle = "#800000"; }
+            else { ctx.fillStyle = "red"; }
+            
+            ctx.fillRect(this.x, this.y, this.width, this.height);
+            
+            ctx.strokeStyle = "white";
+            ctx.lineWidth = 2;
+            ctx.strokeRect(this.x, this.y, this.width, this.height);
+        }
+
+        // --- Text elements remain exactly the same ---
         ctx.fillStyle = "white";     
         ctx.font = "bold 12px Arial"; 
         ctx.textAlign = "center"; 
-        ctx.fontFamily = "Arial"; 
         
         ctx.fillText(this.name, this.x + this.width / 2, this.y - 22);
         
@@ -176,12 +193,20 @@ function createNPC(homeX, homeY, profession = "peasant", img = null, workplaceX 
 
     const randomProfession = jobs[Math.floor(Math.random() * jobs.length)];
 
+    let assignedImgPath = img;
+    if (!assignedImgPath) {
+        if (randomProfession === "peasant") assignedImgPath = peasantImage;
+        else if (randomProfession === "miner") assignedImgPath = minerImage;
+        else if (randomProfession === "lumberman") assignedImgPath = lumbermanImage;
+        else if (randomProfession === "guard") assignedImgPath = guardImage;
+    }
+
 
     var npc = new NPC(
         activeNPCs.length + 1, 
         fullName, 
         profession = randomProfession,  
-        img,
+        assignedImgPath,
         homeX, 
         homeY, 
         100, 
@@ -323,5 +348,10 @@ function changeWork()
     const profession = npc.profession;
 
     npc.profession = jobs[Math.floor(Math.random() * jobs.length)];
+
+    if (npc.profession === "peasant") npc.img = peasantImage;
+    else if (npc.profession === "miner") npc.img = minerImage;
+    else if (npc.profession === "lumberman") npc.img = lumbermanImage;
+    else if (npc.profession === "guard") npc.img = guardImage;
     assignWork();
 }
