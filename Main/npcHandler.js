@@ -50,8 +50,14 @@ class NPC {
         this.homeX = homeX;
         this.homeY = homeY;
         
+        // Aktuálna pozícia v pixeloch
         this.x = (homeX * TILE_SIZE) + (TILE_SIZE / 2) - 10;
         this.y = (homeY * TILE_SIZE) + (TILE_SIZE / 2) - 15;
+        
+        // --- NOVÉ: Cieľová pozícia, kam NPC smeruje ---
+        this.targetX = this.x;
+        this.targetY = this.y;
+        this.speed = 50; // Rýchlosť pohybu (pixelov za sekundu)
         
         this.width = 8;
         this.height = 16;
@@ -64,57 +70,71 @@ class NPC {
         this.workplaceY = workplaceY;
 
         this.state = "Wandering";
-
         this.lastUpdate = Date.now();
-
-        //setInterval(this.wander.bind(this), 1000);
-
     }
 
-    update() {
-    const teraz = Date.now();
+    // UPDATE metóda teraz prijíma deltaTime (sekundy od posledného snímku, napr. 0.016 pri 60 FPS)
+    update(deltaTime) {
+        const teraz = Date.now();
 
-    // Časová kontrola pre aktualizáciu stavu NPC
-    if (teraz - this.lastUpdate > 1000) {
-        
-        if (currentHour >= 20 || currentHour < 6) 
-        {
-            this.inHome();
-        }
-        else if(currentHour >= 7 && currentHour < 16)
-        {
-            if (this.workplaceX !== null && this.workplaceY !== null) 
-            {
-                this.work();
+        // 1. Logika rozhodovania (spúšťa sa raz za sekundu)
+        if (teraz - this.lastUpdate > 1000) {
+            if (currentHour >= 20 || currentHour < 6) {
+                this.inHome();
             }
-            else 
-            {
-                this.state = "Wandering";
+            else if (currentHour >= 7 && currentHour < 16) {
+                if (this.workplaceX !== null && this.workplaceY !== null) {
+                    this.work();
+                } else {
+                    this.wander();
+                }
+            } 
+            else {
+                if (this.state === "In Home") {
+                    this.state = "Wandering";
+                }
                 this.wander();
             }
-        } 
-        else 
-        {
-            if (this.state === "In Home") 
-            {
-                this.state = "Wandering";
-            }
-            this.wander();
+            this.lastUpdate = teraz;
         }
 
-        this.lastUpdate = teraz;
+        // 2. FYZICKÝ PLYNULÝ POHYB (Spúšťa sa každý snímok)
+        this.moveToTarget(deltaTime);
     }
-}
+
+    // Pomocná metóda na plynulý presun k cieľu
+    moveToTarget(deltaTime) {
+        let dx = this.targetX - this.x;
+        let dy = this.targetY - this.y;
+        let distance = Math.sqrt(dx * dx + dy * dy);
+
+        // Ak sme dostatočne blízko cieľa (menej ako 1 pixel), zastavíme sa na presnej pozícii
+        if (distance < 1) {
+            this.x = this.targetX;
+            this.y = this.targetY;
+            return;
+        }
+
+        // Vypočítame krok pre tento snímok na základe rýchlosti a času
+        let step = this.speed * deltaTime;
+
+        // Ak je krok väčší ako zostávajúca vzdialenosť, skočíme priamo do cieľa
+        if (step >= distance) {
+            this.x = this.targetX;
+            this.y = this.targetY;
+        } else {
+            // Normalizácia vektora a posun o plynulý krok
+            this.x += (dx / distance) * step;
+            this.y += (dy / distance) * step;
+        }
+    }
 
     draw(ctx) {
-        // Find the preloaded image based on the NPC's profession
         const npcImgAsset = npcImages[this.profession];
 
-        // If the image is loaded, draw it. Otherwise, use your old color box as a fallback
         if (npcImgAsset && npcImgAsset.complete && npcImgAsset.naturalWidth !== 0) {
             ctx.drawImage(npcImgAsset, this.x, this.y, this.width, this.height);
         } else {
-            // Fallback colors
             if (this.profession === "peasant") { ctx.fillStyle = "#8B4513"; }
             else if (this.profession === "miner") { ctx.fillStyle = "#7b7e81"; }
             else if (this.profession === "lumberman") { ctx.fillStyle = "#228B22"; }
@@ -122,17 +142,14 @@ class NPC {
             else { ctx.fillStyle = "red"; }
             
             ctx.fillRect(this.x, this.y, this.width, this.height);
-            
             ctx.strokeStyle = "white";
             ctx.lineWidth = 2;
             ctx.strokeRect(this.x, this.y, this.width, this.height);
         }
 
-        // --- Text elements remain exactly the same ---
-        ctx.fillStyle = "white";     
+        ctx.fillStyle = "white";     
         ctx.font = "bold 12px Arial"; 
         ctx.textAlign = "center"; 
-        
         ctx.fillText(this.name, this.x + this.width / 2, this.y - 22);
         
         ctx.font = "10px Arial";
@@ -140,6 +157,7 @@ class NPC {
         ctx.fillText(`State: ${this.state}`, this.x + this.width / 2, this.y - 8);
     }
 
+    // Zmena: Už nemením x/y priamo, len určím NOVÝ CIEĽ (target)
     wander() {
         this.state = "Wandering";
         const moveRange = 32; 
@@ -147,17 +165,18 @@ class NPC {
         let dx = (Math.random() * moveRange * 2) - moveRange;
         let dy = (Math.random() * moveRange * 2) - moveRange;
 
-        this.x += dx;
-        this.y += dy;
+        let newTargetX = this.x + dx;
+        let newTargetY = this.y + dy;
 
-        this.x = Math.max(0, Math.min(this.x, MAP_SIZE * TILE_SIZE));
-        this.y = Math.max(0, Math.min(this.y, MAP_SIZE * TILE_SIZE));
+        // Obyčajné ohraničenie mapy
+        this.targetX = Math.max(0, Math.min(newTargetX, MAP_SIZE * TILE_SIZE));
+        this.targetY = Math.max(0, Math.min(newTargetY, MAP_SIZE * TILE_SIZE));
     }
 
     returnHome() {
         this.state = "Returning Home";
-        this.x = (this.homeX * TILE_SIZE) + (TILE_SIZE / 2) - 10;
-        this.y = (this.homeY * TILE_SIZE) + (TILE_SIZE / 2) - 15;
+        this.targetX = (this.homeX * TILE_SIZE) + (TILE_SIZE / 2) - 10;
+        this.targetY = (this.homeY * TILE_SIZE) + (TILE_SIZE / 2) - 15;
     }
 
     idle() {
@@ -166,8 +185,8 @@ class NPC {
 
     inHome() {
         this.state = "In Home";
-        this.x = (this.homeX * TILE_SIZE) + (TILE_SIZE / 2) - 10;
-        this.y = (this.homeY * TILE_SIZE) + (TILE_SIZE / 2) - 15;
+        this.targetX = (this.homeX * TILE_SIZE) + (TILE_SIZE / 2) - 10;
+        this.targetY = (this.homeY * TILE_SIZE) + (TILE_SIZE / 2) - 15;
     }
 
     work(){
@@ -175,8 +194,8 @@ class NPC {
         const randomOffsetX = Math.random() * (TILE_SIZE - 20);
         const randomOffsetY = Math.random() * (TILE_SIZE - 20);
         if (this.workplaceX !== null && this.workplaceY !== null) {
-            this.x = (this.workplaceX * TILE_SIZE) + randomOffsetX;
-            this.y = (this.workplaceY * TILE_SIZE) + randomOffsetY;
+            this.targetX = (this.workplaceX * TILE_SIZE) + randomOffsetX;
+            this.targetY = (this.workplaceY * TILE_SIZE) + randomOffsetY;
         }
     }
 }
