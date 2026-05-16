@@ -5,33 +5,16 @@ const ctx = canvas.getContext('2d');
 let battlePhase = "field";
 let playerArmy = [];
 let enemyArmy = [];
-let projectiles = []; // Pridané pre šípy a balvany
+let projectiles = [];
 let isFighting = false;
 let isTargetingExplosion = false;
 
 // --- CONSTANTS & ROLES ---
-const NPC_W = 10;
-const NPC_H = 15;
 const MAP_SIZE = 25;
 const TILE_SIZE = 128;
 let mapData = [];
 let camera = { x: 0, y: 0, zoom: 1 };
 let minZoom = 1;
-
-const ROLES = {
-    MILITIA: { name: 'Militia', hp: 60, speed: 2.5, damage: 2, range: 15, sizeScale: 0.9 },
-    GUARDS: { name: 'Guards', hp: 120, speed: 1.5, damage: 4, range: 15, sizeScale: 1.1 },
-    MEN_AT_ARMS: { name: 'Men-at-Arms', hp: 100, speed: 2.0, damage: 5, range: 15, sizeScale: 1.1 },
-    RANGED: { name: 'Ranged', hp: 50, speed: 2.0, damage: 3, range: 120, sizeScale: 1.0 },
-    KNIGHT: { name: 'Knight', hp: 150, speed: 1.8, damage: 8, range: 18, sizeScale: 1.3 },
-    CAVALRY: { name: 'Cavalry', hp: 130, speed: 4.5, damage: 6, range: 20, sizeScale: 1.8 },
-    WAR_MACHINE: { name: 'War-Machine', hp: 300, speed: 0.5, damage: 15, range: 150, sizeScale: 2.5 },
-    KING: { name: 'King', hp: 500, speed: 1.2, damage: 12, range: 20, sizeScale: 1.5 }
-};
-
-// --- CAMERA CONTROLS ---
-let isDragging = false;
-let lastMouse = { x: 0, y: 0 };
 
 // --- IMAGES ---
 const imgLand = new Image(); imgLand.src = '../Resources/Tiles/Img_LandDefault.png';
@@ -39,9 +22,32 @@ const imgForest1 = new Image(); imgForest1.src = '../Resources/Tiles/Img_Forest1
 const imgForest2 = new Image(); imgForest2.src = '../Resources/Tiles/Img_Forest2.png';
 const imgForest3 = new Image(); imgForest3.src = '../Resources/Tiles/Img_Forest3.png';
 const imgForest4 = new Image(); imgForest4.src = '../Resources/Tiles/Img_Forest4.png';
-const imgPeasant = new Image(); imgPeasant.src = '../Resources/NPCs/peasant.png';
 
-// --- INITIALIZATION ---
+const imgMilitia = new Image(); imgMilitia.src = '../Resources/NPCs/NPC_Peasant.png';
+const imgGuard = new Image(); imgGuard.src = '../Resources/NPCs/NPC_Guard.png';
+const imgMenAtArms = new Image(); imgMenAtArms.src = '../Resources/NPCs/NPC_ManAtArms.png';
+const imgRanged = new Image(); imgRanged.src = '../Resources/NPCs/NPC_Ranged.png';
+const imgKnight = new Image(); imgKnight.src = '../Resources/NPCs/NPC_Knight.png';
+const imgCavalry = new Image(); imgCavalry.src = '../Resources/NPCs/NPC_Cavalry.png';
+const imgKing = new Image(); imgKing.src = '../Resources/NPCs/NPC_King.png';
+const imgWarMachine = new Image(); imgWarMachine.src = '../Resources/NPCs/NPC_Guard.png'; 
+
+// Pridané špecifické w (šírka) a h (výška) pre každú rolu
+const ROLES = {
+    MILITIA: { name: 'Militia', hp: 60, speed: 2.5, damage: 2, range: 15, img: imgMilitia, w: 7.5, h: 15 },
+    GUARDS: { name: 'Guards', hp: 120, speed: 1.5, damage: 4, range: 15, img: imgGuard, w: 7.5, h: 15 },
+    MEN_AT_ARMS: { name: 'Men-at-Arms', hp: 100, speed: 2.0, damage: 5, range: 15, img: imgMenAtArms, w: 7.5, h: 15 },
+    RANGED: { name: 'Ranged', hp: 50, speed: 2.0, damage: 3, range: 120, img: imgRanged, w: 7.5, h: 15 },
+    KNIGHT: { name: 'Knight', hp: 150, speed: 1.8, damage: 8, range: 18, img: imgKnight, w: 7.5, h: 15 },
+    CAVALRY: { name: 'Cavalry', hp: 130, speed: 4.5, damage: 6, range: 20, img: imgCavalry, w: 30, h: 30 }, // Zmenené na 64x64
+    WAR_MACHINE: { name: 'War-Machine', hp: 300, speed: 0.5, damage: 15, range: 150, img: imgWarMachine, w: 7.5, h: 15 },
+    KING: { name: 'King', hp: 500, speed: 1.2, damage: 12, range: 20, img: imgKing, w: 7.5, h: 15 }
+};
+
+// --- CAMERA CONTROLS ---
+let isDragging = false;
+let lastMouse = { x: 0, y: 0 };
+
 function resizeCanvas() {
     canvas.width = window.innerWidth;
     const topUI = document.getElementById('battle-ui') ? document.getElementById('battle-ui').offsetHeight : 0;
@@ -117,7 +123,6 @@ window.addEventListener('mousemove', (e) => {
 
 window.addEventListener('mouseup', () => isDragging = false);
 
-// Event pre zameriavanie Ability
 canvas.addEventListener('click', (e) => {
     if (isTargetingExplosion) {
         const rect = canvas.getBoundingClientRect();
@@ -193,7 +198,9 @@ function createUnit(minX, maxX, minZ, maxZ, roleDef) {
         speed: roleDef.speed + (Math.random() * 0.4 - 0.2),
         damage: roleDef.damage,
         range: roleDef.range,
-        sizeScale: roleDef.sizeScale,
+        img: roleDef.img,
+        w: roleDef.w, // Priradenie šírky podľa roly
+        h: roleDef.h, // Priradenie výšky podľa roly
         cooldown: 0
     };
 }
@@ -308,7 +315,7 @@ function processArmyActions(attackers, defenders) {
                 unit.y += (dy / length) * unit.speed;
             } else {
                 if (unit.cooldown <= 0) {
-                    if (unit.range > 20) { // Útok na diaľku (letí projektil)
+                    if (unit.range > 20) {
                         projectiles.push({
                             x: unit.x,
                             y: unit.y,
@@ -320,7 +327,7 @@ function processArmyActions(attackers, defenders) {
                     } else {
                         closest.hp -= unit.damage;
                     }
-                    unit.cooldown = 60; // 1 sekunda cooldown
+                    unit.cooldown = 60; 
                 }
             }
         }
@@ -351,7 +358,7 @@ function updateProjectiles() {
     }
 }
 
-// --- ABILITIES LOGIC ---
+//ABILITIES LOGIC
 function castExplosion() {
     if (!isFighting) {
         alert("Wait for the battle to start!");
@@ -390,7 +397,7 @@ function executeExplosion(worldX, worldY, screenX, screenY) {
             if (fxContainer.contains(explosionImg)) {
                 fxContainer.removeChild(explosionImg);
             }
-        }, 2000);
+        }, 450);
     }
 
     setTimeout(() => {
@@ -401,8 +408,7 @@ function executeExplosion(worldX, worldY, screenX, screenY) {
     }, 5000);
 }
 
-// --- RENDERING LOOP ---
-// --- RENDERING LOOP ---
+//RENDERING LOOP
 function drawLoop() {
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -411,7 +417,6 @@ function drawLoop() {
     ctx.scale(camera.zoom, camera.zoom);
     ctx.imageSmoothingEnabled = false;
 
-    // Vykreslenie mapy
     for (let y = 0; y < MAP_SIZE; y++) {
         for (let x = 0; x < MAP_SIZE; x++) {
             const tile = mapData[y][x];
@@ -425,40 +430,34 @@ function drawLoop() {
         updateCombat();
     }
 
-    // Pomocná funkcia na vykreslenie HP baru nad hlavou
     function drawHP(unit, w, h, color) {
-        const hpPercent = Math.max(unit.hp / unit.maxHp, 0); // Zabezpečí, že HP nejde do mínusu
-        const barW = w * 1.5; // Bar bude o kúsok širší ako samotná postava
-        const barH = 3; // Hrúbka baru
+        const hpPercent = Math.max(unit.hp / unit.maxHp, 0);
+        // Prispôsobí šírku HP baru veľkosti jednotky
+        const barW = w > 20 ? w : w * 1.5; 
+        const barH = 3;
         const barX = unit.x - barW / 2;
-        const barY = unit.y - h / 2 - 6; // Posunuté 6 pixelov nad hlavu
+        const barY = unit.y - h / 2 - 6;
 
-        ctx.fillStyle = "#333"; // Tmavé pozadie baru (chýbajúce HP)
+        ctx.fillStyle = "#333";
         ctx.fillRect(barX, barY, barW, barH);
-        ctx.fillStyle = color; // Aktuálne HP
+        ctx.fillStyle = color;
         ctx.fillRect(barX, barY, barW * hpPercent, barH);
     }
 
-    // Vykreslenie tvojej armády
     playerArmy.forEach(unit => {
-        const w = NPC_W * unit.sizeScale;
-        const h = NPC_H * unit.sizeScale;
-        ctx.drawImage(imgPeasant, unit.x - w/2, unit.y - h/2, w, h);
-        drawHP(unit, w, h, "#00ff00"); // Zelený bar
+        // Vykresľovanie používa dynamickú výšku a šírku každej roly (unit.w a unit.h)
+        ctx.drawImage(unit.img, unit.x - unit.w/2, unit.y - unit.h/2, unit.w, unit.h);
+        drawHP(unit, unit.w, unit.h, "#00ff00");
     });
 
-    // Vykreslenie nepriateľa
     enemyArmy.forEach(unit => {
-        const w = NPC_W * unit.sizeScale;
-        const h = NPC_H * unit.sizeScale;
         ctx.save();
         ctx.filter = 'sepia(1) hue-rotate(-50deg) saturate(3)';
-        ctx.drawImage(imgPeasant, unit.x - w/2, unit.y - h/2, w, h);
+        ctx.drawImage(unit.img, unit.x - unit.w/2, unit.y - unit.h/2, unit.w, unit.h);
         ctx.restore();
-        drawHP(unit, w, h, "#ff0000"); // Červený bar
+        drawHP(unit, unit.w, unit.h, "#ff0000");
     });
 
-    // Vykreslenie projektilov (Šípy a balvany)
     projectiles.forEach(p => {
         ctx.fillStyle = p.isBoulder ? "#555" : "#fff";
         ctx.beginPath();
@@ -475,13 +474,6 @@ function retreat() {
     }
 }
 
-let loadedImages = 0;
-function onImageLoad() {
-    loadedImages++;
-    if (loadedImages === 2) {
-        initBattle();
-    }
-}
-
-imgLand.onload = onImageLoad;
-imgPeasant.onload = onImageLoad;
+window.onload = () => {
+    initBattle();
+};
