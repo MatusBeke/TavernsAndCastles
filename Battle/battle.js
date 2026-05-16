@@ -33,7 +33,10 @@ const imgCavalry = new Image(); imgCavalry.src = '../Resources/NPCs/NPC_Cavalry.
 const imgKing = new Image(); imgKing.src = '../Resources/NPCs/NPC_King.png';
 const imgWarMachine = new Image(); imgWarMachine.src = '../Resources/NPCs/NPC_Guard.png'; 
 
-// Rýchlosť (speed) je znížená 10-násobne
+// --- NOVÝ OBRÁZOK ŠÍPU ---
+const imgArrow = new Image(); imgArrow.src = '../Resources/Arrow.png';
+
+// Štatistiky (Rýchlosť je znížená 10-násobne pre pomalší boj)
 const ROLES = {
     MILITIA: { name: 'Militia', hp: 60, speed: 0.25, damage: 2, range: 15, img: imgMilitia, w: 7.5, h: 15 },
     GUARDS: { name: 'Guards', hp: 120, speed: 0.15, damage: 4, range: 15, img: imgGuard, w: 7.5, h: 15 },
@@ -196,7 +199,6 @@ function createUnit(minX, maxX, minZ, maxZ, roleDef) {
         role: roleDef.name,
         hp: roleDef.hp,
         maxHp: roleDef.hp,
-        // Odchýlka rýchlosti znížená kvôli menšej základnej rýchlosti
         speed: roleDef.speed + (Math.random() * 0.04 - 0.02), 
         damage: roleDef.damage,
         range: roleDef.range,
@@ -364,14 +366,13 @@ function processArmyActions(attackers, defenders) {
                             y: unit.y,
                             target: unit.target,
                             damage: finalDamage,
-                            speed: 1.5, // Znížená rýchlosť projektilov
+                            speed: 1.5, // Znížená rýchlosť projektilov pre pomalší let
                             isBoulder: unit.role === 'War-Machine'
                         });
                     } else {
                         unit.target.hp -= finalDamage;
                     }
                     
-                    // Zvýšený cooldown pre pomalšie bitky (cca 1.5 až 2.5 sekundy pauza)
                     unit.cooldown = 100 + Math.random() * 50; 
                 }
             }
@@ -505,11 +506,36 @@ function drawLoop() {
         drawHP(unit, unit.w, unit.h, "#ff0000");
     });
 
+    // --- LOGIKA VYKRESLOVANIA PROJEKTILOV (UPRAVENÁ PRE OBRÁZOK) ---
     projectiles.forEach(p => {
-        ctx.fillStyle = p.isBoulder ? "#555" : "#fff";
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.isBoulder ? 4 : 2, 0, Math.PI * 2);
-        ctx.fill();
+        if (p.isBoulder) {
+            // Kamene (boulders) necháme ako sivé krúžky, kým nebude nakreslený šuter
+            ctx.fillStyle = "#555";
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
+            ctx.fill();
+        } else {
+            // Šípy (arrows) - použijeme imgArrow a otočíme ho k cieľu
+            
+            // Vypočítame uhol letu na základe pohybu k cieľu
+            let dx = p.target.x - p.x;
+            let dy = p.target.y - p.y;
+            let angle = Math.atan2(dy, dx);
+
+            // Nastavíme pevnú vizuálnu veľkosť pre šíp na mape (napr. 10x4 pixelov)
+            let arrowWidth = 10;
+            let arrowHeight = 4;
+
+            ctx.save(); // Uložíme aktuálny stav canvasu
+            ctx.translate(p.x, p.y); // Posunieme stred kreslenia na pozíciu šípu
+            ctx.rotate(angle); // Otočíme canvas o uhol letu
+            ctx.imageSmoothingEnabled = false; // Udržíme pixel-art ostrý
+
+            // Vykreslíme obrázok vycentrovaný na bod p.x, p.y
+            ctx.drawImage(imgArrow, -arrowWidth / 2, -arrowHeight / 2, arrowWidth, arrowHeight);
+            
+            ctx.restore(); // Vrátime stav canvasu späť
+        }
     });
 
     requestAnimationFrame(drawLoop);
