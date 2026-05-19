@@ -50,14 +50,13 @@ class NPC {
         this.homeX = homeX;
         this.homeY = homeY;
         
-        // Aktuálna pozícia v pixeloch
+        // Aktuálna pozícia
         this.x = (homeX * TILE_SIZE) + (TILE_SIZE / 2) - 10;
         this.y = (homeY * TILE_SIZE) + (TILE_SIZE / 2) - 15;
         
-        // --- NOVÉ: Cieľová pozícia, kam NPC smeruje ---
         this.targetX = this.x;
         this.targetY = this.y;
-        this.speed = 50; // Rýchlosť pohybu (pixelov za sekundu)
+        this.speed = 50; 
         
         this.width = 8;
         this.height = 16;
@@ -73,7 +72,6 @@ class NPC {
         this.lastUpdate = Date.now();
     }
 
-    // UPDATE metóda teraz prijíma deltaTime (sekundy od posledného snímku, napr. 0.016 pri 60 FPS)
     update(deltaTime) {
         const teraz = Date.now();
 
@@ -97,8 +95,6 @@ class NPC {
             }
             this.lastUpdate = teraz;
         }
-
-        // 2. FYZICKÝ PLYNULÝ POHYB (Spúšťa sa každý snímok)
         this.moveToTarget(deltaTime);
     }
 
@@ -307,12 +303,31 @@ function showNpcInfo(npc) {
     modal.style.display = 'flex'; 
 
     document.getElementById('npc-info-name').innerText = npc.name;
-    document.getElementById('npc-info-profession').innerText = `Proffesion: ${npc.profession}`;
     document.getElementById('npc-info-state').innerText = `State: ${npc.state}`;
     document.getElementById('npc-info-health').innerText = `${npc.health}/100`;
     document.getElementById('npc-info-hunger').innerText = npc.hunger;
     document.getElementById('npc-info-happiness').innerText = npc.happiness;
     
+    // --- DROPDOWN POPULATION ---
+    const jobDropdown = document.getElementById('npc-info-profession-select');
+    if (jobDropdown) {
+        jobDropdown.innerHTML = ''; // Clear previous selections
+        
+        // Loop through your existing global 'jobs' array
+        jobs.forEach(job => {
+            const option = document.createElement('option');
+            option.value = job;
+            // Capitalize the first letter for clean styling (e.g., "miner" -> "Miner")
+            option.textContent = job.charAt(0).toUpperCase() + job.slice(1); 
+            
+            // Highlight the NPC's actual current profession
+            if (job === npc.profession) {
+                option.selected = true;
+            }
+            jobDropdown.appendChild(option);
+        });
+    }
+
     const workText = (npc.workplaceX !== null) ? `Workplace: [${npc.workplaceX}, ${npc.workplaceY}]` : "Unemployed";
     document.getElementById('npc-info-work').innerText = workText;
 
@@ -355,22 +370,39 @@ function assignWork() {
             npc.workplaceY = y;
         }
     }
-
-    console.log(`Práca priradená pre ${npc.name} na súradnice: ${npc.workplaceX}, ${npc.workplaceY}`);
+    else if (profession === "guard") {
+        if (typeof activeBarracks !== 'undefined' && activeBarracks.length > 0) {
+            const barracks = activeBarracks[Math.floor(Math.random() * activeBarracks.length)];
+            let [x, y] = barracks.split(',').map(Number);
+            npc.workplaceX = x;
+            npc.workplaceY = y;
+        }
+    }
     
     showNpcInfo(npc);
 }
 
-function changeWork()
-{
-    const npc = selectedNPC;
-    const profession = npc.profession;
+function changeWork() {
+    // Safety check to ensure an NPC is active
+    if (!selectedNPC) return;
 
-    npc.profession = jobs[Math.floor(Math.random() * jobs.length)];
+    const jobDropdown = document.getElementById('npc-info-profession-select');
+    if (!jobDropdown) return;
 
-    if (npc.profession === "peasant") npc.img = peasantImage;
-    else if (npc.profession === "miner") npc.img = minerImage;
-    else if (npc.profession === "lumberman") npc.img = lumbermanImage;
-    else if (npc.profession === "guard") npc.img = guardImage;
+    // Grab the specific job chosen by the player right from the dropdown menu
+    const chosenJob = jobDropdown.value;
+
+    // Apply the selection directly to the character
+    selectedNPC.profession = chosenJob;
+
+    // Map your images directly to the selected role
+    if (chosenJob === "peasant") selectedNPC.img = peasantImage;
+    else if (chosenJob === "miner") selectedNPC.img = minerImage;
+    else if (chosenJob === "lumberman") selectedNPC.img = lumbermanImage;
+    else if (chosenJob === "guard") selectedNPC.img = guardImage;
+    
+    // Re-run your assignment logic to find a valid nearby building matrix
     assignWork();
+    
+    console.log(`Changed ${selectedNPC.name}'s job to: ${chosenJob}`);
 }

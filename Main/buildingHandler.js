@@ -21,6 +21,7 @@ var activeFields = [];
 var activeMines = [];
 var activeLumberyards = [];
 var activeQuarries = [];
+var activeBarracks = [];
 
 //Zapnutie bocnych menu
 function toggleStats(menuId) {
@@ -256,6 +257,15 @@ document.getElementById('gameCanvas').addEventListener('click', (e) => {
 
                 console.log("Current active mines:");
                 activeMines.forEach(element => {
+                    console.log(element);
+                });
+            }
+            else if (selectedBuildingImg.src.includes('Barracks')) {  //Barracks
+                activeBarracks.push(gridX + "," + gridY);
+                console.log("New barracks added at (" + gridX + ", " + gridY + ")");
+
+                console.log("Current active barracks:");
+                activeBarracks.forEach(element => {
                     console.log(element);
                 });
             }

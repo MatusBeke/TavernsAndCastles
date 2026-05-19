@@ -104,6 +104,19 @@
         "maxBuildLevel": 1
     },
     {
+        "id": "barracks",
+        "name": "Barracks",
+        "category": "castles",
+        "level": 0,
+        "price": 500,
+        "popCost": 0,
+        "baseHealth": 1000,
+        "productionText": "Ultimate Defense",
+        "image": "../Resources/Buildables/Barracks/Img_Barracks.png",
+        "description": "A military building for training and housing soldiers. It provides defense and allows you to recruit troops to defend your kingdom.",
+        "maxBuildLevel": 1
+    },
+    {
         "id": "mine",
         "name": "Mine",
         "category": "mines",
