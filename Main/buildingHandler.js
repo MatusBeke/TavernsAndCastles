@@ -149,15 +149,15 @@ document.getElementById('gameCanvas').addEventListener('click', (e) => {
         }
         
         if (!isBuildingMode) {
-            if (tile.buildingImg) {
-                if (tile.buildingSrc && tile.buildingSrc.toLowerCase().includes('tavern')) {
-                    showWarning("Chill Daddy.", "yellow");
-                    return;
-                }
-                openBuildingInfo(tile, gridX, gridY);
+        if (tile.buildingImg) {
+            if (tile.buildingSrc && tile.buildingSrc.toLowerCase().includes('tavern')) {
+                openTavernModal();
+                return;
             }
-            return;
+            openBuildingInfo(tile, gridX, gridY);
         }
+        return;
+    }
 
         //Kontrola typu terenu a zobrazovanie upozorneni ak nie je splnena podmienka pre stavbu
         const isWaterOrForest = tile.img && (tile.img.src.includes('Water') || tile.img.src.includes('Forest'));
@@ -383,6 +383,14 @@ function sellBuilding() {
     
     closeBuildingInfo();
     showWarning("Building sold!" , "yellow");
+}
+
+function openTavernModal() {
+    document.getElementById('tavern-modal').style.display = 'flex';
+}
+
+function closeTavernModal() {
+    document.getElementById('tavern-modal').style.display = 'none';
 }
 
 //

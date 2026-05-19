@@ -127,6 +127,28 @@
             </div>
         </div>
     </div>
+
+    <div id="tavern-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center;">
+        <div id="tavern-container" style="position: relative; width: 900px; height: 600px; background-image: url('../Resources/Img_TavernBackground.png'); background-size: cover; background-position: center; border: 6px solid #8B4513; border-radius: 15px; box-shadow: 0 0 30px #000; font-family: 'MedievalSharp', cursive; color: #fff; display: flex; flex-direction: column; justify-content: space-between; padding: 35px; box-sizing: border-box;">
+            
+            <div style="text-align: center; background: rgba(0, 0, 0, 0.65); padding: 15px; border-radius: 8px;">
+                <h2 style="margin: 0; font-size: 2.8rem; color: #ffd700; text-shadow: 3px 3px 6px #000;">Tavern</h2>
+                <p style="margin: 8px 0 0 0; font-size: 1.3rem;">Minigame coming soon...</p>
+            </div>
+
+            <div style="flex-grow: 1; display: flex; justify-content: center; align-items: center; margin: 20px 0;">
+                <div style="background: rgba(0,0,0,0.6); padding: 30px; border-radius: 8px; border: 2px dashed #ffd700; font-size: 1.4rem; text-align: center; width: 80%; height: 60%; display: flex; justify-content: center; align-items: center;">
+                    [ Minigame Logic / Canvas Placeholder ]
+                </div>
+            </div>
+
+            <div style="text-align: center;">
+                <button onclick="closeTavernModal()" style="font-family: 'MedievalSharp', cursive; font-size: 1.5rem; padding: 12px 35px; background: #8B4513; color: white; border: 3px solid #ffd700; border-radius: 8px; cursor: pointer; text-shadow: 2px 2px 3px #000; transition: transform 0.1s ease;">
+                    Leave Tavern
+                </button>
+            </div>
+        </div>
+    </div>
     <div id="realm-display">Realm Name</div>
 
     <div id="building-menu"></div>
