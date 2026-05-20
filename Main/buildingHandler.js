@@ -14,6 +14,7 @@ let currentWood = 50000;
 let currentStone = 200000;
 let currentFood = 1000000;
 let currentLevel = 1;
+let currentXP = 0;
 
 let selectedTileForInfo = null;
 
@@ -37,6 +38,8 @@ function updateHUD() {
     const statStoneDisplay = document.getElementById('stat-stone');
     const statPopDisplay = document.getElementById('stat-pop');
     const statFoodDisplay = document.getElementById('stat-food');
+    const statLevelDisplay = document.getElementById('stat-level');
+    const statXPDisplay = document.getElementById('stat-xp');
     const statDaysDisplay = document.getElementById('stat-days');
 
     if (statGoldDisplay) statGoldDisplay.innerText = currentGold;
@@ -44,9 +47,16 @@ function updateHUD() {
     if (statStoneDisplay) statStoneDisplay.innerText = currentStone;
     if (statPopDisplay) statPopDisplay.innerText = currentPop;
     if (statFoodDisplay) statFoodDisplay.innerText = currentFood;
+    if (currentXP >= currentLevel * 100) {
+        currentXP -= currentLevel * 100;
+        currentLevel += 1;
+        showWarning(`Level up! You are now level ${currentLevel}.`, "yellow");
+    }
+    if (statLevelDisplay) statLevelDisplay.innerText = currentLevel;
+    if (statXPDisplay) statXPDisplay.innerText = currentXP + "/" + (currentLevel * 100);
 
     if (statDaysDisplay) {
-        statDaysDisplay.innerText = currentPop > 0 ? Math.floor(currentFood / currentPop) : "∞";
+        statDaysDisplay.innerText = currentPop > 0 ? Math.floor(currentFood / currentPop) : "inf";
     }
 }
 
@@ -324,6 +334,7 @@ document.getElementById('gameCanvas').addEventListener('click', (e) => {
 
 //Vypnutie rezimu stavania a resetovanie pomocnych premennych
 function finalizeBuild(canvas) {
+    currentXP += 5;
     isBuildingMode = false;
     selectedBuildingImg = null;
     selectedBuildingSrc = null;
