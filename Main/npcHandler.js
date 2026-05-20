@@ -106,18 +106,34 @@ class NPC {
             }
 
             if (currentHour >= 20 || currentHour < 6) {
-                this.inHome();
+                this.inHome();            
             }
-            else if (currentHour >= 7 && currentHour < 16) {
-                if (this.workplaceX !== null && this.workplaceY !== null) {
+            else if (currentHour >= 7 && currentHour < 17) {
+                if (this.workplaceX !== null && this.workplaceY !== null) 
+                {
                     this.work();
+                    if (currentHour === 12) 
+                    {
+                        this.hunger = 100;
+                        currentFood -= 1;
+                    }
                 } else {
                     this.wander();
+                    if (currentHour === 12) 
+                    {
+                        this.hunger = 100;
+                        currentFood -= 1;
+                    }
                 }
             } 
             else {
                 if (this.state === "In Home") {
                     this.state = "Wandering";
+                    if (currentHour === 7) 
+                    {
+                        this.hunger = 100;
+                        currentFood -= 1;
+                    }
                 }
                 this.wander();
             }

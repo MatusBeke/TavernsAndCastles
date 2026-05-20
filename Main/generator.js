@@ -205,6 +205,19 @@ var camera = { x: 0, y: 0, zoom: 1 };
 
                     if (tile.buildingImg) {
                         ctx.drawImage(tile.buildingImg, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+
+                        // if (typeof currentHour !== 'undefined' && (currentHour >= 20 || currentHour < 6)) {
+                        //     if (!window.imgBuildingNightLight) {
+                        //         window.imgBuildingNightLight = new Image();
+                        //         window.imgBuildingNightLight.src = '../Resources/Img_LightSource.png';
+                        //     }
+                        //     if (window.imgBuildingNightLight.complete && window.imgBuildingNightLight.naturalWidth !== 0) {
+                        //         ctx.save();
+                        //         ctx.globalCompositeOperation = "screen"; 
+                        //         ctx.drawImage(window.imgBuildingNightLight, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                        //         ctx.restore();
+                        //     }
+                        // }
                     }
                 }
             }

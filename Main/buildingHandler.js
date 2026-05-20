@@ -12,7 +12,7 @@ let currentGold = 100000;
 let currentPop = 0;
 let currentWood = 50000;
 let currentStone = 200000;
-let currentFood = 1000000;
+let currentFood = 1000;
 let currentLevel = 1;
 let currentXP = 0;
 
@@ -24,6 +24,7 @@ var activeMines = [];
 var activeLumberyards = [];
 var activeQuarries = [];
 var activeBarracks = [];
+
 
 //Zapnutie bocnych menu
 function toggleStats(menuId) {
