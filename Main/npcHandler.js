@@ -8,18 +8,21 @@ let peasantImage = "../Resources/NPCs/NPC_Peasant.png";
 let minerImage = "../Resources/NPCs/NPC_Miner.png";
 let lumbermanImage = "../Resources/NPCs/NPC_Lumberman.png";
 let guardImage = "../Resources/NPCs/NPC_Guard.png";
+let skeletonImage = "../Resources/NPCs/NPC_Skeleton.png";
 
 const npcImages = {
     "peasant": new Image(),
     "miner": new Image(),
     "lumberman": new Image(),
-    "guard": new Image()
+    "guard": new Image(),
+    "skeleton": new Image()
 };
 
 npcImages["peasant"].src = peasantImage;
 npcImages["miner"].src = minerImage;
 npcImages["lumberman"].src = lumbermanImage;
 npcImages["guard"].src = guardImage;
+npcImages["skeleton"].src = skeletonImage;
 
 // Default, kým sa nenačíta JSON s menami NPCs
 let npcNamesData = {
@@ -73,10 +76,35 @@ class NPC {
     }
 
     update(deltaTime) {
+        if (this.state === "Dead") {
+            this.speed = 0;
+            this.health = 0;
+            this.hunger = 0;
+            return;
+        }
+
         const teraz = Date.now();
 
-        // 1. Logika rozhodovania (spúšťa sa raz za sekundu)
         if (teraz - this.lastUpdate > 1000) {
+            //Znizovanie hladu podla cinnosti
+            if (this.state === "Working") {
+                this.hunger = Math.max(0, this.hunger - 5);
+            } else if (this.state !== "In Home") {
+                this.hunger = Math.max(0, this.hunger - 2);
+            }
+
+            //Ak hlad klesol na 0, NPC umrie
+            if (this.hunger <= 0) {
+                this.state = "Dead";
+                this.health = 0;
+                this.speed = 0;
+                this.happiness = 0;
+                console.log(`NPC ${this.name} práve zomrelo od hladu na pozadí!`);
+                
+                this.lastUpdate = teraz;
+                return;
+            }
+
             if (currentHour >= 20 || currentHour < 6) {
                 this.inHome();
             }
@@ -93,6 +121,7 @@ class NPC {
                 }
                 this.wander();
             }
+            
             this.lastUpdate = teraz;
         }
         this.moveToTarget(deltaTime);
@@ -126,11 +155,16 @@ class NPC {
     }
 
     draw(ctx) {
-        const npcImgAsset = npcImages[this.profession];
+        let npcImgAsset = npcImages[this.profession];
+
+        if (this.state === "Dead") {
+            npcImgAsset = npcImages["skeleton"];
+        }
 
         if (npcImgAsset && npcImgAsset.complete && npcImgAsset.naturalWidth !== 0) {
             ctx.drawImage(npcImgAsset, this.x, this.y, this.width, this.height);
         } else {
+            // Fallback rendering
             if (this.profession === "peasant") { ctx.fillStyle = "#8B4513"; }
             else if (this.profession === "miner") { ctx.fillStyle = "#7b7e81"; }
             else if (this.profession === "lumberman") { ctx.fillStyle = "#228B22"; }
@@ -143,30 +177,32 @@ class NPC {
             ctx.strokeRect(this.x, this.y, this.width, this.height);
         }
 
-        ctx.fillStyle = "white";     
+        // Meno a stav nad hlavou NPC
+        ctx.fillStyle = "white";     
         ctx.font = "bold 12px Arial"; 
         ctx.textAlign = "center"; 
-        ctx.fillText(this.name, this.x + this.width / 2, this.y - 22);
+        ctx.fillText(this.name, this.x + this.width / 2, this.y - 12);
         
         ctx.font = "10px Arial";
         ctx.fillStyle = "#FFD700";
-        ctx.fillText(`State: ${this.state}`, this.x + this.width / 2, this.y - 8);
+        ctx.fillText(`State: ${this.state}`, this.x + this.width / 2, this.y - 2);
     }
 
-    // Zmena: Už nemením x/y priamo, len určím NOVÝ CIEĽ (target)
     wander() {
-        this.state = "Wandering";
-        const moveRange = 32; 
+        if (this.state !== "Dead") 
+        {
+            this.state = "Wandering";
+            const moveRange = 32; 
 
-        let dx = (Math.random() * moveRange * 2) - moveRange;
-        let dy = (Math.random() * moveRange * 2) - moveRange;
+            let dx = (Math.random() * moveRange * 2) - moveRange;
+            let dy = (Math.random() * moveRange * 2) - moveRange;
 
-        let newTargetX = this.x + dx;
-        let newTargetY = this.y + dy;
+            let newTargetX = this.x + dx;
+            let newTargetY = this.y + dy;
 
-        // Obyčajné ohraničenie mapy
-        this.targetX = Math.max(0, Math.min(newTargetX, MAP_SIZE * TILE_SIZE));
-        this.targetY = Math.max(0, Math.min(newTargetY, MAP_SIZE * TILE_SIZE));
+            this.targetX = Math.max(0, Math.min(newTargetX, MAP_SIZE * TILE_SIZE));
+            this.targetY = Math.max(0, Math.min(newTargetY, MAP_SIZE * TILE_SIZE));
+        }
     }
 
     returnHome() {
@@ -180,18 +216,26 @@ class NPC {
     }
 
     inHome() {
-        this.state = "In Home";
-        this.targetX = (this.homeX * TILE_SIZE) + (TILE_SIZE / 2) - 10;
-        this.targetY = (this.homeY * TILE_SIZE) + (TILE_SIZE / 2) - 15;
+        if (this.state !== "Dead") 
+        {
+            this.state = "In Home";
+            this.targetX = (this.homeX * TILE_SIZE) + (TILE_SIZE / 2) - 10;
+            this.targetY = (this.homeY * TILE_SIZE) + (TILE_SIZE / 2) - 15;
+        }
     }
 
     work(){
-        this.state = "Working";
-        const randomOffsetX = Math.random() * (TILE_SIZE - 20);
-        const randomOffsetY = Math.random() * (TILE_SIZE - 20);
-        if (this.workplaceX !== null && this.workplaceY !== null) {
-            this.targetX = (this.workplaceX * TILE_SIZE) + randomOffsetX;
-            this.targetY = (this.workplaceY * TILE_SIZE) + randomOffsetY;
+        if (this.state !== "Dead") {
+            this.state = "Working";
+            const randomOffsetX = Math.random() * (TILE_SIZE - 20);
+            const randomOffsetY = Math.random() * (TILE_SIZE - 20);
+            if (this.workplaceX !== null && this.workplaceY !== null) {
+                this.targetX = (this.workplaceX * TILE_SIZE) + randomOffsetX;
+                this.targetY = (this.workplaceY * TILE_SIZE) + randomOffsetY;
+            }
+            if (this.profession === "peasant") {
+                this.happiness = Math.min(100, this.happiness + 1);
+            }
         }
     }
 }
@@ -302,12 +346,27 @@ function showNpcInfo(npc) {
     if (!modal) return;
     modal.style.display = 'flex'; 
 
+    let hungerState = "Full";
+    if (npc.hunger <= 0) 
+    {
+        hungerState = "Dead";
+    } 
+    else if (npc.hunger < 30) 
+    {
+        hungerState = "Starving"; 
+    } 
+    else if (npc.hunger < 70) 
+    {
+        hungerState = "Hungry";
+    }
+
+
     document.getElementById('npc-info-name').innerText = npc.name;
     document.getElementById('npc-info-state').innerText = `State: ${npc.state}`;
     document.getElementById('npc-info-health').innerText = `${npc.health}/100`;
-    document.getElementById('npc-info-hunger').innerText = npc.hunger;
-    document.getElementById('npc-info-happiness').innerText = npc.happiness;
-    
+    document.getElementById('npc-info-hunger').innerText = `${npc.hunger}/100 (${hungerState})`;
+    document.getElementById('npc-info-happiness').innerText = `${npc.happiness}/100`;
+
     // --- DROPDOWN POPULATION ---
     const jobDropdown = document.getElementById('npc-info-profession-select');
     if (jobDropdown) {
@@ -383,26 +442,20 @@ function assignWork() {
 }
 
 function changeWork() {
-    // Safety check to ensure an NPC is active
-    if (!selectedNPC) return;
+    // Drop execution immediately if the target NPC is invalid or dead
+    if (!selectedNPC || selectedNPC.state === "Dead") return;
 
     const jobDropdown = document.getElementById('npc-info-profession-select');
     if (!jobDropdown) return;
 
-    // Grab the specific job chosen by the player right from the dropdown menu
     const chosenJob = jobDropdown.value;
-
-    // Apply the selection directly to the character
     selectedNPC.profession = chosenJob;
 
-    // Map your images directly to the selected role
     if (chosenJob === "peasant") selectedNPC.img = peasantImage;
     else if (chosenJob === "miner") selectedNPC.img = minerImage;
     else if (chosenJob === "lumberman") selectedNPC.img = lumbermanImage;
     else if (chosenJob === "guard") selectedNPC.img = guardImage;
     
-    // Re-run your assignment logic to find a valid nearby building matrix
     assignWork();
-    
     console.log(`Changed ${selectedNPC.name}'s job to: ${chosenJob}`);
 }
