@@ -13,6 +13,7 @@ let currentPop = 0;
 let currentWood = 50000;
 let currentStone = 200000;
 let currentFood = 1000000;
+let currentLevel = 1;
 
 let selectedTileForInfo = null;
 
@@ -89,10 +90,15 @@ function selectBattleType(type) {
 
 
 //Stavanie budov
-function startBuilding(imageSrc, maxLVL, price, popCost, category) {
+function startBuilding(imageSrc, maxLVL, price, popCost, category, levelReq) {
     //Ak nemame dostatok zlata alebo populacie, zobrazime upozornenie a nebudeme pokracovat do rezimu stavania
     if (currentGold < price) {
-        showWarning("Not enough resources or population!", "red");
+        showWarning("Not enough gold!", "red");
+        return;
+    }
+
+    if (currentLevel < levelReq) {
+        showWarning("Not enough level!", "red");
         return;
     }
 
