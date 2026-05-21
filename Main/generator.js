@@ -4,7 +4,7 @@ var TILE_SIZE = 128;
 var mapData = []; 
 var camera = { x: 0, y: 0, zoom: 1 };
 
-{
+
     // Pripojenie na HTML canvas pre vykreslovanie
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
@@ -71,9 +71,19 @@ var camera = { x: 0, y: 0, zoom: 1 };
                 } else {
                     tileImg = (n < hillsLevel) ? imgHills : imgMountains; // Kopce a hory
                 }
+
+                //Save logika mapy
+                let tileType = 'land';
+                if (tileImg === imgWater) tileType = 'water';
+                else if (tileImg === imgMountains) tileType = 'mountains';
+                else if (tileImg === imgHills) tileType = 'hills';
+                else if (tileImg === imgForest1) tileType = 'forest1';
+                else if (tileImg === imgForest2) tileType = 'forest2';
+                else if (tileImg === imgForest3) tileType = 'forest3';
+                else if (tileImg === imgForest4) tileType = 'forest4';
                 
                 // Ulozenie bloku do pamate mapy
-                mapData[y][x] = { n: n, img: tileImg };
+                mapData[y][x] = { n: n, img: tileImg, type: tileType };
             }
         }
 
@@ -357,7 +367,6 @@ var camera = { x: 0, y: 0, zoom: 1 };
 
             initMap();
         };
-    }
 
     // Asynchronna funkcia na nacitanie bocneho menu s budovami podla kategorie
     async function loadBuildingMenu(filterCategory = 'houses') {
@@ -423,3 +432,117 @@ function showInfo(id) {
 
 // Nacita defaultnu kategoriu budov ('houses') po starte hry
 loadBuildingMenu();
+
+
+//Ukladanie
+function saveMap() {
+    const savedTiles = [];
+
+    for (let y = 0; y < MAP_SIZE; y++) {
+        savedTiles[y] = [];
+        for (let x = 0; x < MAP_SIZE; x++) {
+            const tile = mapData[y][x];
+            
+            // Základné informácie o políčku
+            const tileSave = {
+                type: tile.type,
+                n: tile.n
+            };
+
+            // Ak je na políčku budova, uložíme jej dáta
+            if (tile.buildingImg) {
+                tileSave.buildingSrc = tile.buildingSrc; // napr. '../Resources/Img_Tavern.png'
+                tileSave.buildingLevel = tile.buildingLevel;
+            }
+
+            savedTiles[y][x] = tileSave;
+        }
+    }
+
+    // Vytvoríme hlavný objekt uloženej pozície
+    const saveGameData = {
+        mapSize: MAP_SIZE,
+        camera: { x: camera.x, y: camera.y, zoom: camera.zoom },
+        time: {
+            day: currentDay,
+            hour: currentHour,
+            minute: currentMinute
+        },
+        map: savedTiles
+        // Sem neskôr jednoducho pridáš: npcs: activeNPCs.map(...)
+    };
+
+    // Prevedieme na text a uložíme do prehliadača pod názvom 'rts_save_slot_1'
+    localStorage.setItem('rts_save_slot_1', JSON.stringify(saveGameData));
+    console.log("Hra bola úspešne uložená!");
+}
+
+function loadMap() {
+    const rawData = localStorage.getItem('rts_save_slot_1');
+    
+    if (!rawData) {
+        alert("Nenašiel sa žiadny uložený pozícia!");
+        return;
+    }
+
+    const saveData = JSON.parse(rawData);
+
+    // 1. Obnovíme základné nastavenia a kameru
+    MAP_SIZE = saveData.mapSize;
+    camera.x = saveData.camera.x;
+    camera.y = saveData.camera.y;
+    camera.zoom = saveData.camera.zoom;
+
+    if (saveData.time) {
+        currentDay = saveData.time.day;
+        currentHour = saveData.time.hour;
+        currentMinute = saveData.time.minute - 10; 
+        if (currentMinute < 0) {
+            currentMinute = 50; currentHour--;
+            if (currentHour < 0) { currentHour = 23; currentDay--; }
+        }
+        updateTime(); 
+    }
+
+    // Pomocný slovník pre rýchle priradenie obrázkov terénu podľa uloženého stringu
+    const imageMap = {
+        'water': imgWater,
+        'land': imgLand,
+        'mountains': imgMountains,
+        'hills': imgHills,
+        'forest1': imgForest1,
+        'forest2': imgForest2,
+        'forest3': imgForest3,
+        'forest4': imgForest4
+    };
+
+    // 2. Rekonštrukcia mapData
+    mapData = [];
+    for (let y = 0; y < MAP_SIZE; y++) {
+        mapData[y] = [];
+        for (let x = 0; x < MAP_SIZE; x++) {
+            const tileData = saveData.map[y][x];
+
+            const tile = {
+                n: tileData.n,
+                type: tileData.type,
+                img: imageMap[tileData.type] // Priradíme už načítaný globálny Image objekt
+            };
+
+            // Ak bola na políčku budova, znovuvytvoríme jej Image objekt
+            if (tileData.buildingSrc) {
+                const bImg = new Image();
+                bImg.src = tileData.buildingSrc;
+
+                tile.buildingImg = bImg;
+                tile.buildingSrc = tileData.buildingSrc;
+                tile.buildingLevel = tileData.buildingLevel;
+            }
+
+            mapData[y][x] = tile;
+        }
+    }
+
+    console.log("Hra bola úspešne načítaná!");
+    clampCamera();
+}
