@@ -80,6 +80,8 @@ class NPC {
             this.speed = 0;
             this.health = 0;
             this.hunger = 0;
+            this.happiness = 0;
+            this.img = skeletonImage;
             return;
         }
 
@@ -88,9 +90,9 @@ class NPC {
         if (teraz - this.lastUpdate > 1000) {
             //Znizovanie hladu podla cinnosti
             if (this.state === "Working") {
-                this.hunger = Math.max(0, this.hunger - 5);
+                this.hunger = Math.max(0, this.hunger - 3);
             } else if (this.state !== "In Home") {
-                this.hunger = Math.max(0, this.hunger - 2);
+                this.hunger = Math.max(0, this.hunger - 1);
             }
 
             //Ak hlad klesol na 0, NPC umrie
@@ -130,6 +132,11 @@ class NPC {
                 if (this.state === "In Home") {
                     this.state = "Wandering";
                     if (currentHour === 7) 
+                    {
+                        this.hunger = 100;
+                        currentFood -= 1;
+                    }
+                    if (currentHour === 18) 
                     {
                         this.hunger = 100;
                         currentFood -= 1;

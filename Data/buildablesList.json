@@ -51,7 +51,20 @@
         "description": "Advanced housing made of stone, providing better protection and comfort for your citizens. It is more durable than a log cabin and can withstand harsher weather conditions.",
         "maxBuildLevel": 4
     },
-        {
+    {
+        "id": "pub",
+        "name": "Pub",
+        "category": "houses",
+        "level": 4,
+        "price": 0,
+        "popCost": 0,
+        "baseHealth": 300,
+        "productionText": "Provides Happiness",
+        "image": "../Resources/Buildables/Pub/Img_Pub.png",
+        "description": "A lively pub where citizens can gather to socialize and enjoy entertainment. It provides happiness and a boost to morale for your population.",
+        "maxBuildLevel": 1
+    },
+    {
         "id": "town-house",
         "name": "Town House",
         "category": "houses",
