@@ -498,3 +498,4 @@ function changeWork() {
     assignWork();
     console.log(`Changed ${selectedNPC.name}'s job to: ${chosenJob}`);
 }
+

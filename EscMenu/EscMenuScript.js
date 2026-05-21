@@ -16,6 +16,8 @@ document.body.insertAdjacentHTML('beforeend', `
         <div class="esc-nav">
             <button class="esc-btn" onclick="toggleEscMenu()"><span class="icon">⚔</span> Resume</button>
             <button class="esc-btn" onclick="openInGameOptions()"><span class="icon">📜</span> Settings</button>
+            <button class="esc-btn" onclick="save()"><span class="icon">📜</span> Save Game</button>
+            <button class="esc-btn" onclick="load()"><span class="icon">📜</span> Load Game</button>
             <button class="esc-btn" onclick="quitToMainMenu()"><span class="icon">🗝</span> Return to Menu</button>
         </div>
     </div>
@@ -66,4 +68,12 @@ function openInGameOptions() {
 // Návrat do hlavného menu
 function quitToMainMenu() {
     transitionTo("../Menu/MenuIndex.html", false);
+}
+
+function save(){
+    saveMap();
+}
+
+function load(){
+    loadMap();
 }

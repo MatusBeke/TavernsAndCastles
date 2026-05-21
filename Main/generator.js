@@ -516,7 +516,8 @@ function saveMap() {
     };
 
     localStorage.setItem('rts_save_slot_1', JSON.stringify(saveGameData));
-    console.log("Hra (vrátane surovín) bola úspešne uložená!");
+    console.log("Hra bola úspešne uložená!");
+    //showWarning("Autosaving game", "yellow");
 }
 
 function loadMap() {
@@ -643,3 +644,7 @@ function loadMap() {
     console.log("Hra bola kompletne načítaná úspešne!");
     clampCamera();
 }
+
+//Autosave
+//updateHUD()
+//setInterval(saveMap, 10000);
