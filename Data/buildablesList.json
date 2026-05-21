@@ -56,7 +56,7 @@
         "name": "Pub",
         "category": "houses",
         "level": 4,
-        "price": 0,
+        "price": 2000,
         "popCost": 0,
         "baseHealth": 300,
         "productionText": "Provides Happiness",
@@ -125,7 +125,7 @@
         "popCost": 0,
         "baseHealth": 5000,
         "productionText": "Ranged defense",
-        "image": "../Resources/Buildables/Castle/Img_Donjon.png",
+        "image": "../Resources/Buildables/Castle/Img_ArcherTower.png",
         "description": "A fortified tower within the castle, offering ranged defense.",
         "maxBuildLevel": 1
     },
@@ -205,6 +205,19 @@
         "productionText": "+20 Ingots / Day",
         "image": "../Resources/Buildables/Foundry/Img_Foundry.png",
         "description": "A facility for processing raw materials into useful items.",
+        "maxBuildLevel": 1
+    },
+        {
+        "id": "chapel",
+        "name": "Chapel",
+        "category": "houses",
+        "level": 5,
+        "price": 2500,
+        "popCost": 0,
+        "baseHealth": 1000,
+        "productionText": "+20 Happiness / Day",
+        "image": "../Resources/Buildables/Chapel/Img_Chapel.png",
+        "description": "A place of worship and reflection for the inhabitants.",
         "maxBuildLevel": 1
     }
 ]
