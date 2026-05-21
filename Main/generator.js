@@ -436,22 +436,27 @@ loadBuildingMenu();
 
 //Ukladanie
 function saveMap() {
+    if (!mapData || mapData.length === 0 || !mapData[0]) {
+        console.log("Ukladanie zrušené: Mapa nie je pripravená.");
+        return;
+    }
+
     const savedTiles = [];
 
+    // 1. Uloženie mriežky mapy (terén + budovy)
     for (let y = 0; y < MAP_SIZE; y++) {
         savedTiles[y] = [];
         for (let x = 0; x < MAP_SIZE; x++) {
             const tile = mapData[y][x];
+            if (!tile) continue;
             
-            // Základné informácie o políčku
             const tileSave = {
                 type: tile.type,
                 n: tile.n
             };
 
-            // Ak je na políčku budova, uložíme jej dáta
             if (tile.buildingImg) {
-                tileSave.buildingSrc = tile.buildingSrc; // napr. '../Resources/Img_Tavern.png'
+                tileSave.buildingSrc = tile.buildingSrc;
                 tileSave.buildingLevel = tile.buildingLevel;
             }
 
@@ -459,7 +464,29 @@ function saveMap() {
         }
     }
 
-    // Vytvoríme hlavný objekt uloženej pozície
+    // 2. Extrahovanie čistých dát z activeNPCs
+    const savedNPCs = activeNPCs.map(npc => {
+        return {
+            id: npc.id,
+            name: npc.name,
+            profession: npc.profession,
+            img: npc.img,
+            homeX: npc.homeX,
+            homeY: npc.homeY,
+            x: npc.x,
+            y: npc.y,
+            targetX: npc.targetX,
+            targetY: npc.targetY,
+            health: npc.health,
+            hunger: npc.hunger,
+            happiness: npc.happiness,
+            workplaceX: npc.workplaceX,
+            workplaceY: npc.workplaceY,
+            state: npc.state
+        };
+    });
+
+    // 3. Vytvorenie hlavného objektu uloženej pozície
     const saveGameData = {
         mapSize: MAP_SIZE,
         camera: { x: camera.x, y: camera.y, zoom: camera.zoom },
@@ -468,20 +495,35 @@ function saveMap() {
             hour: currentHour,
             minute: currentMinute
         },
-        map: savedTiles
-        // Sem neskôr jednoducho pridáš: npcs: activeNPCs.map(...)
+        map: savedTiles,
+        npcs: savedNPCs,
+        workplaces: {
+            fields: typeof activeFields !== 'undefined' ? activeFields : [],
+            mines: typeof activeMines !== 'undefined' ? activeMines : [],
+            lumberyards: typeof activeLumberyards !== 'undefined' ? activeLumberyards : [],
+            barracks: typeof activeBarracks !== 'undefined' ? activeBarracks : []
+        },
+        // --- NOVÉ: Ukladanie všetkých herných surovín ---
+        resources: {
+            gold: typeof currentGold !== 'undefined' ? currentGold : 0,
+            pop: typeof currentPop !== 'undefined' ? currentPop : 0,
+            wood: typeof currentWood !== 'undefined' ? currentWood : 0,
+            stone: typeof currentStone !== 'undefined' ? currentStone : 0,
+            food: typeof currentFood !== 'undefined' ? currentFood : 0,
+            level: typeof currentLevel !== 'undefined' ? currentLevel : 1,
+            xp: typeof currentXP !== 'undefined' ? currentXP : 0
+        }
     };
 
-    // Prevedieme na text a uložíme do prehliadača pod názvom 'rts_save_slot_1'
     localStorage.setItem('rts_save_slot_1', JSON.stringify(saveGameData));
-    console.log("Hra bola úspešne uložená!");
+    console.log("Hra (vrátane surovín) bola úspešne uložená!");
 }
 
 function loadMap() {
     const rawData = localStorage.getItem('rts_save_slot_1');
     
     if (!rawData) {
-        alert("Nenašiel sa žiadny uložený pozícia!");
+        alert("Nenašlo sa žiadne uložené pozícia!");
         return;
     }
 
@@ -504,32 +546,45 @@ function loadMap() {
         updateTime(); 
     }
 
-    // Pomocný slovník pre rýchle priradenie obrázkov terénu podľa uloženého stringu
+    // 2. Načítanie aktívnych pracovísk
+    if (saveData.workplaces) {
+        if (typeof activeFields !== 'undefined') activeFields = saveData.workplaces.fields || [];
+        if (typeof activeMines !== 'undefined') activeMines = saveData.workplaces.mines || [];
+        if (typeof activeLumberyards !== 'undefined') activeLumberyards = saveData.workplaces.lumberyards || [];
+        if (typeof activeBarracks !== 'undefined') activeBarracks = saveData.workplaces.barracks || [];
+    }
+
+    // --- NOVÉ: Načítanie a prepísanie surovín ---
+    if (saveData.resources) {
+        if (typeof currentGold !== 'undefined') currentGold = saveData.resources.gold;
+        if (typeof currentPop !== 'undefined') currentPop = saveData.resources.pop;
+        if (typeof currentWood !== 'undefined') currentWood = saveData.resources.wood;
+        if (typeof currentStone !== 'undefined') currentStone = saveData.resources.stone;
+        if (typeof currentFood !== 'undefined') currentFood = saveData.resources.food;
+        if (typeof currentLevel !== 'undefined') currentLevel = saveData.resources.level;
+        if (typeof currentXP !== 'undefined') currentXP = saveData.resources.xp;
+    }
+
+    // Pomocný slovník pre priradenie obrázkov terénu
     const imageMap = {
-        'water': imgWater,
-        'land': imgLand,
-        'mountains': imgMountains,
-        'hills': imgHills,
-        'forest1': imgForest1,
-        'forest2': imgForest2,
-        'forest3': imgForest3,
-        'forest4': imgForest4
+        'water': imgWater, 'land': imgLand, 'mountains': imgMountains, 'hills': imgHills,
+        'forest1': imgForest1, 'forest2': imgForest2, 'forest3': imgForest3, 'forest4': imgForest4
     };
 
-    // 2. Rekonštrukcia mapData
+    // 3. Rekonštrukcia mapData
     mapData = [];
     for (let y = 0; y < MAP_SIZE; y++) {
         mapData[y] = [];
         for (let x = 0; x < MAP_SIZE; x++) {
             const tileData = saveData.map[y][x];
+            if (!tileData) continue;
 
             const tile = {
                 n: tileData.n,
                 type: tileData.type,
-                img: imageMap[tileData.type] // Priradíme už načítaný globálny Image objekt
+                img: imageMap[tileData.type]
             };
 
-            // Ak bola na políčku budova, znovuvytvoríme jej Image objekt
             if (tileData.buildingSrc) {
                 const bImg = new Image();
                 bImg.src = tileData.buildingSrc;
@@ -543,6 +598,48 @@ function loadMap() {
         }
     }
 
-    console.log("Hra bola úspešne načítaná!");
+    // 4. Načítanie a oživenie NPCs
+    activeNPCs = []; 
+    const npcListElement = document.getElementById("citizens-list");
+    if (npcListElement) {
+        npcListElement.innerHTML = '';
+    }
+
+    if (saveData.npcs && Array.isArray(saveData.npcs)) {
+        saveData.npcs.forEach(npcData => {
+            const restoredNpc = new NPC(
+                npcData.id,
+                npcData.name,
+                npcData.profession,
+                npcData.img,
+                npcData.homeX,
+                npcData.homeY,
+                npcData.health,
+                npcData.hunger,
+                npcData.happiness,
+                npcData.workplaceX,
+                npcData.workplaceY
+            );
+
+            restoredNpc.x = npcData.x;
+            restoredNpc.y = npcData.y;
+            restoredNpc.targetX = npcData.targetX;
+            restoredNpc.targetY = npcData.targetY;
+            restoredNpc.state = npcData.state;
+
+            activeNPCs.push(restoredNpc);
+
+            if (typeof updateCitizensList === 'function') {
+                updateCitizensList(restoredNpc.name);
+            }
+        });
+    }
+
+    // Aktualizácia HUD panelu s novými načítanými surovinami
+    if (typeof updateHUD === 'function') {
+        updateHUD();
+    }
+
+    console.log("Hra bola kompletne načítaná úspešne!");
     clampCamera();
 }
