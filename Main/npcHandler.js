@@ -210,11 +210,11 @@ class NPC {
 
         // Meno a stav nad hlavou NPC
         ctx.fillStyle = "white";     
-        ctx.font = "bold 12px Arial"; 
+        ctx.font = "bold 12px MedievalSharp"; 
         ctx.textAlign = "center"; 
         ctx.fillText(this.name, this.x + this.width / 2, this.y - 12);
         
-        ctx.font = "10px Arial";
+        ctx.font = "10px MedievalSharp";
         ctx.fillStyle = "#FFD700";
         ctx.fillText(`State: ${this.state}`, this.x + this.width / 2, this.y - 2);
     }
