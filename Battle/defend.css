@@ -1,0 +1,147 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'MedievalSharp', cursive;
+}
+
+body {
+    background-color: #000;
+    overflow: hidden;
+    color: #d4af37;
+}
+
+/* Hlavné UI navrchu */
+#battle-ui {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 50px;
+    background: linear-gradient(to bottom, #2b1d14, #1a0f0a);
+    border-bottom: 3px solid #8b0000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    z-index: 10;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.8);
+}
+
+.team-stat {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.player-stat { color: #00ff00; }
+.enemy-stat { color: #ff3333; }
+.phase-indicator { color: #d4af37; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 2px;}
+
+#btn-retreat {
+    background-color: #8b0000;
+    color: white;
+    border: 1px solid #ff3333;
+    padding: 5px 15px;
+    cursor: pointer;
+    font-size: 1rem;
+    border-radius: 4px;
+}
+#btn-retreat:hover { background-color: #ff3333; }
+
+/* Herná plocha */
+#battleCanvas {
+    display: block;
+    width: 100vw;
+    height: calc(100vh - 110px);
+    cursor: grab;
+}
+
+#battleCanvas:active { cursor: grabbing; }
+#battleCanvas.targeting-mode { cursor: crosshair !important; }
+
+/* Ability Bar naspodku */
+#ability-bar {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 60px;
+    background: linear-gradient(to top, #2b1d14, #1a0f0a);
+    border-top: 3px solid #d4af37;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+}
+
+#btn-explosion {
+    background-color: #3e2723;
+    color: #ffcc00;
+    border: 2px solid #ff0000;
+    padding: 10px 20px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    border-radius: 8px;
+    box-shadow: 0 0 10px #ff0000;
+    transition: 0.2s;
+}
+
+#btn-explosion:hover:not(:disabled) {
+    background-color: #5d4037;
+    box-shadow: 0 0 20px #ffcc00;
+    transform: scale(1.05);
+}
+
+#btn-explosion:disabled {
+    background-color: #222;
+    color: #555;
+    border-color: #555;
+    box-shadow: none;
+    cursor: not-allowed;
+}
+
+/* Modálne okná */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-color: rgba(0,0,0,0.8);
+    z-index: 100;
+}
+
+.modal-content {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    background: linear-gradient(to top, #2b1d14, #0a0503);
+    border: 4px solid #d4af37;
+    padding: 30px;
+    text-align: center;
+    border-radius: 10px;
+    box-shadow: 0 0 20px #8b0000;
+}
+
+.modal-content h2 { margin-bottom: 15px; font-size: 2rem; }
+.modal-content p { margin-bottom: 20px; font-size: 1.2rem; }
+.modal-content input {
+    padding: 10px; font-size: 1.2rem; width: 100px;
+    text-align: center; background: #000; color: #d4af37; border: 2px solid #d4af37;
+}
+.modal-content button {
+    display: block; margin: 20px auto 0; padding: 10px 20px;
+    font-size: 1.2rem; background: #8b0000; color: #fff;
+    border: 2px solid #ff3333; cursor: pointer;
+}
+
+/* Vizuálne efekty */
+#fx-container {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 50;
+}
+
+.explosion-gif {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    width: 250px; height: 250px;
+    pointer-events: none;
+}
