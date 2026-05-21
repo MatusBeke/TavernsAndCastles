@@ -101,6 +101,7 @@ class NPC {
                 this.health = 0;
                 this.speed = 0;
                 this.happiness = 0;
+                activeNPCs = activeNPCs.filter(npc => npc.id !== this.id);
                 console.log(`NPC ${this.name} práve zomrelo od hladu na pozadí!`);
                 
                 this.lastUpdate = teraz;
@@ -108,7 +109,14 @@ class NPC {
             }
 
             if (currentHour >= 20 || currentHour < 6) {
-                this.inHome();            
+                this.inHome();    
+                if (currentHour === 23 && currentMinute == 0)
+                {
+                    if (Math.random() < 0.25) 
+                    { 
+                        this.reproduce();
+                    }
+                }        
             }
             else if (currentHour >= 7 && currentHour < 17) {
                 if (this.workplaceX !== null && this.workplaceY !== null) 
@@ -260,6 +268,14 @@ class NPC {
                 this.happiness = Math.min(100, this.happiness + 1);
             }
         }
+    }
+
+    reproduce()
+    {
+        this.state = "Reproducing";
+        this.targetX = (this.homeX * TILE_SIZE) + (TILE_SIZE / 2) - 10;
+        this.targetY = (this.homeY * TILE_SIZE) + (TILE_SIZE / 2) - 15;
+        this.happiness += 1;
     }
 }
 

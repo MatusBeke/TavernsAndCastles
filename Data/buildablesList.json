@@ -117,6 +117,19 @@
         "maxBuildLevel": 1
     },
     {
+        "id": "archer-tower",
+        "name": "Archer Tower",
+        "category": "castles",
+        "level": 3,
+        "price": 3000,
+        "popCost": 0,
+        "baseHealth": 5000,
+        "productionText": "Ranged defense",
+        "image": "../Resources/Buildables/Castle/Img_Donjon.png",
+        "description": "A fortified tower within the castle, offering ranged defense.",
+        "maxBuildLevel": 1
+    },
+    {
         "id": "barracks",
         "name": "Barracks",
         "category": "castles",
