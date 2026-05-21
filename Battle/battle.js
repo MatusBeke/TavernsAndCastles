@@ -38,14 +38,14 @@ const imgArrow = new Image(); imgArrow.src = '../Resources/Arrow.png';
 
 // Štatistiky (Rýchlosť je znížená 10-násobne pre pomalší boj)
 const ROLES = {
-    MILITIA: { name: 'Militia', hp: 60, speed: 0.25, damage: 2, range: 15, img: imgMilitia, w: 7.5, h: 15 },
-    GUARDS: { name: 'Guards', hp: 120, speed: 0.15, damage: 4, range: 15, img: imgGuard, w: 7.5, h: 15 },
-    MEN_AT_ARMS: { name: 'Men-at-Arms', hp: 100, speed: 0.20, damage: 5, range: 15, img: imgMenAtArms, w: 7.5, h: 15 },
-    RANGED: { name: 'Ranged', hp: 50, speed: 0.20, damage: 3, range: 120, img: imgRanged, w: 7.5, h: 15 },
-    KNIGHT: { name: 'Knight', hp: 150, speed: 0.18, damage: 8, range: 18, img: imgKnight, w: 7.5, h: 15 },
-    CAVALRY: { name: 'Cavalry', hp: 130, speed: 0.45, damage: 6, range: 20, img: imgCavalry, w: 30, h: 30 }, 
-    WAR_MACHINE: { name: 'War-Machine', hp: 300, speed: 0.05, damage: 15, range: 150, img: imgWarMachine, w: 7.5, h: 15 },
-    KING: { name: 'King', hp: 500, speed: 0.12, damage: 12, range: 20, img: imgKing, w: 7.5, h: 15 }
+    MILITIA: { name: 'Militia', hp: 60, speed: 1, damage: 2, range: 15, img: imgMilitia, w: 7.5, h: 15 },
+    GUARDS: { name: 'Guards', hp: 120, speed: 1, damage: 4, range: 15, img: imgGuard, w: 7.5, h: 15 },
+    MEN_AT_ARMS: { name: 'Men-at-Arms', hp: 100, speed: 1, damage: 5, range: 15, img: imgMenAtArms, w: 7.5, h: 15 },
+    RANGED: { name: 'Ranged', hp: 50, speed: 1, damage: 3, range: 120, img: imgRanged, w: 7.5, h: 15 },
+    KNIGHT: { name: 'Knight', hp: 150, speed: 1, damage: 8, range: 18, img: imgKnight, w: 7.5, h: 15 },
+    CAVALRY: { name: 'Cavalry', hp: 130, speed: 2, damage: 6, range: 20, img: imgCavalry, w: 30, h: 30 }, 
+    WAR_MACHINE: { name: 'War-Machine', hp: 300, speed: 1, damage: 15, range: 150, img: imgWarMachine, w: 7.5, h: 15 },
+    KING: { name: 'King', hp: 500, speed: 1, damage: 12, range: 20, img: imgKing, w: 7.5, h: 15 }
 };
 
 // --- CAMERA CONTROLS ---
