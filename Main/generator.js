@@ -4,7 +4,6 @@ var TILE_SIZE = 128;
 var mapData = []; 
 var camera = { x: 0, y: 0, zoom: 1 };
 
-
     // Pripojenie na HTML canvas pre vykreslovanie
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
@@ -267,19 +266,39 @@ var camera = { x: 0, y: 0, zoom: 1 };
 
     // ... (ostatné event listenery na wheel, mousedown, mousemove zostávajú rovnaké) ...
 
-    // Ked sa nacita prvy zakladny obrazok mapy, inicializujeme ju
     imgMountains.onload = () => {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
 
-        // Vycentrovanie kamery presne na stred mapy pri starte
+        const shouldLoad = localStorage.getItem('should_load_game');
+        const hasExistingSave = localStorage.getItem('rts_save_slot_1');
+        
+        console.log("Kontrola vlajky by-load:", shouldLoad);
+        console.log("Existuje reálny save?:", hasExistingSave ? "ÁNO" : "NIE");
+
+        if (shouldLoad === 'true') {
+            localStorage.removeItem('should_load_game');
+            
+            if (hasExistingSave) {
+                console.log("Spúšťam loadMap()...");
+                loadMap(); 
+            } else {
+                alert("Uložená pozícia sa nenašla! Spúšťam novú mapu.");
+                generateNewGameWorld();
+            }
+        } else {
+            console.log("Hráč nechcel loadovať, generujem nový svet.");
+            generateNewGameWorld();
+        }
+    };
+
+    // Pod to rovno prihoď túto pomocnú funkciu:
+    function generateNewGameWorld() {
         camera.x = (canvas.width / 2) - (MAP_SIZE * TILE_SIZE / 2);
         camera.y = (canvas.height / 2) - (MAP_SIZE * TILE_SIZE / 2);
-
-        // --- ZMENA TU: Resetujeme čas tesne pred spustením slučky ---
         lastTime = performance.now(); 
         initMap();
-    };
+    }
 
     //Plynuly prechod medzi dnom a nocou podla aktualneho casu
     function getNightIntensity() {
@@ -355,18 +374,6 @@ var camera = { x: 0, y: 0, zoom: 1 };
 
     // Koniec tahania kamery po pusteni mysi
     window.addEventListener('mouseup', () => isDragging = false);
-
-    // Ked sa nacita prvy zakladny obrazok mapy, inicializujeme ju
-    imgMountains.onload = () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-
-            // Vycentrovanie kamery presne na stred mapy pri starte
-            camera.x = (canvas.width / 2) - (MAP_SIZE * TILE_SIZE / 2);
-            camera.y = (canvas.height / 2) - (MAP_SIZE * TILE_SIZE / 2);
-
-            initMap();
-        };
 
     // Asynchronna funkcia na nacitanie bocneho menu s budovami podla kategorie
     async function loadBuildingMenu(filterCategory = 'houses') {
@@ -517,7 +524,7 @@ function saveMap() {
 
     localStorage.setItem('rts_save_slot_1', JSON.stringify(saveGameData));
     console.log("Hra bola úspešne uložená!");
-    //showWarning("Autosaving game", "yellow");
+    showWarning("Autosaving game", "yellow");
 }
 
 function loadMap() {
@@ -643,8 +650,13 @@ function loadMap() {
 
     console.log("Hra bola kompletne načítaná úspešne!");
     clampCamera();
+
+    requestAnimationFrame(draw);
 }
 
 //Autosave
-//updateHUD()
-//setInterval(saveMap, 10000);
+setInterval(() => {
+    if (mapData && mapData.length > 0) {
+        saveMap();
+    }
+}, 10000);

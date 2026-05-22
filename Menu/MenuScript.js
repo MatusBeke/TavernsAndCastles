@@ -64,6 +64,25 @@ async function quitGame() {
     window.location.replace("about:blank");
 }
 
+async function loadGame(){
+    console.log("Pripravujem načítanie hry...");
+    
+    // 1. Nastavíme príznak, že po načítaní stránky s hrou sa má spustiť load
+    localStorage.setItem('should_load_game', 'true');
+    
+    // 2. Vizuálny prechod do hry (rovnaký ako máš v startGame)
+    Object.assign(document.body.style, {
+        transition: "opacity 1.5s ease, filter 1.5s ease",
+        opacity: "0",
+        filter: "brightness(0.3) blur(10px) sepia(50%)"
+    });
+    
+    await delay(1500);
+    // 3. Presmerovanie do samotnej hry
+    window.location.href = "../Main/index.html";
+
+}
+
 // Generovanie zvuku pri prejdení myšou 
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
