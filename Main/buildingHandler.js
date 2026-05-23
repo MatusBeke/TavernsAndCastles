@@ -350,6 +350,7 @@ document.getElementById('gameCanvas').addEventListener('click', (e) => {
                 });
             }
             finalizeBuild(canvas);
+            return;
         }
     }
 });
