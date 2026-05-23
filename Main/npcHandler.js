@@ -3,6 +3,7 @@ const npcList = document.getElementById("citizens-list");
 
 let jobs = ["peasant", "miner", "lumberman", "guard"];
 let selectedNPC = null;
+let isAbleToWork = true;
 
 let peasantImage = "../Resources/NPCs/NPC_Peasant.png";
 let minerImage = "../Resources/NPCs/NPC_Miner.png";
@@ -90,7 +91,7 @@ class NPC {
         if (teraz - this.lastUpdate > 1000) {
             //Znizovanie hladu podla cinnosti
             if (this.state === "Working") {
-                this.hunger = Math.max(0, this.hunger - 3);
+                this.hunger = Math.max(0, this.hunger - 2);
             } else if (this.state !== "In Home") {
                 this.hunger = Math.max(0, this.hunger - 1);
             }
@@ -101,54 +102,37 @@ class NPC {
                 this.health = 0;
                 this.speed = 0;
                 this.happiness = 0;
-                activeNPCs = activeNPCs.filter(npc => npc.id !== this.id);
                 console.log(`NPC ${this.name} práve zomrelo od hladu na pozadí!`);
                 
                 this.lastUpdate = teraz;
                 return;
             }
+            if ((currentHour === 7 || currentHour === 12 || currentHour === 18) && currentMinute === 0) {
+                this.hunger = 100;
+                currentFood -= 1;
+            }
 
             if (currentHour >= 20 || currentHour < 6) {
                 this.inHome();    
-                if (currentHour === 23 && currentMinute == 0)
-                {
-                    if (Math.random() < 0.25) 
-                    { 
-                        this.reproduce();
-                    }
-                }        
+                // if (currentHour === 23 && currentMinute == 0)
+                // {
+                //     if (Math.random() < 0.25) 
+                //     { 
+                //         this.reproduce();
+                //     }
+                // }        
             }
             else if (currentHour >= 7 && currentHour < 17) {
-                if (this.workplaceX !== null && this.workplaceY !== null) 
+                if (this.workplaceX !== null && this.workplaceY !== null && isAbleToWork == true) 
                 {
                     this.work();
-                    if (currentHour === 12) 
-                    {
-                        this.hunger = 100;
-                        currentFood -= 1;
-                    }
                 } else {
                     this.wander();
-                    if (currentHour === 12) 
-                    {
-                        this.hunger = 100;
-                        currentFood -= 1;
-                    }
                 }
             } 
             else {
                 if (this.state === "In Home") {
                     this.state = "Wandering";
-                    if (currentHour === 7) 
-                    {
-                        this.hunger = 100;
-                        currentFood -= 1;
-                    }
-                    if (currentHour === 18) 
-                    {
-                        this.hunger = 100;
-                        currentFood -= 1;
-                    }
                 }
                 this.wander();
             }
@@ -256,7 +240,7 @@ class NPC {
     }
 
     work(){
-        if (this.state !== "Dead") {
+        if (this.state !== "Dead" && isAbleToWork == true) {
             this.state = "Working";
             const randomOffsetX = Math.random() * (TILE_SIZE - 20);
             const randomOffsetY = Math.random() * (TILE_SIZE - 20);
@@ -426,8 +410,31 @@ function showNpcInfo(npc) {
         });
     }
 
-    const workText = (npc.workplaceX !== null) ? `Workplace: [${npc.workplaceX}, ${npc.workplaceY}]` : "Unemployed";
+
+    //Kontrola ci sa pracovisko nachadza v 20 tilovom radiuse od domu
+    let distanceFromHome = 0;
+    let distanceText = "";
+
+    if (npc.workplaceX !== null && npc.workplaceY !== null) {
+        let dx = npc.workplaceX - npc.homeX;
+        let dy = npc.workplaceY - npc.homeY;
+
+        distanceFromHome = parseFloat(Math.sqrt(dx * dx + dy * dy).toFixed(0));
+        distanceText = distanceFromHome.toString();
+        isAbleToWork = distanceFromHome <= 20;
+        console.log("Moze pracovat.")
+    } else {
+        isAbleToWork = false; 
+        distanceFromHome = 0;
+        distanceText = "Workplace too far away! - " + distanceFromHome.toString()
+        console.log("Nemoze pracovat.")
+    }
+
+    const workText = (npc.workplaceX !== null) ? `Workplace: [${npc.workplaceX}, ${npc.workplaceY}] (${distanceText})` : "Unemployed";
     document.getElementById('npc-info-work').innerText = workText;
+
+    const homeText = (npc.homeX !== null) ? `Home: [${npc.homeX}, ${npc.homeY}]` : "Homeless";
+    document.getElementById('npc-info-home').innerText = homeText;
 
     if (npc.img) {
         document.getElementById('npc-info-img').src = npc.img;
