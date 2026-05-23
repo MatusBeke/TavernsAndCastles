@@ -74,6 +74,9 @@ class NPC {
 
         this.state = "Wandering";
         this.lastUpdate = Date.now();
+
+        this.workTimer = 0;
+        
     }
 
     update(deltaTime) {
@@ -110,6 +113,7 @@ class NPC {
             if ((currentHour === 7 || currentHour === 12 || currentHour === 18) && currentMinute === 0) {
                 this.hunger = 100;
                 currentFood -= 1;
+                updateHUD();
             }
 
             if (currentHour >= 20 || currentHour < 6) {
@@ -239,17 +243,80 @@ class NPC {
         }
     }
 
-    work(){
+    work() {
         if (this.state !== "Dead" && isAbleToWork == true) {
             this.state = "Working";
             const randomOffsetX = Math.random() * (TILE_SIZE - 20);
             const randomOffsetY = Math.random() * (TILE_SIZE - 20);
+            
             if (this.workplaceX !== null && this.workplaceY !== null) {
                 this.targetX = (this.workplaceX * TILE_SIZE) + randomOffsetX;
                 this.targetY = (this.workplaceY * TILE_SIZE) + randomOffsetY;
             }
+            
             if (this.profession === "peasant") {
-                this.happiness = Math.min(100, this.happiness + 1);
+                this.workTimer += 1;
+
+                if (this.workTimer >= 5) {
+                    currentFood += 1;
+                    this.happiness = Math.min(100, this.happiness + 1);
+                    
+                    // Správne zobrazenie plávajúceho textu
+                    if (typeof spawnFloatingText === 'function') {
+                        spawnFloatingText("+1 Food", this.workplaceX, this.workplaceY, "#d9ff00");
+                    }
+                    
+                    updateHUD();
+                    this.workTimer = 0; 
+                }
+            }
+            else if (this.profession === "lumberman") {
+                this.workTimer += 1;
+
+                if (this.workTimer >= 5) {
+                    currentWood += 1;
+                    this.happiness = Math.min(100, this.happiness + 1);
+                    
+                    // Správne zobrazenie plávajúceho textu
+                    if (typeof spawnFloatingText === 'function') {
+                        spawnFloatingText("+1 Wood", this.workplaceX, this.workplaceY, "#d9ff00");
+                    }
+                    
+                    updateHUD();
+                    this.workTimer = 0; 
+                }
+            }
+            else if (this.profession === "guard") {
+                this.workTimer += 1;
+
+                if (this.workTimer >= 5) {
+                    currentTrainingPoints += 1;
+                    this.happiness = Math.min(100, this.happiness + 1);
+                    
+                    // Správne zobrazenie plávajúceho textu
+                    if (typeof spawnFloatingText === 'function') {
+                        spawnFloatingText("+1 Training Point", this.workplaceX, this.workplaceY, "#3378b8");
+                    }
+                    
+                    updateHUD();
+                    this.workTimer = 0; 
+                }
+            }
+            else if (this.profession === "miner") {
+                this.workTimer += 1;
+
+                if (this.workTimer >= 5) {
+                    currentStone += 1;
+                    this.happiness = Math.min(100, this.happiness + 1);
+                    
+                    // Správne zobrazenie plávajúceho textu
+                    if (typeof spawnFloatingText === 'function') {
+                        spawnFloatingText("+1 Stone", this.workplaceX, this.workplaceY, "#3378b8");
+                    }
+                    
+                    updateHUD();
+                    this.workTimer = 0; 
+                }
             }
         }
     }
@@ -506,3 +573,81 @@ function changeWork() {
     console.log(`Changed ${selectedNPC.name}'s job to: ${chosenJob}`);
 }
 
+// Pomocná funkcia na nájdenie nového domu po predaji
+function relocateNPCHomeAfterSell(npc, soldX, soldY) {
+    let closestHome = null;
+    let minDistance = Infinity;
+
+    // Prejdeme celú mapu a hľadáme obytné budovy
+    for (let y = 0; y < MAP_SIZE; y++) {
+        for (let x = 0; x < MAP_SIZE; x++) {
+            const tile = mapData[y][x];
+            
+            if (tile && tile.buildingSrc) {
+                const src = tile.buildingSrc.toLowerCase();
+                // Overíme, či ide o obytnú budovu (Cabin, House) a či to nie je tá, ktorú práve búrame
+                if ((src.includes('cabin') || src.includes('house')) && !(x === soldX && y === soldY)) {
+                    
+                    let dx = x - soldX;
+                    let dy = y - soldY;
+                    let distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < minDistance) {
+                        minDistance = distance;
+                        closestHome = { x, y };
+                    }
+                }
+            }
+        }
+    }
+
+    if (closestHome) {
+        npc.homeX = closestHome.x;
+        npc.homeY = closestHome.y;
+        console.log(`NPC ${npc.name} sa úspešne presťahoval na [${npc.homeX}, ${npc.homeY}]`);
+    } else {
+        npc.homeX = null;
+        npc.homeY = null;
+        if (npc.state) npc.state = "Wandering"; 
+        console.log(`NPC ${npc.name} nenašiel voľné ubytovanie.`);
+    }
+}
+
+// Pomocná funkcia na nájdenie novej práce po predaji
+function relocateNPCWorkplaceAfterSell(npc) {
+    let targetArray = [];
+
+    // Priradíme správne pole podľa profesie NPC
+    if (npc.profession === "peasant") targetArray = activeFields;
+    else if (npc.profession === "lumberman") targetArray = activeLumberyards;
+    else if (npc.profession === "miner") targetArray = activeMines;
+    else if (npc.profession === "guard") targetArray = activeBarracks;
+    else if (npc.profession === "quarryman") targetArray = activeQuarries; // Pridané pre lomy
+
+    let closestWork = null;
+    let minDistance = Infinity;
+
+    // Kedže v poliach máš stringy "x,y", musíme ich naparsovať
+    targetArray.forEach(coordsStr => {
+        let [x, y] = coordsStr.split(',').map(Number);
+        
+        let dx = x - npc.workplaceX;
+        let dy = y - npc.workplaceY;
+        let distance = Math.sqrt(dx * dx + dy * dy);
+
+        if (distance < minDistance) {
+            minDistance = distance;
+            closestWork = { x, y };
+        }
+    });
+
+    if (closestWork) {
+        npc.workplaceX = closestWork.x;
+        npc.workplaceY = closestWork.y;
+        console.log(`NPC ${npc.name} si našiel novú prácu na [${npc.workplaceX}, ${npc.workplaceY}]`);
+    } else {
+        npc.workplaceX = null;
+        npc.workplaceY = null;
+        console.log(`NPC ${npc.name} je momentálne nezamestnaný.`);
+    }
+}
