@@ -214,31 +214,20 @@ var camera = { x: 0, y: 0, zoom: 1 };
 
                     if (tile.buildingImg) {
                         ctx.drawImage(tile.buildingImg, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-
-                        // if (typeof currentHour !== 'undefined' && (currentHour >= 20 || currentHour < 6)) {
-                        //     if (!window.imgBuildingNightLight) {
-                        //         window.imgBuildingNightLight = new Image();
-                        //         window.imgBuildingNightLight.src = '../Resources/Img_LightSource.png';
-                        //     }
-                        //     if (window.imgBuildingNightLight.complete && window.imgBuildingNightLight.naturalWidth !== 0) {
-                        //         ctx.save();
-                        //         ctx.globalCompositeOperation = "screen"; 
-                        //         ctx.drawImage(window.imgBuildingNightLight, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-                        //         ctx.restore();
-                        //     }
-                        // }
                     }
                 }
             }
 
-            // --- ZMENA TU: Aktualizácia a vykreslenie NPCs s odovzdaním deltaTime ---
-            activeNPCs.forEach(npc => {
-                npc.update(deltaTime); // <--- Odovzdávame delta čas pre plynulý posun
-            });
+            // Aktualizácia a vykreslenie NPCs s odovzdaním deltaTime
+            if (typeof activeNPCs !== 'undefined') {
+                activeNPCs.forEach(npc => {
+                    if (typeof npc.update === 'function') npc.update(deltaTime);
+                });
 
-            activeNPCs.forEach(npc => {
-                npc.draw(ctx);
-            });
+                activeNPCs.forEach(npc => {
+                    if (typeof npc.draw === 'function') npc.draw(ctx);
+                });
+            }
 
             ctx.setTransform(1, 0, 0, 1, 0, 0);
 
@@ -257,14 +246,13 @@ var camera = { x: 0, y: 0, zoom: 1 };
 
     //Plynuly prechod medzi dnom a nocou podla aktualneho casu
     function getNightIntensity() {
+        if (typeof currentHour === 'undefined') return 0;
         if (currentHour === 18) return 0.1;
         if (currentHour === 19) return 0.3;
         if (currentHour >= 20 || currentHour < 5) return 0.55; // Uplna noc
         if (currentHour === 5) return 0.2;
         return 0; // Deň
     }
-
-    // ... (ostatné event listenery na wheel, mousedown, mousemove zostávajú rovnaké) ...
 
     imgMountains.onload = () => {
         canvas.width = window.innerWidth;
@@ -292,21 +280,11 @@ var camera = { x: 0, y: 0, zoom: 1 };
         }
     };
 
-    // Pod to rovno prihoď túto pomocnú funkciu:
     function generateNewGameWorld() {
         camera.x = (canvas.width / 2) - (MAP_SIZE * TILE_SIZE / 2);
         camera.y = (canvas.height / 2) - (MAP_SIZE * TILE_SIZE / 2);
         lastTime = performance.now(); 
         initMap();
-    }
-
-    //Plynuly prechod medzi dnom a nocou podla aktualneho casu
-    function getNightIntensity() {
-        if (currentHour === 18) return 0.1;
-        if (currentHour === 19) return 0.3;
-        if (currentHour >= 20 || currentHour < 5) return 0.55; // Uplna noc
-        if (currentHour === 5) return 0.2;
-        return 0; // Deň
     }
 
     // Zoomovanie kamery kolieskom mysi
@@ -352,8 +330,6 @@ var camera = { x: 0, y: 0, zoom: 1 };
 
             lastMouse = { x: e.clientX, y: e.clientY };
     });
-
-
 
     function startBattle() {
         console.log("Starting Field Battle...");
@@ -440,7 +416,6 @@ function showInfo(id) {
 // Nacita defaultnu kategoriu budov ('houses') po starte hry
 loadBuildingMenu();
 
-
 //Ukladanie
 function saveMap() {
     if (!mapData || mapData.length === 0 || !mapData[0]) {
@@ -472,7 +447,7 @@ function saveMap() {
     }
 
     // 2. Extrahovanie čistých dát z activeNPCs
-    const savedNPCs = activeNPCs.map(npc => {
+    const savedNPCs = (typeof activeNPCs !== 'undefined' ? activeNPCs : []).map(npc => {
         return {
             id: npc.id,
             name: npc.name,
@@ -498,9 +473,9 @@ function saveMap() {
         mapSize: MAP_SIZE,
         camera: { x: camera.x, y: camera.y, zoom: camera.zoom },
         time: {
-            day: currentDay,
-            hour: currentHour,
-            minute: currentMinute
+            day: typeof currentDay !== 'undefined' ? currentDay : 1,
+            hour: typeof currentHour !== 'undefined' ? currentHour : 8,
+            minute: typeof currentMinute !== 'undefined' ? currentMinute : 0
         },
         map: savedTiles,
         npcs: savedNPCs,
@@ -510,7 +485,6 @@ function saveMap() {
             lumberyards: typeof activeLumberyards !== 'undefined' ? activeLumberyards : [],
             barracks: typeof activeBarracks !== 'undefined' ? activeBarracks : []
         },
-        // --- NOVÉ: Ukladanie všetkých herných surovín ---
         resources: {
             gold: typeof currentGold !== 'undefined' ? currentGold : 0,
             pop: typeof currentPop !== 'undefined' ? currentPop : 0,
@@ -524,7 +498,7 @@ function saveMap() {
 
     localStorage.setItem('rts_save_slot_1', JSON.stringify(saveGameData));
     console.log("Hra bola úspešne uložená!");
-    showWarning("Autosaving game", "yellow");
+    if (typeof showWarning === 'function') showWarning("Autosaving game", "yellow");
 }
 
 function loadMap() {
@@ -543,7 +517,7 @@ function loadMap() {
     camera.y = saveData.camera.y;
     camera.zoom = saveData.camera.zoom;
 
-    if (saveData.time) {
+    if (saveData.time && typeof currentDay !== 'undefined') {
         currentDay = saveData.time.day;
         currentHour = saveData.time.hour;
         currentMinute = saveData.time.minute - 10; 
@@ -551,7 +525,7 @@ function loadMap() {
             currentMinute = 50; currentHour--;
             if (currentHour < 0) { currentHour = 23; currentDay--; }
         }
-        updateTime(); 
+        if (typeof updateTime === 'function') updateTime(); 
     }
 
     // 2. Načítanie aktívnych pracovísk
@@ -562,7 +536,6 @@ function loadMap() {
         if (typeof activeBarracks !== 'undefined') activeBarracks = saveData.workplaces.barracks || [];
     }
 
-    // --- NOVÉ: Načítanie a prepísanie surovín ---
     if (saveData.resources) {
         if (typeof currentGold !== 'undefined') currentGold = saveData.resources.gold;
         if (typeof currentPop !== 'undefined') currentPop = saveData.resources.pop;
@@ -607,40 +580,44 @@ function loadMap() {
     }
 
     // 4. Načítanie a oživenie NPCs
-    activeNPCs = []; 
-    const npcListElement = document.getElementById("citizens-list");
-    if (npcListElement) {
-        npcListElement.innerHTML = '';
-    }
+    if (typeof activeNPCs !== 'undefined') {
+        activeNPCs = []; 
+        const npcListElement = document.getElementById("citizens-list");
+        if (npcListElement) {
+            npcListElement.innerHTML = '';
+        }
 
-    if (saveData.npcs && Array.isArray(saveData.npcs)) {
-        saveData.npcs.forEach(npcData => {
-            const restoredNpc = new NPC(
-                npcData.id,
-                npcData.name,
-                npcData.profession,
-                npcData.img,
-                npcData.homeX,
-                npcData.homeY,
-                npcData.health,
-                npcData.hunger,
-                npcData.happiness,
-                npcData.workplaceX,
-                npcData.workplaceY
-            );
+        if (saveData.npcs && Array.isArray(saveData.npcs)) {
+            saveData.npcs.forEach(npcData => {
+                if (typeof NPC !== 'undefined') {
+                    const restoredNpc = new NPC(
+                        npcData.id,
+                        npcData.name,
+                        npcData.profession,
+                        npcData.img,
+                        npcData.homeX,
+                        npcData.homeY,
+                        npcData.health,
+                        npcData.hunger,
+                        npcData.happiness,
+                        npcData.workplaceX,
+                        npcData.workplaceY
+                    );
 
-            restoredNpc.x = npcData.x;
-            restoredNpc.y = npcData.y;
-            restoredNpc.targetX = npcData.targetX;
-            restoredNpc.targetY = npcData.targetY;
-            restoredNpc.state = npcData.state;
+                    restoredNpc.x = npcData.x;
+                    restoredNpc.y = npcData.y;
+                    restoredNpc.targetX = npcData.targetX;
+                    restoredNpc.targetY = npcData.targetY;
+                    restoredNpc.state = npcData.state;
 
-            activeNPCs.push(restoredNpc);
+                    activeNPCs.push(restoredNpc);
 
-            if (typeof updateCitizensList === 'function') {
-                updateCitizensList(restoredNpc.name);
-            }
-        });
+                    if (typeof updateCitizensList === 'function') {
+                        updateCitizensList(restoredNpc.name);
+                    }
+                }
+            });
+        }
     }
 
     // Aktualizácia HUD panelu s novými načítanými surovinami
@@ -660,3 +637,171 @@ setInterval(() => {
         saveMap();
     }
 }, 30000);
+
+
+// ==========================================
+// --- INVASION MINIGAME (DEFEND VILLAGE) ---
+// ==========================================
+
+window.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('underAttack') && urlParams.get('underAttack') === 'true') {
+        // Vymaže parameter z URL, aby sa minihra nespúšťala po každom refreshi
+        const url = new URL(window.location);
+        url.searchParams.delete('underAttack');
+        window.history.replaceState({}, document.title, url);
+        
+        // Spustí minihru s menším oneskorením, aby sa stihla načítať hlavná mapa
+        setTimeout(startInvasionMinigame, 1000);
+    }
+});
+
+function startInvasionMinigame() {
+    alert("🚨 YOUR VILLAGE IS UNDER ATTACK! 🚨\nClick on the invaders to stop them from reaching the center!");
+
+    // Vytvorenie priehľadného plátna pre minihru priamo nad tvojím svetom
+    const mgCanvas = document.createElement('canvas');
+    mgCanvas.id = 'minigameCanvas';
+    mgCanvas.style.position = 'fixed';
+    mgCanvas.style.top = '0';
+    mgCanvas.style.left = '0';
+    mgCanvas.style.width = '100vw';
+    mgCanvas.style.height = '100vh';
+    mgCanvas.style.zIndex = '9999'; // Úplne navrchu, blokuje dragovanie sveta pod ním
+    mgCanvas.style.cursor = 'crosshair';
+    document.body.appendChild(mgCanvas);
+
+    const mgCtx = mgCanvas.getContext('2d');
+    mgCanvas.width = window.innerWidth;
+    mgCanvas.height = window.innerHeight;
+
+    let invaders = [];
+    let villageHp = 10; // Koľko nepriateľov môže prejsť, kým prehráš
+    let killsNeeded = 25; // Koľko ich musíš zabiť na výhru
+    let kills = 0;
+    let minigameActive = true;
+
+    // Generovanie nepriateľov
+    let spawnInterval = setInterval(() => {
+        if (!minigameActive) return clearInterval(spawnInterval);
+
+        let edge = Math.floor(Math.random() * 4);
+        let startX, startY;
+        let w = mgCanvas.width;
+        let h = mgCanvas.height;
+
+        if (edge === 0) { startX = Math.random() * w; startY = -50; } // Hore
+        else if (edge === 1) { startX = w + 50; startY = Math.random() * h; } // Vpravo
+        else if (edge === 2) { startX = Math.random() * w; startY = h + 50; } // Dole
+        else { startX = -50; startY = Math.random() * h; } // Vľavo
+
+        invaders.push({
+            x: startX,
+            y: startY,
+            size: 20 + Math.random() * 10,
+            speed: 1.5 + Math.random() * 1.5
+        });
+    }, 1000); // Každú sekundu vybehne jeden nepriateľ
+
+    // Klikanie (Zabíjanie nepriateľov)
+    mgCanvas.addEventListener('mousedown', (e) => {
+        if (!minigameActive) return;
+        const clickX = e.clientX;
+        const clickY = e.clientY;
+
+        for (let i = invaders.length - 1; i >= 0; i--) {
+            let inv = invaders[i];
+            let dist = Math.hypot(inv.x - clickX, inv.y - clickY);
+            if (dist < inv.size * 1.5) { // Hitbox tolerancia (kliknutie nemusí byť na pixel presné)
+                invaders.splice(i, 1);
+                kills++;
+                
+                // Vykreslenie malej stopy po zabití
+                mgCtx.fillStyle = "rgba(255, 0, 0, 0.5)";
+                mgCtx.beginPath();
+                mgCtx.arc(clickX, clickY, 20, 0, Math.PI * 2);
+                mgCtx.fill();
+                
+                if (kills >= killsNeeded) {
+                    endMinigame(true);
+                }
+                break; // Zabije len jedného na jeden klik
+            }
+        }
+    });
+
+    // Slučka minihry
+    function mgLoop() {
+        if (!minigameActive) return;
+
+        mgCtx.clearRect(0, 0, mgCanvas.width, mgCanvas.height);
+
+        // Vykreslenie stredu (Obranná zóna)
+        const centerX = mgCanvas.width / 2;
+        const centerY = mgCanvas.height / 2;
+        
+        mgCtx.fillStyle = "rgba(0, 0, 0, 0.6)";
+        mgCtx.fillRect(centerX - 60, centerY - 40, 120, 80);
+        mgCtx.fillStyle = "white";
+        mgCtx.font = "bold 18px Arial";
+        mgCtx.textAlign = "center";
+        mgCtx.fillText("TOWN HP: " + villageHp, centerX, centerY - 5);
+        mgCtx.fillText("KILLS: " + kills + "/" + killsNeeded, centerX, centerY + 20);
+
+        // Pohyb a vykreslenie nepriateľov
+        for (let i = invaders.length - 1; i >= 0; i--) {
+            let inv = invaders[i];
+            let dx = centerX - inv.x;
+            let dy = centerY - inv.y;
+            let dist = Math.hypot(dx, dy);
+
+            if (dist < 40) {
+                // Nepriateľ sa dostal do dediny
+                invaders.splice(i, 1);
+                villageHp--;
+                
+                // Vizuálny efekt zranenia stredu
+                mgCtx.fillStyle = "rgba(255, 0, 0, 0.8)";
+                mgCtx.fillRect(centerX - 60, centerY - 40, 120, 80);
+                
+                if (villageHp <= 0) {
+                    endMinigame(false);
+                }
+            } else {
+                // Posun nepriateľa
+                inv.x += (dx / dist) * inv.speed;
+                inv.y += (dy / dist) * inv.speed;
+
+                // Vykreslenie (červený kruh symbolizujúci nepriateľa)
+                mgCtx.fillStyle = "#ff3333";
+                mgCtx.beginPath();
+                mgCtx.arc(inv.x, inv.y, inv.size, 0, Math.PI * 2);
+                mgCtx.fill();
+                mgCtx.strokeStyle = "#8b0000";
+                mgCtx.lineWidth = 3;
+                mgCtx.stroke();
+            }
+        }
+
+        requestAnimationFrame(mgLoop);
+    }
+
+    function endMinigame(won) {
+        minigameActive = false;
+        mgCanvas.remove(); 
+        
+        if (won) {
+            alert("Victory! You have defended your village from the invaders!");
+        } else {
+            alert("Defeat! The invaders have plundered your village and stolen some of your gold!");
+            // Odobratie 500 goldov ako trest za prehru
+            if (typeof currentGold !== 'undefined') {
+                currentGold = Math.max(0, currentGold - 500); 
+                if (typeof updateHUD === 'function') updateHUD(); 
+            }
+        }
+    }
+
+    // Odštartovanie slučky minihry
+    mgLoop();
+}

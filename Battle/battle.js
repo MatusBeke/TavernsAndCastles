@@ -400,16 +400,16 @@ function updateCombat() {
         battleEnded = true;
         isFighting = false;
         setTimeout(() => {
-            showGameMessage(eventMessage ? eventMessage + "\n\nVICTORY!\nMoving to ATTACK phase!" : "VICTORY!\nMoving to ATTACK phase!", () => {
-                window.location.href = "defend.html"; // Zmenené rovno na defend fázu/prípravu
+            showGameMessage(eventMessage ? eventMessage + "\n\nVICTORY!\nReturning to your world." : "VICTORY!\nReturning to your world.", () => {
+                window.location.href = "../index.html"; // Návrat na normálnu mapu po výhre
             });
         }, 1500);
     } else if (playerArmy.length === 0 && enemyArmy.length > 0) {
         battleEnded = true;
         isFighting = false;
         setTimeout(() => {
-            showGameMessage(eventMessage ? eventMessage + "\n\nDEFEAT!\nMoving to DEFEND phase!" : "DEFEAT!\nMoving to DEFEND phase!", () => {
-                window.location.href = "defend.html"; // Zmenené rovno na defend fázu/prípravu
+            showGameMessage(eventMessage ? eventMessage + "\n\nDEFEAT!\nThey are marching to your world!" : "DEFEAT!\nThey are marching to your world!", () => {
+                window.location.href = "../index.html?underAttack=true"; // Presun na mapu a spustenie obrannej minihry
             });
         }, 1500);
     }
