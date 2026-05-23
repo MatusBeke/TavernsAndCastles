@@ -12,14 +12,9 @@ let currentGold = 100000;
 let currentPop = 0;
 let currentWood = 0;
 let currentStone = 0;
-let currentCoal = 0;
-let currentIron = 0;
-let currentSteel = 0;
-let currentPlanks = 0;
 let currentFood = 100;
 let currentLevel = 1;
 let currentXP = 0;
-let currentTrainingPoints = 0;
 
 let selectedTileForInfo = null;
 let isChopping = false;
@@ -52,8 +47,6 @@ function updateHUD() {
     const statLevelDisplay = document.getElementById('stat-level');
     const statXPDisplay = document.getElementById('stat-xp');
     const statDaysDisplay = document.getElementById('stat-days');
-    const statCoalDisplay = document.getElementById('stat-coal');
-    const statTPDisplay = document.getElementById('stat-tp');
 
     if (statGoldDisplay) statGoldDisplay.innerText = currentGold;
     if (statWoodDisplay) statWoodDisplay.innerText = currentWood;
@@ -67,8 +60,6 @@ function updateHUD() {
     }
     if (statLevelDisplay) statLevelDisplay.innerText = currentLevel;
     if (statXPDisplay) statXPDisplay.innerText = currentXP + "/" + (currentLevel * 100);
-    if (statCoalDisplay) statCoalDisplay.innerText = currentCoal;
-    if (statTPDisplay) statTPDisplay.innerText = currentTrainingPoints;
 
     /*if (statDaysDisplay) {
         statDaysDisplay.innerText = currentPop > 0 ? Math.floor(currentFood / currentPop) : "inf";

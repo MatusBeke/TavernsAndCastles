@@ -270,54 +270,6 @@ class NPC {
                     this.workTimer = 0; 
                 }
             }
-            else if (this.profession === "lumberman") {
-                this.workTimer += 1;
-
-                if (this.workTimer >= 5) {
-                    currentWood += 1;
-                    this.happiness = Math.min(100, this.happiness + 1);
-                    
-                    // Správne zobrazenie plávajúceho textu
-                    if (typeof spawnFloatingText === 'function') {
-                        spawnFloatingText("+1 Wood", this.workplaceX, this.workplaceY, "#d9ff00");
-                    }
-                    
-                    updateHUD();
-                    this.workTimer = 0; 
-                }
-            }
-            else if (this.profession === "guard") {
-                this.workTimer += 1;
-
-                if (this.workTimer >= 5) {
-                    currentTrainingPoints += 1;
-                    this.happiness = Math.min(100, this.happiness + 1);
-                    
-                    // Správne zobrazenie plávajúceho textu
-                    if (typeof spawnFloatingText === 'function') {
-                        spawnFloatingText("+1 Training Point", this.workplaceX, this.workplaceY, "#3378b8");
-                    }
-                    
-                    updateHUD();
-                    this.workTimer = 0; 
-                }
-            }
-            else if (this.profession === "miner") {
-                this.workTimer += 1;
-
-                if (this.workTimer >= 5) {
-                    currentStone += 1;
-                    this.happiness = Math.min(100, this.happiness + 1);
-                    
-                    // Správne zobrazenie plávajúceho textu
-                    if (typeof spawnFloatingText === 'function') {
-                        spawnFloatingText("+1 Stone", this.workplaceX, this.workplaceY, "#3378b8");
-                    }
-                    
-                    updateHUD();
-                    this.workTimer = 0; 
-                }
-            }
         }
     }
 
