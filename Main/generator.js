@@ -4,6 +4,57 @@ var TILE_SIZE = 128;
 var mapData = []; 
 var camera = { x: 0, y: 0, zoom: 1 };
 
+let floatingTexts = [];
+
+function spawnFloatingText(text, tileX, tileY, color = "#d9ff00", duration = 1500) {
+    // Calculate the pixel center of the target tile
+    const pixelX = tileX * TILE_SIZE + TILE_SIZE / 2;
+    const pixelY = tileY * TILE_SIZE + TILE_SIZE / 2;
+
+    floatingTexts.push({
+        text: text,
+        x: pixelX,
+        y: pixelY,
+        color: color,
+        startTime: Date.now(),
+        duration: duration
+    });
+}
+
+function drawFloatingTexts(ctx) {
+    const now = Date.now();
+    
+    ctx.save();
+    ctx.font = "bold 16px MedievalSharp";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+
+    for (let i = floatingTexts.length - 1; i >= 0; i--) {
+        const ft = floatingTexts[i];
+        const elapsed = now - ft.startTime;
+
+        if (elapsed > ft.duration) {
+            floatingTexts.splice(i, 1);
+            continue;
+        }
+
+        const progress = elapsed / ft.duration;
+
+
+        const currentY = ft.y - (progress * 40);  
+        const alpha = progress < 0.5 ? 1 : 1 - ((progress - 0.5) / 0.5);
+
+        ctx.fillStyle = ft.color;
+        ctx.globalAlpha = alpha;
+        ctx.fillText(ft.text, ft.x, currentY);
+
+        ctx.globalAlpha = 1;
+    }
+
+    ctx.restore();
+}
+
+
     // Pripojenie na HTML canvas pre vykreslovanie
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
