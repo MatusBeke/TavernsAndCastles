@@ -257,9 +257,15 @@ function drawFloatingTexts(ctx) {
                             const landImg = new Image();
                             landImg.src = '../Resources/Tiles/Img_LandDefault.png';
                             tile.img = landImg;
+
+                            const treeFallSFX = new Audio();
+                            treeFallSFX.src = "../Resources/SFX/SFX_TreeFall.mp3";
+                            treeFallSFX.volume = 0.3;
+                            treeFallSFX.play();
           
                             currentWood += 50;
                             spawnFloatingText("+50 Wood", x, y, "#d9ff00");
+                            isChopping = false;
                             updateHUD();
                         }
                     }
