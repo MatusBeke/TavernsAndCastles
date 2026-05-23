@@ -10,8 +10,8 @@ let currentBuildingCategory = null;
 //Suroviny
 let currentGold = 100000;
 let currentPop = 0;
-let currentWood = 50000;
-let currentStone = 200000;
+let currentWood = 0;
+let currentStone = 0;
 let currentFood = 1000;
 let currentLevel = 1;
 let currentXP = 0;
@@ -245,6 +245,7 @@ document.getElementById('gameCanvas').addEventListener('click', (e) => {
             tile.buildingSrc = selectedBuildingSrc; 
             tile.buildingLevel = 1; 
             
+            spawnFloatingText(("-" + currentBuildingPrice + " Gold"), gridX, gridY, "#cc0000");
             currentGold -= currentBuildingPrice;
             updateHUD();
 
@@ -335,6 +336,7 @@ document.getElementById('gameCanvas').addEventListener('click', (e) => {
 
 //Vypnutie rezimu stavania a resetovanie pomocnych premennych
 function finalizeBuild(canvas) {
+    
     currentXP += 5;
     isBuildingMode = false;
     selectedBuildingImg = null;

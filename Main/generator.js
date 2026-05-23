@@ -4,6 +4,57 @@ var TILE_SIZE = 128;
 var mapData = []; 
 var camera = { x: 0, y: 0, zoom: 1 };
 
+//PopUp texty
+let floatingTexts = [];
+
+function spawnFloatingText(text, tileX, tileY, color = "#d9ff00", duration = 1500) {
+    // Calculate the pixel center of the target tile
+    const pixelX = tileX * TILE_SIZE + TILE_SIZE / 2;
+    const pixelY = tileY * TILE_SIZE + TILE_SIZE / 2;
+
+    floatingTexts.push({
+        text: text,
+        x: pixelX,
+        y: pixelY,
+        color: color,
+        startTime: Date.now(),
+        duration: duration
+    });
+}
+
+function drawFloatingTexts(ctx) {
+    const now = Date.now();
+    
+    ctx.save();
+    ctx.font = "bold 16px MedievalSharp";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+
+    for (let i = floatingTexts.length - 1; i >= 0; i--) {
+        const ft = floatingTexts[i];
+        const elapsed = now - ft.startTime;
+
+        if (elapsed > ft.duration) {
+            floatingTexts.splice(i, 1);
+            continue;
+        }
+
+        const progress = elapsed / ft.duration;
+
+
+        const currentY = ft.y - (progress * 40);  
+        const alpha = progress < 0.5 ? 1 : 1 - ((progress - 0.5) / 0.5);
+
+        ctx.fillStyle = ft.color;
+        ctx.globalAlpha = alpha;
+        ctx.fillText(ft.text, ft.x, currentY);
+
+        ctx.globalAlpha = 1;
+    }
+
+    ctx.restore();
+}
+
     // Pripojenie na HTML canvas pre vykreslovanie
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
@@ -206,39 +257,29 @@ var camera = { x: 0, y: 0, zoom: 1 };
                             const landImg = new Image();
                             landImg.src = '../Resources/Tiles/Img_LandDefault.png';
                             tile.img = landImg;
-                            
+          
                             currentWood += 50;
+                            spawnFloatingText("+50 Wood", x, y, "#d9ff00");
                             updateHUD();
                         }
                     }
 
                     if (tile.buildingImg) {
                         ctx.drawImage(tile.buildingImg, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-
-                        // if (typeof currentHour !== 'undefined' && (currentHour >= 20 || currentHour < 6)) {
-                        //     if (!window.imgBuildingNightLight) {
-                        //         window.imgBuildingNightLight = new Image();
-                        //         window.imgBuildingNightLight.src = '../Resources/Img_LightSource.png';
-                        //     }
-                        //     if (window.imgBuildingNightLight.complete && window.imgBuildingNightLight.naturalWidth !== 0) {
-                        //         ctx.save();
-                        //         ctx.globalCompositeOperation = "screen"; 
-                        //         ctx.drawImage(window.imgBuildingNightLight, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-                        //         ctx.restore();
-                        //     }
-                        // }
                     }
                 }
             }
 
-            // --- ZMENA TU: Aktualizácia a vykreslenie NPCs s odovzdaním deltaTime ---
+            //Update npc pre plynuly pohyb
             activeNPCs.forEach(npc => {
-                npc.update(deltaTime); // <--- Odovzdávame delta čas pre plynulý posun
+                npc.update(deltaTime); 
             });
 
             activeNPCs.forEach(npc => {
                 npc.draw(ctx);
             });
+
+            drawFloatingTexts(ctx);
 
             ctx.setTransform(1, 0, 0, 1, 0, 0);
 
