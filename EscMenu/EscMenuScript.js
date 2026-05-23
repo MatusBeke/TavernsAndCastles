@@ -18,6 +18,7 @@ document.body.insertAdjacentHTML('beforeend', `
             <button class="esc-btn" onclick="openInGameOptions()"><span class="icon">📜</span> Settings</button>
             <button class="esc-btn" onclick="save()"><span class="icon">📜</span> Save Game</button>
             <button class="esc-btn" onclick="load()"><span class="icon">📜</span> Load Game</button>
+            <button class="esc-btn" onclick="erease()"><span class="icon">📜</span> Erease Progress</button>
             <button class="esc-btn" onclick="quitToMainMenu()"><span class="icon">🗝</span> Return to Menu</button>
         </div>
     </div>
@@ -70,10 +71,29 @@ function quitToMainMenu() {
     transitionTo("../Menu/MenuIndex.html", false);
 }
 
-function save(){
+//Localstoreage
+function save()
+{
     saveMap();
 }
 
-function load(){
+function load()
+{
     loadMap();
+}
+
+function erease()
+{
+    const AreYouSure = confirm("Are you sure you want to erease your progress? You can't return it!");
+
+    if (AreYouSure)
+    {
+        localStorage.clear();
+        console.log("Localstorage cleared!")
+    }
+    else
+    {
+        console.log("Ereasing declined!")
+    }
+    
 }

@@ -659,4 +659,4 @@ setInterval(() => {
     if (mapData && mapData.length > 0) {
         saveMap();
     }
-}, 10000);
+}, 30000);
