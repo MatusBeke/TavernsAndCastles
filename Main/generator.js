@@ -257,14 +257,9 @@ function drawFloatingTexts(ctx) {
                             const landImg = new Image();
                             landImg.src = '../Resources/Tiles/Img_LandDefault.png';
                             tile.img = landImg;
-<<<<<<< HEAD
-                            
-                            currentWood += 50;
-=======
           
                             currentWood += 50;
                             spawnFloatingText("+50 Wood", x, y, "#d9ff00");
->>>>>>> parent of 85869b9 (Paradicka nove npc presmerovanie ak pride o robout)
                             updateHUD();
                         }
                     }
