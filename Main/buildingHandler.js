@@ -12,12 +12,11 @@ let currentGold = 100000;
 let currentPop = 0;
 let currentWood = 0;
 let currentStone = 0;
-let currentFood = 100;
+let currentFood = 1000;
 let currentLevel = 1;
 let currentXP = 0;
 
 let selectedTileForInfo = null;
-let isChopping = false;
 
 //Workplaces pre NPCs
 var activeFields = [];
@@ -25,10 +24,6 @@ var activeMines = [];
 var activeLumberyards = [];
 var activeQuarries = [];
 var activeBarracks = [];
-
-let coinSFX = new Audio();
-coinSFX.src = "../Resources/SFX/SFX_Coins.mp3";
-coinSFX.volume = 0.3
 
 
 //Zapnutie bocnych menu
@@ -61,9 +56,9 @@ function updateHUD() {
     if (statLevelDisplay) statLevelDisplay.innerText = currentLevel;
     if (statXPDisplay) statXPDisplay.innerText = currentXP + "/" + (currentLevel * 100);
 
-    /*if (statDaysDisplay) {
+    if (statDaysDisplay) {
         statDaysDisplay.innerText = currentPop > 0 ? Math.floor(currentFood / currentPop) : "inf";
-    }*/
+    }
 }
 
 //Zobrazovanie upozorneni
@@ -148,10 +143,9 @@ document.getElementById('gameCanvas').addEventListener('click', (e) => {
 
         //TODO: Pridat maximalnu vzdialenost od lumberyardu pre tazenie lesa, aby sa nedalo tazit les na druhom konci mapy
         // Logika na tazenie lesa
-        if (!isBuildingMode && tile.img && tile.img.src.includes('Forest') && (activeLumberyards.length > 0) && isChopping == false) {
+        if (!isBuildingMode && tile.img && tile.img.src.includes('Forest') && (activeLumberyards.length > 0)) {
             if (tile.isClearing) return;
 
-            isChopping = true;
             const lumberedLand = new Image();
             lumberedLand.src = '../Resources/Tiles/Img_Forest4.png'; // Obrázok rúbaniska
 
@@ -234,12 +228,8 @@ document.getElementById('gameCanvas').addEventListener('click', (e) => {
                     console.log(`NPC ${element.name} lives at (${element.homeX}, ${element.homeY}) with profession ${element.profession}.`);
                 });
             }
-
-            
             
             currentGold -= currentBuildingPrice;
-            spawnFloatingText(("-" + currentBuildingPrice + " Gold"), gridX, gridY, "#cc0000");
-            coinSFX.play();
             updateHUD();
             finalizeBuild(canvas);
             return; 
@@ -255,9 +245,8 @@ document.getElementById('gameCanvas').addEventListener('click', (e) => {
             tile.buildingSrc = selectedBuildingSrc; 
             tile.buildingLevel = 1; 
             
-            currentGold -= currentBuildingPrice;
             spawnFloatingText(("-" + currentBuildingPrice + " Gold"), gridX, gridY, "#cc0000");
-            coinSFX.play();
+            currentGold -= currentBuildingPrice;
             updateHUD();
 
 
@@ -404,56 +393,17 @@ function upgradeBuilding() {
 
 function sellBuilding() {
     if (!selectedTileForInfo) return;
-    
-    coinSFX.play();
+    //TODO: OPRAVIT TOTO aby sa spravne pocitalo zlato pri predaji budovy
+    currentGold += selectedTileForInfo.tile.buildingLevel * selectedTileForInfo.tile.buildingPrice * 0.75 || 0;
 
-    const soldX = selectedTileForInfo.x;
-    const soldY = selectedTileForInfo.y;
-    const coordString = `${soldX},${soldY}`;
-    const tile = selectedTileForInfo.tile;
-
-    // 1. OPRAVA VÝPOČTU ZLATA: Keďže tile nemá .buildingPrice, musíme cenu vytiahnuť z kroniky (window.gameBuildings)
-    let baseSrc = tile.buildingSrc;
-    if (tile.buildingLevel > 1) {
-         baseSrc = tile.buildingSrc.replace(/(\d+)(?=\.\w+$)/, '1');
-    }
-    let bData = window.gameBuildings ? window.gameBuildings.find(b => b.image === baseSrc) : null;
-    let basePrice = bData ? bData.price : 100; // Ak nenájde cenu, dáme predvolenú 100
-    
-    // Pripočítame zlato (75% z ceny budovy vynásobenej jej levelom)
-    let goldRefund = Math.floor((tile.buildingLevel || 1) * basePrice * 0.75);
-    currentGold += goldRefund;
-    spawnFloatingText((`+${goldRefund} Gold`), soldX, soldY, "#00cc00");
-
-    // 2. ODSTRÁNENIE Z HERNÝCH POCOV: Vymažeme súradnice zo všetkých polí pracovísk
-    activeFields = activeFields.filter(c => c !== coordString);
-    activeLumberyards = activeLumberyards.filter(c => c !== coordString);
-    activeMines = activeMines.filter(c => c !== coordString);
-    activeBarracks = activeBarracks.filter(c => c !== coordString);
-    activeQuarries = activeQuarries.filter(c => c !== coordString); // Pridané lomy, ktoré máš v kóde
-
-    // 3. PRESMEROVANIE NPC: Skontrolujeme, či nejaké NPC nestratilo domov alebo prácu
-    if (typeof activeNPCs !== 'undefined' && Array.isArray(activeNPCs)) {
-        activeNPCs.forEach(npc => {
-            // Stratil domov?
-            if (npc.homeX === soldX && npc.homeY === soldY) {
-                relocateNPCHomeAfterSell(npc, soldX, soldY);
-            }
-            // Stratil prácu?
-            if (npc.workplaceX === soldX && npc.workplaceY === soldY) {
-                relocateNPCWorkplaceAfterSell(npc);
-            }
-        });
-    }
-
-    // 4. VYČISTENIE DLAŽDICE
-    tile.buildingImg = null;
-    tile.buildingSrc = null;
-    tile.buildingLevel = null;
+    selectedTileForInfo.tile.buildingImg = null;
+    selectedTileForInfo.tile.buildingSrc = null;
+    selectedTileForInfo.tile.buildingLevel = null;
     
     updateHUD();
+    
     closeBuildingInfo();
-    showWarning("Building sold!", "yellow");
+    showWarning("Building sold!" , "yellow");
 }
 
 function openTavernModal() {
