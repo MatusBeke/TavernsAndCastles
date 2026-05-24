@@ -4,6 +4,8 @@ var TILE_SIZE = 128;
 var mapData = []; 
 var camera = { x: 0, y: 0, zoom: 1 };
 
+console.log("Map size: " + MAP_SIZE);
+
 //PopUp texty
 let floatingTexts = [];
 

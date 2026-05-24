@@ -119,14 +119,13 @@ class NPC {
             }
 
             if (currentHour >= 20 || currentHour < 6) {
-                this.inHome();    
-                // if (currentHour === 23 && currentMinute == 0)
-                // {
-                //     if (Math.random() < 0.25) 
-                //     { 
-                //         this.reproduce();
-                //     }
-                // }        
+                if (this.homeX !== null && this.homeY !== null) {
+                    this.inHome();    
+                } else {
+                    if (this.state !== "Wandering") {
+                        this.wander();
+                    }
+                }    
             } else if (currentHour >= 7 && currentHour < 17) {
                 if (this.workplaceX !== null && this.workplaceY !== null && isAbleToWork == true) {
                     this.work();
@@ -223,6 +222,10 @@ class NPC {
     }
 
     returnHome() {
+        if (this.homeX === null || this.homeY === null) {
+            this.wander();
+            return;
+        }
         this.state = "Returning Home";
         this.targetX = (this.homeX * TILE_SIZE) + (TILE_SIZE / 2) - 10;
         this.targetY = (this.homeY * TILE_SIZE) + (TILE_SIZE / 2) - 15;
@@ -234,6 +237,10 @@ class NPC {
 
     inHome() {
         if (this.state !== "Dead") {
+            if (this.homeX === null || this.homeY === null) {
+                this.wander();
+                return;
+            }
             this.state = "In Home";
             this.targetX = (this.homeX * TILE_SIZE) + (TILE_SIZE / 2) - 10;
             this.targetY = (this.homeY * TILE_SIZE) + (TILE_SIZE / 2) - 15;
@@ -571,14 +578,15 @@ function relocateNPCHomeAfterSell(npc, soldX, soldY) {
     let closestHome = null;
     let minDistance = Infinity;
 
-    // Prejdeme celú mapu a hľadáme obytné budovy
+    // 1. Prejdeme celú mapu a hľadáme voľné/iné obytné budovy
     for (let y = 0; y < MAP_SIZE; y++) {
         for (let x = 0; x < MAP_SIZE; x++) {
             const tile = mapData[y][x];
 
             if (tile && tile.buildingSrc) {
                 const src = tile.buildingSrc.toLowerCase();
-                // Overíme, či ide o obytnú budovu (Cabin, House) a či to nie je tá, ktorú práve búrame
+                
+                // Overíme, či ide o obytnú budovu a či to nie sú súradnice práve búraného domu
                 if ((src.includes('cabin') || src.includes('house')) && !(x === soldX && y === soldY)) {
                     let dx = x - soldX;
                     let dy = y - soldY;
@@ -593,15 +601,40 @@ function relocateNPCHomeAfterSell(npc, soldX, soldY) {
         }
     }
 
+    // 2. Aplikujeme výsledok sťahovania
     if (closestHome) {
         npc.homeX = closestHome.x;
         npc.homeY = closestHome.y;
-        console.log(`NPC ${npc.name} sa úspešne presťahoval na [${npc.homeX}, ${npc.homeY}]`);
+        console.log(`NPC ${npc.name} sa úspešne presťahoval na nový domov [${npc.homeX}, ${npc.homeY}]`);
+
+        // OPRAVA: Ak je noc, okamžite ho pošleme kráčať k novému domu (aby nezostal stáť na troskách)
+        if (currentHour >= 20 || currentHour < 6) {
+            npc.state = "Returning Home"; // Dočasný stav chôdze namiesto okamžitého "In Home"
+            npc.targetX = (npc.homeX * TILE_SIZE) + (TILE_SIZE / 2) - 10;
+            npc.targetY = (npc.homeY * TILE_SIZE) + (TILE_SIZE / 2) - 15;
+        } else {
+            // Ak je deň, vyženúť ho von blúdiť alebo pracovať
+            npc.wander();
+        }
+
+        // OPRAVA: Musíme prepočítať, či z NOVÉHO domu stále dočiahne do svojej starej práce!
+        if (npc.workplaceX !== null && npc.workplaceY !== null) {
+            let dxWork = npc.workplaceX - npc.homeX;
+            let dyWork = npc.workplaceY - npc.homeY;
+            npc.isAbleToWork = Math.sqrt(dxWork * dxWork + dyWork * dyWork) <= 20;
+            console.log(`Prepočet po presťahovaní: Môže ${npc.name} pracovať z nového domu? ${npc.isAbleToWork}`);
+        }
+
     } else {
+        // Ak na mape nie je ŽIADNY iný dom
         npc.homeX = null;
         npc.homeY = null;
-        if (npc.state) npc.state = "Wandering"; 
-        console.log(`NPC ${npc.name} nenašiel voľné ubytovanie.`);
+        npc.isAbleToWork = false; // Bez domu nemôže fungovať režim spánku/práce správne
+        npc.state = "Wandering"; 
+        
+        // Vyhodíme ho na náhodné miesto na mape, nech nezostane visieť v neexistujúcom dome
+        npc.wander();
+        console.log(`NPC ${npc.name} nenašiel voľné ubytovanie a stal sa bezdomovcom.`);
     }
 }
 

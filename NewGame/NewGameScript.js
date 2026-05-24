@@ -72,3 +72,7 @@ function startWorld() {
     
     setTimeout(() => window.location.href = "../Main/index.html", 1500);
 }
+
+function setMapSize(){
+    MAP_SIZE = 100;
+}
