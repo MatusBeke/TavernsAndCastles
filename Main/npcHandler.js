@@ -303,9 +303,24 @@ class NPC {
                     currentStone += 1;
                     this.happiness = Math.min(100, this.happiness + 1);
                     
-                    // Správne zobrazenie plávajúceho textu
                     if (typeof spawnFloatingText === 'function') {
                         spawnFloatingText("+1 Stone", this.workplaceX, this.workplaceY, "#3378b8");
+                    }
+
+                    // 70% šanca na uhlie (+1 Coal)
+                    if (Math.random() < 0.7) {
+                        currentCoal += 1;
+                        if (typeof spawnFloatingText === 'function') {
+                            spawnFloatingText("+1 Coal", this.workplaceX, this.workplaceY - 20, "#555555");
+                        }
+                    }
+
+                    // 40% šanca na železo (+1 Iron)
+                    if (Math.random() < 0.4) {
+                        currentIron += 1; 
+                        if (typeof spawnFloatingText === 'function') {
+                            spawnFloatingText("+1 Iron", this.workplaceX, this.workplaceY - 40, "#d47a2a");
+                        }
                     }
                     
                     updateHUD();
