@@ -10,14 +10,14 @@ let currentBuildingCategory = null;
 // Suroviny
 let currentGold = 100000;
 let currentPop = 0;
-let currentWood = 100;
-let currentStone = 100;
+let currentWood = 100000;
+let currentStone = 100000;
 let currentCoal = 0;
 let currentIron = 0;
 let currentSteel = 0;
-let currentPlanks = 0;
+let currentPlanks = 100000;
 let currentFood = 100;
-let currentLevel = 1;
+let currentLevel = 5;
 let currentXP = 0;
 let currentTrainingPoints = 0;
 
@@ -34,6 +34,9 @@ var activeMines = [];
 var activeLumberyards = [];
 var activeQuarries = [];
 var activeBarracks = [];
+var activeWindmills = [];
+var activeFoundries = [];
+var activeSawmills = [];
 var activeHappinessBuildings = [];
 
 let coinSFX = new Audio();
@@ -320,6 +323,27 @@ document.getElementById('gameCanvas').addEventListener('click', (e) => {
                 console.log("New barracks added at (" + gridX + ", " + gridY + ")");
                 console.log("Current active barracks:");
                 activeBarracks.forEach(element => {
+                    console.log(element);
+                });
+            } else if (selectedBuildingImg.src.includes('Windmill')) { // Windmills
+                activeWindmills.push(gridX + "," + gridY);
+                console.log("New windmill added at (" + gridX + ", " + gridY + ")");
+                console.log("Current active windmills:");
+                activeWindmills.forEach(element => {
+                    console.log(element);
+                });
+            } else if (selectedBuildingImg.src.includes('Foundry')) { // Foundries
+                activeFoundries.push(gridX + "," + gridY);
+                console.log("New foundry added at (" + gridX + ", " + gridY + ")");
+                console.log("Current active foundries:");
+                activeFoundries.forEach(element => {
+                    console.log(element);
+                });
+            } else if (selectedBuildingImg.src.includes('Sawmill')) { // Sawmills
+                activeSawmills.push(gridX + "," + gridY);
+                console.log("New sawmill added at (" + gridX + ", " + gridY + ")");
+                console.log("Current active sawmills:");
+                activeSawmills.forEach(element => {
                     console.log(element);
                 });
             }

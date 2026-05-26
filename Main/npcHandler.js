@@ -1,9 +1,8 @@
 var activeNPCs = [];
 const npcList = document.getElementById("citizens-list");
 
-let jobs = ["peasant", "miner", "lumberman", "guard"];
+let jobs = ["peasant", "miner", "lumberman", "guard", "millworker", "blacksmith", "carpenter"];
 let selectedNPC = null;
-let isAbleToWork = true;
 
 let peasantImage = "../Resources/NPCs/NPC_Peasant.png";
 let minerImage = "../Resources/NPCs/NPC_Miner.png";
@@ -11,6 +10,9 @@ let lumbermanImage = "../Resources/NPCs/NPC_Lumberman.png";
 let guardImage = "../Resources/NPCs/NPC_Guard.png";
 let skeletonImage = "../Resources/NPCs/NPC_Skeleton.png";
 let kingImage = "../Resources/NPCs/NPC_King.png";
+let millworkerImage = "../Resources/NPCs/NPC_Millworker.png";
+let blacksmithImage = "../Resources/NPCs/NPC_Blacksmith.png";
+let carpenterImage = "../Resources/NPCs/NPC_Carpenter.png";
 
 const npcImages = {
     "peasant": new Image(),
@@ -18,7 +20,10 @@ const npcImages = {
     "lumberman": new Image(),
     "guard": new Image(),
     "skeleton": new Image(),
-    "king": new Image()
+    "king": new Image(),
+    "millworker": new Image(),
+    "blacksmith": new Image(),
+    "carpenter": new Image()
 };
 
 npcImages["peasant"].src = peasantImage;
@@ -27,6 +32,9 @@ npcImages["lumberman"].src = lumbermanImage;
 npcImages["guard"].src = guardImage;
 npcImages["skeleton"].src = skeletonImage;
 npcImages["king"].src = kingImage;
+npcImages["millworker"].src = millworkerImage;
+npcImages["blacksmith"].src = blacksmithImage;
+npcImages["carpenter"].src = carpenterImage;
 
 // Default, kým sa nenačíta JSON s menami NPCs
 let npcNamesData = {
@@ -79,6 +87,8 @@ class NPC {
         this.lastUpdate = Date.now();
 
         this.workTimer = 0;
+
+        this.isAbleToWork = true;
     }
 
     update(deltaTime) {
@@ -127,7 +137,7 @@ class NPC {
                     }
                 }    
             } else if (currentHour >= 7 && currentHour < 17) {
-                if (this.workplaceX !== null && this.workplaceY !== null && isAbleToWork == true) {
+                if (this.workplaceX !== null && this.workplaceY !== null && this.isAbleToWork == true) {
                     this.work();
                 } else {
                     this.wander();
@@ -248,7 +258,7 @@ class NPC {
     }
 
     work() {
-        if (this.state !== "Dead" && isAbleToWork == true) {
+        if (this.state !== "Dead" && this.isAbleToWork == true) {
             this.state = "Working";
             const randomOffsetX = Math.random() * (TILE_SIZE - 20);
             const randomOffsetY = Math.random() * (TILE_SIZE - 20);
@@ -333,6 +343,51 @@ class NPC {
                     updateHUD();
                     this.workTimer = 0; 
                 }
+            } else if (this.profession === "millworker") {
+                this.workTimer += 1;
+
+                if (this.workTimer >= 5) {
+                    currentFood += 2;
+                    this.happiness = Math.min(100, this.happiness + 1);
+
+                    // Správne zobrazenie plávajúceho textu
+                    if (typeof spawnFloatingText === 'function') {
+                        spawnFloatingText("+2 Food", this.workplaceX, this.workplaceY, "#d9ff00");
+                    }
+
+                    updateHUD();
+                    this.workTimer = 0; 
+                }
+            } else if (this.profession === "blacksmith") {
+                this.workTimer += 1;
+
+                if (this.workTimer >= 5) {
+                    currentSteel += 1;
+                    this.happiness = Math.min(100, this.happiness + 1);
+
+                    // Správne zobrazenie plávajúceho textu
+                    if (typeof spawnFloatingText === 'function') {
+                        spawnFloatingText("+1 Steel", this.workplaceX, this.workplaceY, "#7ce4e7");
+                    }
+
+                    updateHUD();
+                    this.workTimer = 0; 
+                }
+            } else if (this.profession === "carpenter") {
+                this.workTimer += 1;
+
+                if (this.workTimer >= 5) {
+                    currentPlanks += 1;
+                    this.happiness = Math.min(100, this.happiness + 1);
+
+                    // Správne zobrazenie plávajúceho textu
+                    if (typeof spawnFloatingText === 'function') {
+                        spawnFloatingText("+1 Plank", this.workplaceX, this.workplaceY, "#a55353");
+                    }
+
+                    updateHUD();
+                    this.workTimer = 0; 
+                }
             }
         }
     }
@@ -361,6 +416,9 @@ function createNPC(homeX, homeY, profession = "peasant", img = null, workplaceX 
         else if (randomProfession === "miner") assignedImgPath = minerImage;
         else if (randomProfession === "lumberman") assignedImgPath = lumbermanImage;
         else if (randomProfession === "guard") assignedImgPath = guardImage;
+        else if (randomProfession === "millworker") assignedImgPath = millworkerImage;
+        else if (randomProfession === "blacksmith") assignedImgPath = blacksmithImage;
+        else if (randomProfession === "carpenter") assignedImgPath = carpenterImage;
     }
 
     var npc = new NPC(
@@ -491,10 +549,10 @@ function showNpcInfo(npc) {
 
         distanceFromHome = parseFloat(Math.sqrt(dx * dx + dy * dy).toFixed(0));
         distanceText = distanceFromHome.toString();
-        isAbleToWork = distanceFromHome <= 20;
+        npc.isAbleToWork = distanceFromHome <= 20;
         console.log("Moze pracovat.")
     } else {
-        isAbleToWork = false; 
+        npc.isAbleToWork = false; 
         distanceFromHome = 0;
         distanceText = "Workplace too far away! - " + distanceFromHome.toString()
         console.log("Nemoze pracovat.")
@@ -549,6 +607,28 @@ function assignWork() {
             npc.workplaceX = x;
             npc.workplaceY = y;
         }
+    }else if (profession === "millworker") { 
+        if (typeof activeWindmills !== 'undefined' && activeWindmills.length > 0) {
+            const mill = activeWindmills[Math.floor(Math.random() * activeWindmills.length)];
+            let [x, y] = mill.split(',').map(Number);
+            npc.workplaceX = x;
+            npc.workplaceY = y;
+        }
+    } else if (profession === "blacksmith") { 
+        if (typeof activeFoundries !== 'undefined' && activeFoundries.length > 0) {
+            const forge = activeFoundries[Math.floor(Math.random() * activeFoundries.length)];
+            let [x, y] = forge.split(',').map(Number);
+            npc.workplaceX = x;
+            npc.workplaceY = y;
+        }
+    }
+    else if (profession === "carpenter") { 
+        if (typeof activeSawmills !== 'undefined' && activeSawmills.length > 0) {
+            const forge = activeSawmills[Math.floor(Math.random() * activeSawmills.length)];
+            let [x, y] = forge.split(',').map(Number);
+            npc.workplaceX = x;
+            npc.workplaceY = y;
+        }
     }
 
     showNpcInfo(npc);
@@ -567,6 +647,8 @@ function changeWork() {
     else if (chosenJob === "miner") selectedNPC.img = minerImage;
     else if (chosenJob === "lumberman") selectedNPC.img = lumbermanImage;
     else if (chosenJob === "guard") selectedNPC.img = guardImage;
+    else if (chosenJob === "millworker") selectedNPC.img = millworkerImage; // PRIDANÉ
+    else if (chosenJob === "blacksmith") selectedNPC.img = blacksmithImage; // PRIDANÉ
 
     assignWork();
     console.log(`Changed ${selectedNPC.name}'s job to: ${chosenJob}`);
