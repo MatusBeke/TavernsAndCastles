@@ -107,8 +107,16 @@ class NPC {
             //Znizovanie hladu podla cinnosti
             if (this.state === "Working") {
                 this.hunger = Math.max(0, this.hunger - 2);
+                if (this.happiness > 0 && this.happiness < 100)
+                    {
+                        this.happiness = Math.max(0, this.happiness - 1);
+                    }
             } else if (this.state !== "In Home") {
                 this.hunger = Math.max(0, this.hunger - 1);
+                if (activeHappinessBuildings.length >= 1){
+                    if (this.happiness > 0 && this.happiness < 100)
+                    this.happiness = Math.max(100, this.happiness + 1);
+                }
             }
 
             //Ak hlad klesol na 0, NPC umrie
@@ -277,7 +285,6 @@ class NPC {
 
                 if (this.workTimer >= 5) {
                     currentFood += 1;
-                    this.happiness = Math.min(100, this.happiness + 1);
 
                     // Správne zobrazenie plávajúceho textu
                     if (typeof spawnFloatingText === 'function') {
@@ -292,7 +299,6 @@ class NPC {
 
                 if (this.workTimer >= 5) {
                     currentWood += 1;
-                    this.happiness = Math.min(100, this.happiness + 1);
                     
                     // Správne zobrazenie plávajúceho textu
                     if (typeof spawnFloatingText === 'function') {
@@ -307,7 +313,6 @@ class NPC {
 
                 if (this.workTimer >= 5) {
                     currentTrainingPoints += 1;
-                    this.happiness = Math.min(100, this.happiness + 1);
                     
                     // Správne zobrazenie plávajúceho textu
                     if (typeof spawnFloatingText === 'function') {
@@ -322,8 +327,7 @@ class NPC {
 
                 if (this.workTimer >= 5) {
                     currentStone += 1;
-                    this.happiness = Math.min(100, this.happiness + 1);
-                    
+
                     if (typeof spawnFloatingText === 'function') {
                         spawnFloatingText("+1 Stone", this.workplaceX, this.workplaceY, "#3378b8");
                     }
@@ -359,7 +363,6 @@ class NPC {
 
                 if (this.workTimer >= 5) {
                     currentFood += 2;
-                    this.happiness = Math.min(100, this.happiness + 1);
 
                     // Správne zobrazenie plávajúceho textu
                     if (typeof spawnFloatingText === 'function') {
@@ -378,7 +381,6 @@ class NPC {
                         currentSteel += 1;
                         currentCoal -= 1;
                         currentIron -= 1;
-                        this.happiness = Math.min(100, this.happiness + 1);
 
                         // Správne zobrazenie plávajúceho textu
                         if (typeof spawnFloatingText === 'function') {

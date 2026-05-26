@@ -27,6 +27,7 @@ let currentStoneCost = 0;
 
 let selectedTileForInfo = null;
 let isChopping = false;
+let hasCastleKeep = false;
 
 // Workplaces pre NPCs
 var activeFields = [];
@@ -135,10 +136,16 @@ function selectBattleType(type) {
 // Stavanie budov
 function startBuilding(imageSrc, maxLVL, price, popCost, category, levelReq, woodCost, stoneCost, planksCost) {
     // Ak nemame dostatok zlata alebo populacie, zobrazime upozornenie a nebudeme pokracovat do rezimu stavania
+    if (imageSrc.toLowerCase().includes('keep') && hasCastleKeep) {
+        showWarning("You can only build one Castle Keep!", "red");
+        return;
+    }
+
     if (currentGold < price) {
         showWarning("Not enough gold!", "red");
         return;
     }
+    
 
     if (currentWood < woodCost || currentPlanks < planksCost || currentStone < stoneCost) {
         showWarning("Not enough resources!", "red");
@@ -295,6 +302,12 @@ document.getElementById('gameCanvas').addEventListener('click', (e) => {
             tile.buildingSrc = selectedBuildingSrc; 
             tile.buildingLevel = 1; 
 
+            if (selectedBuildingSrc.toLowerCase().includes('keep')) {
+                hasCastleKeep = true;
+                showWarning("Castle Keep has been built!", "yellow");
+                console.log("Castle Keep has been built!");
+            }
+
             currentGold -= currentBuildingPrice;
             currentWood -= currentWoodCost;
             currentPlanks -= currentPlanksCost;
@@ -351,6 +364,13 @@ document.getElementById('gameCanvas').addEventListener('click', (e) => {
                 console.log("New sawmill added at (" + gridX + ", " + gridY + ")");
                 console.log("Current active sawmills:");
                 activeSawmills.forEach(element => {
+                    console.log(element);
+                });
+            } else if (selectedBuildingImg.src.includes('Pub') || selectedBuildingImg.src.includes('Chapel')) { // Pubs
+                activeHappinessBuildings.push(gridX + "," + gridY);
+                console.log("New pub added at (" + gridX + ", " + gridY + ")");
+                console.log("Current active pubs:");
+                activeHappinessBuildings.forEach(element => {
                     console.log(element);
                 });
             }
@@ -459,27 +479,28 @@ function sellBuilding() {
     const coordString = `${soldX},${soldY}`;
     const tile = selectedTileForInfo.tile;
 
-    // 1. VÝPOČTU ZLATA: Keďže tile nemá .buildingPrice, musíme cenu vytiahnuť z kroniky (window.gameBuildings)
+    if (tile.buildingSrc && tile.buildingSrc.toLowerCase().includes('keep')) {
+        hasCastleKeep = false;
+        console.log("Castle Keep was destroyed. You can build a new one.");
+    }
+
     let baseSrc = tile.buildingSrc;
     if (tile.buildingLevel > 1) {
         baseSrc = tile.buildingSrc.replace(/(\d+)(?=\.\w+$)/, '1');
     }
     let bData = window.gameBuildings ? window.gameBuildings.find(b => b.image === baseSrc) : null;
-    let basePrice = bData ? bData.price : 100; // Ak nenájde cenu, dáme predvolenú 100
+    let basePrice = bData ? bData.price : 100; 
 
-    // Pripočítame zlato (75% z ceny budovy vynásobenej jej levelom)
     let goldRefund = Math.floor((tile.buildingLevel || 1) * basePrice * 0.75);
     currentGold += goldRefund;
     spawnFloatingText((`+${goldRefund} Gold`), soldX, soldY, "#00cc00");
 
-    // 2. ODSTRÁNENIE Z HERNÝCH POCOV: Vymažeme súradnice zo všetkých polí pracovísk
     activeFields = activeFields.filter(c => c !== coordString);
     activeLumberyards = activeLumberyards.filter(c => c !== coordString);
     activeMines = activeMines.filter(c => c !== coordString);
     activeBarracks = activeBarracks.filter(c => c !== coordString);
-    activeQuarries = activeQuarries.filter(c => c !== coordString); // Pridané lomy, ktoré máš v kóde
+    activeQuarries = activeQuarries.filter(c => c !== coordString);
 
-    // 3. PRESMEROVANIE NPC: Skontrolujeme, či nejaké NPC nestratilo domov alebo prácu
     if (typeof activeNPCs !== 'undefined' && Array.isArray(activeNPCs)) {
         activeNPCs.forEach(npc => {
             // Stratil domov?
@@ -493,7 +514,6 @@ function sellBuilding() {
         });
     }
 
-    // 4. VYČISTENIE DLAŽDICE
     tile.buildingImg = null;
     tile.buildingSrc = null;
     tile.buildingLevel = null;

@@ -649,7 +649,8 @@ function saveMap() {
             food: typeof currentFood !== 'undefined' ? currentFood : 0,
             level: typeof currentLevel !== 'undefined' ? currentLevel : 1,
             xp: typeof currentXP !== 'undefined' ? currentXP : 0,
-            tp: typeof currentTrainingPoints !== 'undefined' ? currentTrainingPoints : 0
+            tp: typeof currentTrainingPoints !== 'undefined' ? currentTrainingPoints : 0,
+            hasCastleKeep: typeof hasCastleKeep !== 'undefined' ? hasCastleKeep : false
         }
     };
 
@@ -716,6 +717,7 @@ function loadMap() {
         if (typeof currentLevel !== 'undefined') currentLevel = saveData.resources.level;
         if (typeof currentXP !== 'undefined') currentXP = saveData.resources.xp;
         if (typeof currentTrainingPoints !== 'undefined') currentTrainingPoints = saveData.resources.tp;
+        if (typeof hasCastleKeep !== 'undefined') hasCastleKeep = saveData.resources.hasCastleKeep || false;
     }
 
     // Pomocný slovník pre priradenie obrázkov terénu
