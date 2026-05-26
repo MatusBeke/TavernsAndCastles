@@ -1,7 +1,7 @@
 var activeNPCs = [];
 const npcList = document.getElementById("citizens-list");
 
-let jobs = ["peasant", "miner", "lumberman", "guard", "millworker", "blacksmith", "carpenter"];
+let jobs = ["peasant", "miner", "lumberman", "guard", "carpenter", "millworker", "blacksmith"];
 let selectedNPC = null;
 
 let peasantImage = "../Resources/NPCs/NPC_Peasant.png";
@@ -362,16 +362,31 @@ class NPC {
                 this.workTimer += 1;
 
                 if (this.workTimer >= 5) {
-                    currentSteel += 1;
-                    this.happiness = Math.min(100, this.happiness + 1);
+                    if (currentCoal >= 1 && currentIron >= 1)
+                    {
+                        currentSteel += 1;
+                        currentCoal -= 1;
+                        currentIron -= 1;
+                        this.happiness = Math.min(100, this.happiness + 1);
 
-                    // Správne zobrazenie plávajúceho textu
-                    if (typeof spawnFloatingText === 'function') {
-                        spawnFloatingText("+1 Steel", this.workplaceX, this.workplaceY, "#7ce4e7");
+                        // Správne zobrazenie plávajúceho textu
+                        if (typeof spawnFloatingText === 'function') {
+                            spawnFloatingText("+1 Steel", this.workplaceX, this.workplaceY, "#7ce4e7");
+                        }
+
+                        updateHUD();
+                        this.workTimer = 0; 
                     }
+                    else
+                    {
+                        if (typeof spawnFloatingText === 'function') {
+                            spawnFloatingText("Resources missing", this.workplaceX, this.workplaceY, "#ff0000");
+                        }
 
-                    updateHUD();
-                    this.workTimer = 0; 
+                        updateHUD();
+                        this.workTimer = 0; 
+                    }
+                
                 }
             } else if (this.profession === "carpenter") {
                 this.workTimer += 1;

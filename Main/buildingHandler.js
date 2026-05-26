@@ -75,6 +75,11 @@ function updateHUD() {
         currentXP -= currentLevel * 100;
         currentLevel += 1;
         showWarning(`Level up! You are now level ${currentLevel}.`, "yellow");
+
+       /* if (currentLevel === 3) {
+            jobs.push("millworker", "carpenter", "blacksmith");
+            showWarning("Advanced jobs unlocked!", "yellow")
+        }*/
     }
     
     if (statLevelDisplay) statLevelDisplay.innerText = currentLevel;
