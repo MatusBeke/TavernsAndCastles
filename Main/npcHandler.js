@@ -555,7 +555,6 @@ function assignWork() {
 }
 
 function changeWork() {
-    // Drop execution immediately if the target NPC is invalid or dead
     if (!selectedNPC || selectedNPC.state === "Dead") return;
 
     const jobDropdown = document.getElementById('npc-info-profession-select');
@@ -617,7 +616,6 @@ function relocateNPCHomeAfterSell(npc, soldX, soldY) {
             npc.wander();
         }
 
-        // OPRAVA: Musíme prepočítať, či z NOVÉHO domu stále dočiahne do svojej starej práce!
         if (npc.workplaceX !== null && npc.workplaceY !== null) {
             let dxWork = npc.workplaceX - npc.homeX;
             let dyWork = npc.workplaceY - npc.homeY;
@@ -634,7 +632,7 @@ function relocateNPCHomeAfterSell(npc, soldX, soldY) {
         
         // Vyhodíme ho na náhodné miesto na mape, nech nezostane visieť v neexistujúcom dome
         npc.wander();
-        console.log(`NPC ${npc.name} nenašiel voľné ubytovanie a stal sa bezdomovcom.`);
+        console.log(`NPC ${npc.name} has become homeless.`);
     }
 }
 

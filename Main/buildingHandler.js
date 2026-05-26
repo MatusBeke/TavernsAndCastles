@@ -10,8 +10,8 @@ let currentBuildingCategory = null;
 // Suroviny
 let currentGold = 100000;
 let currentPop = 0;
-let currentWood = 0;
-let currentStone = 0;
+let currentWood = 100;
+let currentStone = 100;
 let currentCoal = 0;
 let currentIron = 0;
 let currentSteel = 0;
@@ -20,6 +20,10 @@ let currentFood = 100;
 let currentLevel = 1;
 let currentXP = 0;
 let currentTrainingPoints = 0;
+
+let currentWoodCost = 0;
+let currentPlanksCost = 0;
+let currentStoneCost = 0;
 
 let selectedTileForInfo = null;
 let isChopping = false;
@@ -30,6 +34,7 @@ var activeMines = [];
 var activeLumberyards = [];
 var activeQuarries = [];
 var activeBarracks = [];
+var activeHappinessBuildings = [];
 
 let coinSFX = new Audio();
 coinSFX.src = "../Resources/SFX/SFX_Coins.mp3";
@@ -118,10 +123,15 @@ function selectBattleType(type) {
 }
 
 // Stavanie budov
-function startBuilding(imageSrc, maxLVL, price, popCost, category, levelReq) {
+function startBuilding(imageSrc, maxLVL, price, popCost, category, levelReq, woodCost, stoneCost, planksCost) {
     // Ak nemame dostatok zlata alebo populacie, zobrazime upozornenie a nebudeme pokracovat do rezimu stavania
     if (currentGold < price) {
         showWarning("Not enough gold!", "red");
+        return;
+    }
+
+    if (currentWood < woodCost || currentPlanks < planksCost || currentStone < stoneCost) {
+        showWarning("Not enough resources!", "red");
         return;
     }
 
@@ -140,6 +150,10 @@ function startBuilding(imageSrc, maxLVL, price, popCost, category, levelReq) {
     currentBuildingCategory = category; 
 
     document.getElementById('gameCanvas').style.cursor = "crosshair";
+
+    currentWoodCost = woodCost;
+    currentPlanksCost = planksCost;
+    currentStoneCost = stoneCost;
 }
 
 // Kontrolovaneie inputu od hraca (stavanie, zobrovanie info okna, tazenie lesa...)
@@ -250,6 +264,9 @@ document.getElementById('gameCanvas').addEventListener('click', (e) => {
             }
 
             currentGold -= currentBuildingPrice;
+            currentWood -= currentWoodCost;
+            currentPlanks -= currentPlanksCost;
+            currentStone -= currentStoneCost;
             spawnFloatingText(("-" + currentBuildingPrice + " Gold"), gridX, gridY, "#cc0000");
             coinSFX.play();
             updateHUD();
@@ -269,6 +286,9 @@ document.getElementById('gameCanvas').addEventListener('click', (e) => {
             tile.buildingLevel = 1; 
 
             currentGold -= currentBuildingPrice;
+            currentWood -= currentWoodCost;
+            currentPlanks -= currentPlanksCost;
+            currentStone -= currentStoneCost;
             spawnFloatingText(("-" + currentBuildingPrice + " Gold"), gridX, gridY, "#cc0000");
             coinSFX.play();
             updateHUD();

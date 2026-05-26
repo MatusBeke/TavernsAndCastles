@@ -455,7 +455,7 @@ async function loadBuildingMenu(filterCategory = 'houses') {
                 <p id="building-menu-element-name">${building.name}</p>
                 <p id="building-menu-element-level">lvl. ${building.level}</p>
                 <p id="building-menu-element-price">${building.price} G | ${popCost} 👥</p>
-                <button id="building-menu-element-button" onclick="startBuilding('${building.image}', ${building.maxBuildLevel}, ${building.price}, ${popCost}, '${building.category}', ${building.level})">Build</button>
+                <button id="building-menu-element-button" onclick="startBuilding('${building.image}', ${building.maxBuildLevel}, ${building.price}, ${popCost}, '${building.category}', ${building.level}, ${building.woodCost}, ${building.stoneCost}, ${building.planksCost})">Build</button>
             `;
             menuContainer.appendChild(buildingElement);
         });
