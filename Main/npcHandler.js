@@ -647,8 +647,9 @@ function changeWork() {
     else if (chosenJob === "miner") selectedNPC.img = minerImage;
     else if (chosenJob === "lumberman") selectedNPC.img = lumbermanImage;
     else if (chosenJob === "guard") selectedNPC.img = guardImage;
-    else if (chosenJob === "millworker") selectedNPC.img = millworkerImage; // PRIDANÉ
-    else if (chosenJob === "blacksmith") selectedNPC.img = blacksmithImage; // PRIDANÉ
+    else if (chosenJob === "millworker") selectedNPC.img = millworkerImage;
+    else if (chosenJob === "blacksmith") selectedNPC.img = blacksmithImage; 
+    else if (chosenJob === "carpenter") selectedNPC.img = carpenterImage;
 
     assignWork();
     console.log(`Changed ${selectedNPC.name}'s job to: ${chosenJob}`);

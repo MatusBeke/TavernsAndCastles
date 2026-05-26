@@ -61,7 +61,8 @@ function updateHUD() {
     const statDaysDisplay = document.getElementById('stat-days');
     const statCoalDisplay = document.getElementById('stat-coal');
     const statIronDisplay = document.getElementById('stat-iron');
-    const statSteelDisplay = document.getElementById('stat-steel')
+    const statSteelDisplay = document.getElementById('stat-steel');
+    const statPlanksDisplay = document.getElementById('stat-planks');
     const statTPDisplay = document.getElementById('stat-tp');
 
     if (statGoldDisplay) statGoldDisplay.innerText = currentGold;
@@ -81,6 +82,7 @@ function updateHUD() {
     if (statCoalDisplay) statCoalDisplay.innerText = currentCoal;
     if (statIronDisplay) statIronDisplay.innerText = currentIron;
     if (statSteelDisplay) statSteelDisplay.innerText = currentSteel;
+    if (statPlanksDisplay) statPlanksDisplay.innerText = currentPlanks;
     if (statTPDisplay) statTPDisplay.innerText = currentTrainingPoints;
 
     /*if (statDaysDisplay) {
