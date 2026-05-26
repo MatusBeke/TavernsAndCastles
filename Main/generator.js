@@ -542,7 +542,8 @@ function saveMap() {
             fields: typeof activeFields !== 'undefined' ? activeFields : [],
             mines: typeof activeMines !== 'undefined' ? activeMines : [],
             lumberyards: typeof activeLumberyards !== 'undefined' ? activeLumberyards : [],
-            barracks: typeof activeBarracks !== 'undefined' ? activeBarracks : []
+            barracks: typeof activeBarracks !== 'undefined' ? activeBarracks : [],
+            windmills: typeof activeWindmills !== 'undefined' ?  activeWindmills : []
         },
         // --- Ukladanie všetkých herných surovín ---
         resources: {
@@ -553,6 +554,102 @@ function saveMap() {
             food: typeof currentFood !== 'undefined' ? currentFood : 0,
             level: typeof currentLevel !== 'undefined' ? currentLevel : 1,
             xp: typeof currentXP !== 'undefined' ? currentXP : 0
+        }
+    };
+
+    localStorage.setItem('rts_save_slot_1', JSON.stringify(saveGameData));
+    console.log("Hra bola úspešne uložená!");
+    showWarning("Autosaving game", "yellow");
+}
+
+// Ukladanie
+function saveMap() {
+    if (!mapData || mapData.length === 0 || !mapData[0]) {
+        console.log("Ukladanie zrušené: Mapa nie je pripravená.");
+        return;
+    }
+
+    const savedTiles = [];
+
+    // 1. Uloženie mriežky mapy (terén + budovy)
+    for (let y = 0; y < MAP_SIZE; y++) {
+        savedTiles[y] = [];
+        for (let x = 0; x < MAP_SIZE; x++) {
+            const tile = mapData[y][x];
+            if (!tile) continue;
+
+            const tileSave = {
+                type: tile.type,
+                n: tile.n
+            };
+
+            if (tile.buildingImg) {
+                tileSave.buildingSrc = tile.buildingSrc;
+                tileSave.buildingLevel = tile.buildingLevel;
+            }
+
+            savedTiles[y][x] = tileSave;
+        }
+    }
+
+    // 2. Extrahovanie čistých dát z activeNPCs
+    const savedNPCs = activeNPCs.map(npc => {
+        return {
+            id: npc.id,
+            name: npc.name,
+            profession: npc.profession,
+            img: npc.img,
+            homeX: npc.homeX,
+            homeY: npc.homeY,
+            x: npc.x,
+            y: npc.y,
+            targetX: npc.targetX,
+            targetY: npc.targetY,
+            health: npc.health,
+            hunger: npc.hunger,
+            happiness: npc.happiness,
+            workplaceX: npc.workplaceX,
+            workplaceY: npc.workplaceY,
+            state: npc.state
+        };
+    });
+
+    // 3. Vytvorenie hlavného objektu uloženej pozície
+    const saveGameData = {
+        mapSize: MAP_SIZE,
+        camera: { x: camera.x, y: camera.y, zoom: camera.zoom },
+        time: {
+            day: currentDay,
+            hour: currentHour,
+            minute: currentMinute
+        },
+        map: savedTiles,
+        npcs: savedNPCs,
+        workplaces: {
+            fields: typeof activeFields !== 'undefined' ? activeFields : [],
+            mines: typeof activeMines !== 'undefined' ? activeMines : [],
+            lumberyards: typeof activeLumberyards !== 'undefined' ? activeLumberyards : [],
+            quarries: typeof activeQuarries !== 'undefined' ? activeQuarries : [],
+            barracks: typeof activeBarracks !== 'undefined' ? activeBarracks : [],
+            windmills: typeof activeWindmills !== 'undefined' ? activeWindmills : [],
+            foundries: typeof activeFoundries !== 'undefined' ? activeFoundries : [],
+            sawmills: typeof activeSawmills !== 'undefined' ? activeSawmills : [],
+            happinessBuildings: typeof activeHappinessBuildings !== 'undefined' ? activeHappinessBuildings : []
+        },
+        // --- Ukladanie všetkých herných surovín ---
+        resources: {
+            gold: typeof currentGold !== 'undefined' ? currentGold : 0,
+            pop: typeof currentPop !== 'undefined' ? currentPop : 0,
+            wood: typeof currentWood !== 'undefined' ? currentWood : 0,
+            stone: typeof currentStone !== 'undefined' ? currentStone : 0,
+            coal: typeof currentCoal !== 'undefined' ? currentCoal : 0,
+            iron: typeof currentIron !== 'undefined' ? currentIron : 0,
+            steel: typeof currentSteel !== 'undefined' ? currentSteel : 0,
+            planks: typeof currentPlanks !== 'undefined' ? currentPlanks : 0,
+            food: typeof currentFood !== 'undefined' ? currentFood : 0,
+            level: typeof currentLevel !== 'undefined' ? currentLevel : 1,
+            xp: typeof currentXP !== 'undefined' ? currentXP : 0,
+            tp: typeof currentTrainingPoints !== 'undefined' ? currentTrainingPoints : 0
         }
     };
 
@@ -597,7 +694,12 @@ function loadMap() {
         if (typeof activeFields !== 'undefined') activeFields = saveData.workplaces.fields || [];
         if (typeof activeMines !== 'undefined') activeMines = saveData.workplaces.mines || [];
         if (typeof activeLumberyards !== 'undefined') activeLumberyards = saveData.workplaces.lumberyards || [];
+        if (typeof activeQuarries !== 'undefined') activeQuarries = saveData.workplaces.quarries || [];
         if (typeof activeBarracks !== 'undefined') activeBarracks = saveData.workplaces.barracks || [];
+        if (typeof activeWindmills !== 'undefined') activeWindmills = saveData.workplaces.windmills || [];
+        if (typeof activeFoundries !== 'undefined') activeFoundries = saveData.workplaces.foundries || [];
+        if (typeof activeSawmills !== 'undefined') activeSawmills = saveData.workplaces.sawmills || [];
+        if (typeof activeHappinessBuildings !== 'undefined') activeHappinessBuildings = saveData.workplaces.happinessBuildings || [];
     }
 
     // --- Načítanie a prepísanie surovín ---
@@ -606,9 +708,14 @@ function loadMap() {
         if (typeof currentPop !== 'undefined') currentPop = saveData.resources.pop;
         if (typeof currentWood !== 'undefined') currentWood = saveData.resources.wood;
         if (typeof currentStone !== 'undefined') currentStone = saveData.resources.stone;
+        if (typeof currentCoal !== 'undefined') currentCoal = saveData.resources.coal;
+        if (typeof currentIron !== 'undefined') currentIron = saveData.resources.iron;
+        if (typeof currentSteel !== 'undefined') currentSteel = saveData.resources.steel;
+        if (typeof currentPlanks !== 'undefined') currentPlanks = saveData.resources.planks;
         if (typeof currentFood !== 'undefined') currentFood = saveData.resources.food;
         if (typeof currentLevel !== 'undefined') currentLevel = saveData.resources.level;
         if (typeof currentXP !== 'undefined') currentXP = saveData.resources.xp;
+        if (typeof currentTrainingPoints !== 'undefined') currentTrainingPoints = saveData.resources.tp;
     }
 
     // Pomocný slovník pre priradenie obrázkov terénu
@@ -691,7 +798,6 @@ function loadMap() {
 
     requestAnimationFrame(draw);
 }
-
 //Autosave každých 30 sekund
 setInterval(() => {
     if (mapData && mapData.length > 0) {

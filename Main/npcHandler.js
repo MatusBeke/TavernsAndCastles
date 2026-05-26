@@ -122,7 +122,7 @@ class NPC {
                 return;
             }
 
-            if ((currentHour === 7 || currentHour === 12 || currentHour === 18) && currentMinute === 0) {
+            if (((currentHour === 7 || currentHour === 12 || currentHour === 18) && currentMinute === 0) && currentFood > 0) {
                 this.hunger = 100;
                 currentFood -= 1;
                 updateHUD();
@@ -183,6 +183,10 @@ class NPC {
 
     draw(ctx) {
         let npcImgAsset = npcImages[this.profession];
+
+        if (this.state === "In Home") {
+            return; 
+        }
 
         if (this.state === "Dead") {
             npcImgAsset = npcImages["skeleton"];
@@ -337,6 +341,13 @@ class NPC {
                         currentIron += 1; 
                         if (typeof spawnFloatingText === 'function') {
                             spawnFloatingText("+1 Iron", this.workplaceX, this.workplaceY - 40, "#d47a2a");
+                        }
+                    }
+
+                    if (Math.random() < 0.3) {
+                        currentGold += 25; 
+                        if (typeof spawnFloatingText === 'function') {
+                            spawnFloatingText("+25 Gold", this.workplaceX, this.workplaceY - 40, "#fbff00");
                         }
                     }
                     
