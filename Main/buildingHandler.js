@@ -120,10 +120,7 @@ function showWarning(msg, type) {
     }, 2000);
 }
 
-// TODO: battle mode
-function startBattle() {
-    document.getElementById('battle-menu-modal').style.display = 'flex';
-}
+
 
 function closeBattleMenu() {
     document.getElementById('battle-menu-modal').style.display = 'none';

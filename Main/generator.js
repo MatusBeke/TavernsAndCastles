@@ -391,9 +391,17 @@ window.addEventListener('mousemove', (e) => {
 });
 
 function startBattle() {
-    console.log("Starting Field Battle...");
-    // Rovno otvorí Field bitku v novom okne
-    window.open('../Battle/battle.html?type=field', '_blank');
+    let currentTroops = 0;
+    
+    // Zistíme, koľko máš reálne NPCčiek na mape
+    if (typeof activeNPCs !== 'undefined') {
+        currentTroops = activeNPCs.length;
+    }
+    
+    console.log("Starting Field Battle s maximálnym počtom vojakov:", currentTroops);
+    
+    // Pošleme toto číslo cez URL do battle.html
+    window.open(`../Battle/battle.html?type=field&maxTroops=${currentTroops}`, '_blank');
 }
 
 function closeBattleMenu() {

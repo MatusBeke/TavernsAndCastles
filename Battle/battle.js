@@ -10,6 +10,7 @@ let projectiles = [];
 let isFighting = false;
 let isTargetingExplosion = false;
 let battleEnded = false;
+let maxAvailableTroops = 0; // Nová premenná pre tvoj reálny počet NPC
 
 // --- CONSTANTS & ROLES ---
 const MAP_SIZE = 25;
@@ -207,8 +208,38 @@ function initBattle() {
         battlePhase = urlParams.get('type');
     }
     
+    // Načítanie max počtu vojakov z URL
+    if (urlParams.has('maxTroops')) {
+        maxAvailableTroops = parseInt(urlParams.get('maxTroops')) || 0;
+    }
+    
     const phaseText = document.getElementById('phase-text');
     if (phaseText) phaseText.innerText = battlePhase.toUpperCase();
+    
+    // Úprava inputu podľa tvojej mapy
+    const troopInput = document.getElementById('troop-input');
+    if (troopInput) {
+        troopInput.max = maxAvailableTroops;
+        troopInput.value = maxAvailableTroops > 0 ? maxAvailableTroops : 0;
+        
+        // Zabezpečenie: Ak hráč manuálne napíše väčšie číslo, hneď ho to opraví
+        troopInput.addEventListener('input', function() {
+            if (parseInt(this.value) > maxAvailableTroops) {
+                this.value = maxAvailableTroops;
+            }
+        });
+        
+        const modalText = document.querySelector('#army-setup-modal p');
+        if (modalText) {
+            modalText.innerText = `You have ${maxAvailableTroops} citizens in your realm ready to fight.\nHow many will you deploy?`;
+        }
+
+        // Prepísanie textu "Available: 400" na reálnu hodnotu
+        const availableText = document.getElementById('available-text');
+        if (availableText) {
+            availableText.innerText = "Available: " + maxAvailableTroops;
+        }
+    }
     
     const modal = document.getElementById('army-setup-modal');
     if (modal) modal.style.display = 'block';
@@ -306,22 +337,30 @@ function confirmArmy() {
     if(!troopInput) return;
 
     let troopCount = parseInt(troopInput.value);
+    
+    if (maxAvailableTroops === 0) {
+        showGameMessage("You have no citizens to send to battle!", null);
+        return;
+    }
+    
     if (isNaN(troopCount) || troopCount < 1) {
         showGameMessage("You must send at least 1 soldier!", null);
         return;
     }
     
-    if (troopCount > 400) {
-        troopCount = 400;
-        troopInput.value = 400;
+    // Kontrola voči max počtu
+    if (troopCount > maxAvailableTroops) {
+        troopCount = maxAvailableTroops;
+        troopInput.value = maxAvailableTroops;
+        showGameMessage(`You only have ${maxAvailableTroops} citizens!`, null);
+        return;
     }
     
     document.getElementById('army-setup-modal').style.display = 'none';
     document.getElementById('army-count').innerText = "Your Army: " + troopCount;
     
-    let enemyCount = troopCount + Math.floor(Math.random() * 20 - 10);
+    let enemyCount = troopCount + Math.floor(Math.random() * (troopCount * 0.2)); // Nepriateľ má max o 20% viac
     if (enemyCount < 1) enemyCount = 1;
-    if (enemyCount > 400) enemyCount = 400;
     document.getElementById('enemy-count').innerText = "Enemy: " + enemyCount;
     
     spawnArmies(troopCount, enemyCount);
@@ -401,7 +440,7 @@ function updateCombat() {
         isFighting = false;
         setTimeout(() => {
             showGameMessage(eventMessage ? eventMessage + "\n\nVICTORY!\nReturning to your world." : "VICTORY!\nReturning to your world.", () => {
-                window.location.href = "../index.html"; // Návrat na normálnu mapu po výhre
+                window.location.href = "../Main/index.html"; 
             });
         }, 1500);
     } else if (playerArmy.length === 0 && enemyArmy.length > 0) {
@@ -409,7 +448,7 @@ function updateCombat() {
         isFighting = false;
         setTimeout(() => {
             showGameMessage(eventMessage ? eventMessage + "\n\nDEFEAT!\nThey are marching to your world!" : "DEFEAT!\nThey are marching to your world!", () => {
-                window.location.href = "../index.html?underAttack=true"; // Presun na mapu a spustenie obrannej minihry
+                window.location.href = "../Main/index.html?underAttack=true"; 
             });
         }, 1500);
     }
