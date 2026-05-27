@@ -59,13 +59,13 @@ const imgCavalry = new Image(); imgCavalry.src = '../Resources/NPCs/NPC_Cavalry.
 const imgKing = new Image(); imgKing.src = '../Resources/NPCs/NPC_King.png';
 
 const ROLES = {
-    MILITIA: { name: 'Militia', hp: 60, speed: 1.0, damage: 4, range: 15, img: imgMilitia, w: 7.5, h: 15 },
-    GUARDS: { name: 'Guards', hp: 120, speed: 1.0, damage: 8, range: 15, img: imgGuard, w: 7.5, h: 15 },
-    MEN_AT_ARMS: { name: 'Men-at-Arms', hp: 100, speed: 1.0, damage: 10, range: 15, img: imgMenAtArms, w: 7.5, h: 15 },
-    RANGED: { name: 'Ranged', hp: 50, speed: 1.0, damage: 6, range: 120, img: imgRanged, w: 7.5, h: 15 },
-    KNIGHT: { name: 'Knight', hp: 150, speed: 1.0, damage: 16, range: 18, img: imgKnight, w: 7.5, h: 15 },
-    CAVALRY: { name: 'Cavalry', hp: 130, speed: 2.0, damage: 12, range: 20, img: imgCavalry, w: 30, h: 30 }, 
-    KING: { name: 'King', hp: 500, speed: 1.0, damage: 24, range: 20, img: imgKing, w: 7.5, h: 15 }
+    MILITIA: { name: 'Militia', hp: 60, speed: 0.5, damage: 4, range: 15, img: imgMilitia, w: 7.5, h: 15 },
+    GUARDS: { name: 'Guards', hp: 120, speed: 0.5, damage: 8, range: 15, img: imgGuard, w: 7.5, h: 15 },
+    MEN_AT_ARMS: { name: 'Men-at-Arms', hp: 100, speed: 0.5, damage: 10, range: 15, img: imgMenAtArms, w: 7.5, h: 15 },
+    RANGED: { name: 'Ranged', hp: 50, speed: 0.5, damage: 6, range: 120, img: imgRanged, w: 7.5, h: 15 },
+    KNIGHT: { name: 'Knight', hp: 150, speed: 0.5, damage: 16, range: 18, img: imgKnight, w: 7.5, h: 15 },
+    CAVALRY: { name: 'Cavalry', hp: 130, speed: 1.0, damage: 12, range: 20, img: imgCavalry, w: 30, h: 30 }, 
+    KING: { name: 'King', hp: 500, speed: 0.5, damage: 24, range: 20, img: imgKing, w: 7.5, h: 15 }
 };
 
 // --- IN-GAME POPUPS ---
