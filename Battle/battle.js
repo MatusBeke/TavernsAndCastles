@@ -10,22 +10,46 @@ let projectiles = [];
 let isFighting = false;
 let isTargetingExplosion = false;
 let battleEnded = false;
-let maxAvailableTroops = 0; // Nová premenná pre tvoj reálny počet NPC
+let maxAvailableTroops = 0;
 
-// --- CONSTANTS & ROLES ---
+// --- CONSTANTS ---
 const MAP_SIZE = 25;
 const TILE_SIZE = 128;
 let mapData = [];
 let camera = { x: 0, y: 0, zoom: 1 };
 let minZoom = 1;
 
-// --- IMAGES ---
+// --- IMAGES (TERRAIN & FX) ---
 const imgLand = new Image(); imgLand.src = '../Resources/Tiles/Img_LandDefault.png';
 const imgForest1 = new Image(); imgForest1.src = '../Resources/Tiles/Img_Forest1.png';
 const imgForest2 = new Image(); imgForest2.src = '../Resources/Tiles/Img_Forest2.png';
 const imgForest3 = new Image(); imgForest3.src = '../Resources/Tiles/Img_Forest3.png';
 const imgForest4 = new Image(); imgForest4.src = '../Resources/Tiles/Img_Forest4.png';
+const imgArrow = new Image(); imgArrow.src = '../Resources/Arrow.png';
 
+// --- IMAGES (BUILDABLES) ---
+const buildImages = {
+    keep: new Image(),
+    barracks: new Image(),
+    pub: new Image(),
+    townHouse: new Image(),
+    stoneHouse: new Image(),
+    windmill: new Image(),
+    tower: new Image(),
+    mine: new Image(),
+    sawmill: new Image()
+};
+buildImages.keep.src = '../Resources/Buildables/Castle/Img_CastleKeep.png';
+buildImages.barracks.src = '../Resources/Buildables/Barracks/Img_Barracks.png';
+buildImages.pub.src = '../Resources/Buildables/Pub/Img_Pub.png';
+buildImages.townHouse.src = '../Resources/Buildables/TownHouse/Img_TownHouse1.png';
+buildImages.stoneHouse.src = '../Resources/Buildables/StoneHouse/Img_StoneHouse1.png';
+buildImages.windmill.src = '../Resources/Buildables/Windmill/Img_Windmill.png'; // Zmenené na .png
+buildImages.tower.src = '../Resources/Buildables/Castle/Img_ArcherTower.png';
+buildImages.mine.src = '../Resources/Buildables/Mine/Img_Mine1.png';
+buildImages.sawmill.src = '../Resources/Buildables/Sawmill/Img_Sawmill.png';
+
+// --- IMAGES (NPCs) ---
 const imgMilitia = new Image(); imgMilitia.src = '../Resources/NPCs/NPC_Peasant.png';
 const imgGuard = new Image(); imgGuard.src = '../Resources/NPCs/NPC_Guard.png';
 const imgMenAtArms = new Image(); imgMenAtArms.src = '../Resources/NPCs/NPC_ManAtArms.png';
@@ -33,18 +57,15 @@ const imgRanged = new Image(); imgRanged.src = '../Resources/NPCs/NPC_Ranged.png
 const imgKnight = new Image(); imgKnight.src = '../Resources/NPCs/NPC_Knight.png';
 const imgCavalry = new Image(); imgCavalry.src = '../Resources/NPCs/NPC_Cavalry.png';
 const imgKing = new Image(); imgKing.src = '../Resources/NPCs/NPC_King.png';
-const imgWarMachine = new Image(); imgWarMachine.src = '../Resources/NPCs/NPC_Guard.png'; 
-const imgArrow = new Image(); imgArrow.src = '../Resources/Arrow.png';
 
 const ROLES = {
-    MILITIA: { name: 'Militia', hp: 60, speed: 1.0, damage: 2, range: 15, img: imgMilitia, w: 7.5, h: 15 },
-    GUARDS: { name: 'Guards', hp: 120, speed: 1.0, damage: 4, range: 15, img: imgGuard, w: 7.5, h: 15 },
-    MEN_AT_ARMS: { name: 'Men-at-Arms', hp: 100, speed: 1.0, damage: 5, range: 15, img: imgMenAtArms, w: 7.5, h: 15 },
-    RANGED: { name: 'Ranged', hp: 50, speed: 1.0, damage: 3, range: 120, img: imgRanged, w: 7.5, h: 15 },
-    KNIGHT: { name: 'Knight', hp: 150, speed: 1.0, damage: 8, range: 18, img: imgKnight, w: 7.5, h: 15 },
-    CAVALRY: { name: 'Cavalry', hp: 130, speed: 2.0, damage: 6, range: 20, img: imgCavalry, w: 30, h: 30 }, 
-    WAR_MACHINE: { name: 'War-Machine', hp: 300, speed: 1.0, damage: 15, range: 150, img: imgWarMachine, w: 7.5, h: 15 },
-    KING: { name: 'King', hp: 500, speed: 1.0, damage: 12, range: 20, img: imgKing, w: 7.5, h: 15 }
+    MILITIA: { name: 'Militia', hp: 60, speed: 1.0, damage: 4, range: 15, img: imgMilitia, w: 7.5, h: 15 },
+    GUARDS: { name: 'Guards', hp: 120, speed: 1.0, damage: 8, range: 15, img: imgGuard, w: 7.5, h: 15 },
+    MEN_AT_ARMS: { name: 'Men-at-Arms', hp: 100, speed: 1.0, damage: 10, range: 15, img: imgMenAtArms, w: 7.5, h: 15 },
+    RANGED: { name: 'Ranged', hp: 50, speed: 1.0, damage: 6, range: 120, img: imgRanged, w: 7.5, h: 15 },
+    KNIGHT: { name: 'Knight', hp: 150, speed: 1.0, damage: 16, range: 18, img: imgKnight, w: 7.5, h: 15 },
+    CAVALRY: { name: 'Cavalry', hp: 130, speed: 2.0, damage: 12, range: 20, img: imgCavalry, w: 30, h: 30 }, 
+    KING: { name: 'King', hp: 500, speed: 1.0, damage: 24, range: 20, img: imgKing, w: 7.5, h: 15 }
 };
 
 // --- IN-GAME POPUPS ---
@@ -202,73 +223,101 @@ canvas.addEventListener('click', (e) => {
     }
 });
 
+// --- INITIALIZATION ---
 function initBattle() {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.has('type')) {
         battlePhase = urlParams.get('type');
     }
     
-    // Načítanie max počtu vojakov z URL
-    if (urlParams.has('maxTroops')) {
-        maxAvailableTroops = parseInt(urlParams.get('maxTroops')) || 0;
-    }
-    
     const phaseText = document.getElementById('phase-text');
     if (phaseText) phaseText.innerText = battlePhase.toUpperCase();
     
-    // Úprava inputu podľa tvojej mapy
+    const modal = document.getElementById('army-setup-modal');
     const troopInput = document.getElementById('troop-input');
+    const modalText = document.querySelector('#army-setup-modal p');
+    const availableText = document.getElementById('available-text');
+
+    if (battlePhase === "attack") {
+        if (urlParams.has('troops')) {
+            maxAvailableTroops = parseInt(urlParams.get('troops')) || 1;
+        }
+        if (modalText) {
+            modalText.innerText = `Your veterans have arrived!\nYou have ${maxAvailableTroops} survivors from the field.\nHow many will join the siege?`;
+        }
+    } else {
+        if (urlParams.has('maxTroops')) {
+            maxAvailableTroops = parseInt(urlParams.get('maxTroops')) || 0;
+        }
+        if (modalText) {
+            modalText.innerText = `You have ${maxAvailableTroops} citizens in your realm ready to fight.\nHow many will you deploy?`;
+        }
+    }
+
     if (troopInput) {
         troopInput.max = maxAvailableTroops;
         troopInput.value = maxAvailableTroops > 0 ? maxAvailableTroops : 0;
         
-        // Zabezpečenie: Ak hráč manuálne napíše väčšie číslo, hneď ho to opraví
         troopInput.addEventListener('input', function() {
             if (parseInt(this.value) > maxAvailableTroops) {
                 this.value = maxAvailableTroops;
             }
         });
         
-        const modalText = document.querySelector('#army-setup-modal p');
-        if (modalText) {
-            modalText.innerText = `You have ${maxAvailableTroops} citizens in your realm ready to fight.\nHow many will you deploy?`;
-        }
-
-        // Prepísanie textu "Available: 400" na reálnu hodnotu
-        const availableText = document.getElementById('available-text');
         if (availableText) {
             availableText.innerText = "Available: " + maxAvailableTroops;
         }
     }
     
-    const modal = document.getElementById('army-setup-modal');
     if (modal) modal.style.display = 'block';
     
     generateBattleMap();
     resizeCanvas();
 }
 
-// --- MAP GENERATION ---
 function generateBattleMap() {
     if (typeof noise !== 'undefined') noise.seed(Math.random());
-    const NOISE_ZOOM = 0.1;
-    const centerPoint = MAP_SIZE / 2;
+    const centerX = Math.floor(MAP_SIZE / 2);
+    const centerY = Math.floor(MAP_SIZE / 2);
 
     for (let y = 0; y < MAP_SIZE; y++) {
         mapData[y] = [];
         for (let x = 0; x < MAP_SIZE; x++) {
-            let n = typeof noise !== 'undefined' ? (noise.perlin2(x * NOISE_ZOOM, y * NOISE_ZOOM) + 1) / 2 : 0.5;
             let tileImg = imgLand;
-            let distanceToCenter = Math.sqrt(Math.pow(x - centerPoint, 2) + Math.pow(y - centerPoint, 2));
+            let buildingImg = null;
+            let dist = Math.sqrt(Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2));
 
-            if (distanceToCenter > 6 && n < 0.5) {
-                let chance = Math.random();
-                if (chance < 0.05) tileImg = imgForest4;
-                else if (chance < 0.20) tileImg = imgForest1;
-                else if (chance < 0.30) tileImg = imgForest3;
-                else tileImg = imgForest2;
+            if (battlePhase === 'attack') {
+                // STRED: Castle Keep
+                if (x === centerX && y === centerY) {
+                    buildingImg = buildImages.keep;
+                } 
+                // KRUH 1: Hlavné budovy (Barracks, TownHouse)
+                else if (dist > 1.5 && dist < 2.5) {
+                    if (Math.random() < 0.3) buildingImg = (Math.random() > 0.5) ? buildImages.barracks : buildImages.townHouse;
+                }
+                // KRUH 2: Ostatné (Pub, StoneHouse, Windmill)
+                else if (dist >= 2.5 && dist < 4) {
+                    let rnd = Math.random();
+                    if (rnd < 0.1) buildingImg = buildImages.pub;
+                    else if (rnd < 0.2) buildingImg = buildImages.stoneHouse;
+                    else if (rnd < 0.25) buildingImg = buildImages.windmill;
+                }
+                // OKRAJ: Obranné veže
+                else if (dist >= 4 && dist < 5 && Math.random() < 0.1) {
+                    buildingImg = buildImages.tower;
+                }
+                // VŠETKO OSTATNÉ: Stromy
+                else {
+                    tileImg = imgForest1;
+                }
+            } else {
+                // FIELD FÁZA: Klasický šum
+                let n = typeof noise !== 'undefined' ? (noise.perlin2(x * 0.1, y * 0.1) + 1) / 2 : 0.5;
+                if (dist > 6 && n < 0.5) tileImg = imgForest1;
             }
-            mapData[y][x] = { img: tileImg };
+
+            mapData[y][x] = { img: tileImg, building: buildingImg };
         }
     }
     requestAnimationFrame(drawLoop);
@@ -300,38 +349,7 @@ function createUnit(minX, maxX, minZ, maxZ, roleDef, isPlayer) {
     };
 }
 
-function spawnArmies(playerCount, enemyCount) {
-    playerArmy = [];
-    enemyArmy = [];
-    projectiles = [];
-
-    const minZ = TILE_SIZE * 4;
-    const maxZ = TILE_SIZE * (MAP_SIZE - 4);
-    
-    const playerMinX = TILE_SIZE * 3;
-    const playerMaxX = TILE_SIZE * 7;
-    const enemyMinX = TILE_SIZE * (MAP_SIZE - 7);
-    const enemyMaxX = TILE_SIZE * (MAP_SIZE - 3);
-
-    playerArmy.push(createUnit(TILE_SIZE * 1, TILE_SIZE * 2, minZ, maxZ, ROLES.KING, true));
-    for(let i = 1; i < playerCount; i++) {
-        playerArmy.push(createUnit(playerMinX, playerMaxX, minZ, maxZ, getRandomRole(), true));
-    }
-
-    enemyArmy.push(createUnit(TILE_SIZE * (MAP_SIZE - 2), TILE_SIZE * (MAP_SIZE - 1), minZ, maxZ, ROLES.KING, false));
-    for(let i = 1; i < enemyCount; i++) {
-        enemyArmy.push(createUnit(enemyMinX, enemyMaxX, minZ, maxZ, getRandomRole(), false));
-    }
-
-    // --- BUFF PRE NEPRIATEĽOV (+50% HP, +20% Damage) ---
-    enemyArmy.forEach(unit => {
-        unit.maxHp = Math.floor(unit.maxHp * 1.5);
-        unit.hp = unit.maxHp;
-        unit.damage = unit.damage * 1.2;
-    });
-}
-
-// --- BATTLE UI LOGIC ---
+// --- BATTLE UI LOGIC (Setup Phase) ---
 function confirmArmy() {
     const troopInput = document.getElementById('troop-input');
     if(!troopInput) return;
@@ -348,25 +366,110 @@ function confirmArmy() {
         return;
     }
     
-    // Kontrola voči max počtu
     if (troopCount > maxAvailableTroops) {
         troopCount = maxAvailableTroops;
         troopInput.value = maxAvailableTroops;
-        showGameMessage(`You only have ${maxAvailableTroops} citizens!`, null);
+        showGameMessage(`You only have ${maxAvailableTroops} soldiers available!`, null);
         return;
     }
     
     document.getElementById('army-setup-modal').style.display = 'none';
-    document.getElementById('army-count').innerText = "Your Army: " + troopCount;
     
-    let enemyCount = troopCount + Math.floor(Math.random() * (troopCount * 0.2)); // Nepriateľ má max o 20% viac
-    if (enemyCount < 1) enemyCount = 1;
-    document.getElementById('enemy-count').innerText = "Enemy: " + enemyCount;
-    
-    spawnArmies(troopCount, enemyCount);
+    if (battlePhase === "attack") {
+        spawnAttackPhase(troopCount);
+    } else {
+        spawnFieldPhase(troopCount);
+    }
 
     const clashBtn = document.getElementById('start-clash-btn');
     if(clashBtn) clashBtn.style.display = 'block';
+}
+
+function spawnFieldPhase(count) {
+    playerArmy = [];
+    enemyArmy = [];
+    projectiles = [];
+
+    const minZ = TILE_SIZE * 4;
+    const maxZ = TILE_SIZE * (MAP_SIZE - 4);
+    const playerMinX = TILE_SIZE * 3;
+    const playerMaxX = TILE_SIZE * 7;
+    const enemyMinX = TILE_SIZE * (MAP_SIZE - 7);
+    const enemyMaxX = TILE_SIZE * (MAP_SIZE - 3);
+
+    playerArmy.push(createUnit(TILE_SIZE * 1, TILE_SIZE * 2, minZ, maxZ, ROLES.KING, true));
+    for(let i = 1; i < count; i++) {
+        playerArmy.push(createUnit(playerMinX, playerMaxX, minZ, maxZ, getRandomRole(), true));
+    }
+
+    let enemyCount = count + Math.floor(Math.random() * (count * 0.2)); 
+    if (enemyCount < 1) enemyCount = 1;
+
+    enemyArmy.push(createUnit(TILE_SIZE * (MAP_SIZE - 2), TILE_SIZE * (MAP_SIZE - 1), minZ, maxZ, ROLES.KING, false));
+    for(let i = 1; i < enemyCount; i++) {
+        enemyArmy.push(createUnit(enemyMinX, enemyMaxX, minZ, maxZ, getRandomRole(), false));
+    }
+
+    applyBattleBalance();
+    document.getElementById('army-count').innerText = "Your Army: " + playerArmy.length;
+    document.getElementById('enemy-count').innerText = "Enemy: " + enemyArmy.length;
+}
+
+function spawnAttackPhase(count) {
+    playerArmy = [];
+    enemyArmy = [];
+    projectiles = [];
+
+    const centerPx = (MAP_SIZE * TILE_SIZE) / 2;
+    const spawnRadius = TILE_SIZE * 2; // Menší radius okolo 1 hradu
+
+    // Obrancovia okolo Keep-u
+    enemyArmy.push(createUnit(centerPx - 10, centerPx + 10, centerPx - 10, centerPx + 10, ROLES.KING, false));
+    
+    let enemyCount = count + Math.floor(count * 0.1) + 10; 
+    for(let i = 1; i < enemyCount; i++) {
+        enemyArmy.push(createUnit(centerPx - spawnRadius, centerPx + spawnRadius, centerPx - spawnRadius, centerPx + spawnRadius, getRandomRole(), false));
+    }
+
+    applyBattleBalance();
+
+    // Hráč útočí zo spodnej strany mapy
+    const playerMinZ = TILE_SIZE * (MAP_SIZE - 4);
+    const playerMaxZ = TILE_SIZE * (MAP_SIZE - 1);
+    const playerMinX = TILE_SIZE * 3;
+    const playerMaxX = TILE_SIZE * (MAP_SIZE - 3);
+
+    playerArmy.push(createUnit((playerMinX+playerMaxX)/2 - 10, (playerMinX+playerMaxX)/2 + 10, playerMinZ, playerMaxZ, ROLES.KING, true));
+    for(let i = 1; i < count; i++) {
+        playerArmy.push(createUnit(playerMinX, playerMaxX, playerMinZ, playerMaxZ, getRandomRole(), true));
+    }
+
+    document.getElementById('army-count').innerText = "Siege Army: " + playerArmy.length;
+    document.getElementById('enemy-count').innerText = "Defenders: " + enemyArmy.length;
+}
+
+function applyBattleBalance() {
+    if (battlePhase === "field") {
+        // Tvoji vojaci sú vo Field Battle hrdinovia
+        playerArmy.forEach(unit => {
+            unit.maxHp = Math.floor(unit.maxHp * 2.0);
+            unit.hp = unit.maxHp;
+            unit.damage = unit.damage * 2.0;
+        });
+        // Nepriatelia v poli sú slabší
+        enemyArmy.forEach(unit => {
+            unit.maxHp = Math.floor(unit.maxHp * 0.8);
+            unit.hp = unit.maxHp;
+            unit.damage = unit.damage * 0.8;
+        });
+    } else {
+        // V Attack fáze (obliehanie) sú obrancovia v hrade silní
+        enemyArmy.forEach(unit => {
+            unit.maxHp = Math.floor(unit.maxHp * 1.5);
+            unit.hp = unit.maxHp;
+            unit.damage = unit.damage * 1.5;
+        });
+    }
 }
 
 function startClash() {
@@ -382,7 +485,6 @@ function findBestTarget(unit, defenders) {
 
     defenders.forEach(def => {
         let dist = Math.hypot(unit.x - def.x, unit.y - def.y);
-        
         if (dist < minDist) {
             minDist = dist;
             bestTarget = def;
@@ -404,7 +506,6 @@ function updateCombat() {
     enemyArmy = enemyArmy.filter(u => u.hp > 0);
 
     let eventMessage = "";
-
     const isEnemyKingAlive = enemyArmy.some(u => u.role === 'King');
     const isPlayerKingAlive = playerArmy.some(u => u.role === 'King');
 
@@ -432,26 +533,17 @@ function updateCombat() {
         }
     }
 
-    document.getElementById('army-count').innerText = "Your Army: " + playerArmy.length;
-    document.getElementById('enemy-count').innerText = "Enemy: " + enemyArmy.length;
+    document.getElementById('army-count').innerText = (battlePhase === 'attack' ? "Siege Army: " : "Your Army: ") + playerArmy.length;
+    document.getElementById('enemy-count').innerText = (battlePhase === 'attack' ? "Defenders: " : "Enemy: ") + enemyArmy.length;
 
+// V tvojom updateCombat():
     if (enemyArmy.length === 0 && playerArmy.length > 0) {
         battleEnded = true;
         isFighting = false;
-        setTimeout(() => {
-            showGameMessage(eventMessage ? eventMessage + "\n\nVICTORY!\nReturning to your world." : "VICTORY!\nReturning to your world.", () => {
-                window.location.href = "../Main/index.html"; 
-            });
-        }, 1500);
-    } else if (playerArmy.length === 0 && enemyArmy.length > 0) {
-        battleEnded = true;
-        isFighting = false;
-        setTimeout(() => {
-            showGameMessage(eventMessage ? eventMessage + "\n\nDEFEAT!\nThey are marching to your world!" : "DEFEAT!\nThey are marching to your world!", () => {
-                window.location.href = "../Main/index.html?underAttack=true"; 
-            });
-        }, 1500);
-    }
+        showGameMessage("VICTORY!", () => {
+            window.close(); // Okno bitky zmizne, tvoja mapa pod ním zostane
+    });
+}
 }
 
 function processArmyActions(attackers, defenders) {
@@ -605,6 +697,9 @@ function drawLoop() {
             const tile = mapData[y][x];
             if (tile.img) {
                 ctx.drawImage(tile.img, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE + 1, TILE_SIZE + 1);
+            }
+            if (tile.building) {
+                ctx.drawImage(tile.building, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
             }
         }
     }
