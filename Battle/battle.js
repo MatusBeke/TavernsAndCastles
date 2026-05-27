@@ -302,7 +302,6 @@ function spawnArmies(playerCount, enemyCount) {
 
 // --- BATTLE UI LOGIC ---
 function confirmArmy() {
-    console.log("Active npcs count" + activeNPCs.length);
     const troopInput = document.getElementById('troop-input');
     if(!troopInput) return;
 
@@ -310,15 +309,6 @@ function confirmArmy() {
     if (isNaN(troopCount) || troopCount < 1) {
         showGameMessage("You must send at least 1 soldier!", null);
         return;
-    }
-
-    if (typeof activeNPCs !== 'undefined') {
-        const maxAllowed = activeNPCs.length;
-        if (troopCount > maxAllowed) {
-            showGameMessage(`You cannot send more soldiers than your current population (${maxAllowed} NPCs)!`, null);
-            troopInput.value = maxAllowed; 
-            return;
-        }
     }
     
     if (troopCount > 400) {
