@@ -351,6 +351,16 @@ imgMountains.onload = () => {
 
 // Pomocná funkcia na vygenerovanie nového sveta
 function generateNewGameWorld() {
+    // --- TOTO ZABEZPEČÍ SPRÁVNU VEĽKOSŤ MAPY ---
+    let savedSize = localStorage.getItem('mapSize');
+    if (savedSize) {
+        MAP_SIZE = parseInt(savedSize); // Zoberie číslo z pamäte (z menu)
+    } else {
+        MAP_SIZE = 150; // Ak by sa niečo pokazilo, dá strednú mapu
+    }
+    console.log("Generujem novú mapu s veľkosťou:", MAP_SIZE);
+    // -------------------------------------------
+
     camera.x = (canvas.width / 2) - (MAP_SIZE * TILE_SIZE / 2);
     camera.y = (canvas.height / 2) - (MAP_SIZE * TILE_SIZE / 2);
     lastTime = performance.now(); 
