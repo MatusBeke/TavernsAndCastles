@@ -120,7 +120,6 @@ function showWarning(msg, type) {
     }, 2000);
 }
 
-// TODO: battle mode
 function startBattle() {
     document.getElementById('battle-menu-modal').style.display = 'flex';
 }
@@ -188,7 +187,6 @@ document.getElementById('gameCanvas').addEventListener('click', (e) => {
     if (gridX >= 0 && gridX < MAP_SIZE && gridY >= 0 && gridY < MAP_SIZE) {
         const tile = mapData[gridY][gridX];
 
-        // TODO: Pridat maximalnu vzdialenost od lumberyardu pre tazenie lesa, aby sa nedalo tazit les na druhom konci mapy
         // Logika na tazenie lesa
         if (!isBuildingMode && tile.img && tile.img.src.includes('Forest') && (activeLumberyards.length > 0) && isChopping == false) {
             if (tile.isClearing) return;
@@ -247,7 +245,6 @@ document.getElementById('gameCanvas').addEventListener('click', (e) => {
             }
         }
 
-        // TODO: Pridat to aby sa nedala upgradovat budova aj inou budovou
         // upgrade logika budov
         if (tile.buildingImg) {
             if (currentGold < currentBuildingPrice) {
@@ -466,7 +463,69 @@ function closeBuildingInfo() {
 
 // TODO: Vytvorit logiku pre upgrade button
 function upgradeBuilding() {
-    showWarning("Upgrade functionality is not implemented yet!", "yellow");
+   if (!selectedTileForInfo) return;
+
+    const tile = selectedTileForInfo.tile;
+    const gridX = selectedTileForInfo.x;
+    const gridY = selectedTileForInfo.y;
+
+    let baseSrc = tile.buildingSrc;
+    if (tile.buildingLevel > 1) {
+        baseSrc = tile.buildingSrc.replace(/(\d+)(?=\.\w+$)/, '1');
+    }
+    let bData = window.gameBuildings ? window.gameBuildings.find(b => b.image === baseSrc) : null;
+
+    let upgradeGoldCost = bData ? bData.price : 100; 
+    let upgradeWoodCost = bData && bData.woodCost ? bData.woodCost : 0;
+    let upgradeStoneCost = bData && bData.stoneCost ? bData.stoneCost : 0;
+    let upgradePlanksCost = bData && bData.planksCost ? bData.planksCost : 0;
+    let maxLevel = bData && bData.maxLevel ? bData.maxLevel : 5;
+
+    if (tile.buildingLevel >= maxLevel) {
+        showWarning("Maximum level reached!", "red");
+        return; 
+    }
+
+    const nextLevel = (tile.buildingLevel || 1) + 1;
+    const nextSrc = tile.buildingSrc.replace(/(\d+)(?=\.\w+$)/, nextLevel);
+    
+    const testImg = new Image();
+    testImg.src = nextSrc;
+
+    testImg.onerror = function() {
+        showWarning("Maximum level reached!", "red");
+    };
+
+    testImg.onload = function() {
+        if (currentGold < upgradeGoldCost || currentWood < upgradeWoodCost || currentStone < upgradeStoneCost || currentPlanks < upgradePlanksCost) {
+            showWarning("Not enough resources for upgrade!", "red");
+            return;
+        }
+
+        tile.buildingLevel = nextLevel;
+        tile.buildingSrc = nextSrc;
+        tile.buildingImg = testImg; 
+
+        if (tile.buildingSrc.includes('Cabin') || tile.buildingSrc.includes('House')) {
+            createNPC(gridX, gridY);
+            currentPop += 1;
+            updateHUD();
+        }
+
+        currentGold -= upgradeGoldCost;
+        currentWood -= upgradeWoodCost;
+        currentStone -= upgradeStoneCost;
+        currentPlanks -= upgradePlanksCost;
+
+        currentXP += 10;
+        spawnFloatingText((`-${upgradeGoldCost} Gold`), gridX, gridY, "#cc0000");
+        if (coinSFX) coinSFX.play();
+        
+        showWarning(`Building upgraded to level ${tile.buildingLevel}!`, "yellow");
+
+        updateHUD();
+        openBuildingInfo(tile, gridX, gridY);
+    };
 }
 
 function sellBuilding() {

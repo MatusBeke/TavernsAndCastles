@@ -1,5 +1,5 @@
 // Generovanie mapy za pouzitia Perlin Noise a pohyb kamery pomocou mysky
-var MAP_SIZE = 200;
+var MAP_SIZE = newMapSize;
 var TILE_SIZE = 128;
 var mapData = []; 
 var camera = { x: 0, y: 0, zoom: 1 };

@@ -98,6 +98,8 @@ class NPC {
             this.hunger = 0;
             this.happiness = 0;
             this.img = skeletonImage;
+            this.name = "";
+           // this.state = "";
             return;
         }
 
@@ -112,7 +114,7 @@ class NPC {
                         this.happiness = Math.max(0, this.happiness - 1);
                     }
             } else if (this.state !== "In Home") {
-                this.hunger = Math.max(0, this.hunger - 1);
+                this.hunger = Math.max(0, this.hunger - 10);
                 if (activeHappinessBuildings.length >= 1){
                     if (this.happiness > 0 && this.happiness < 100)
                     this.happiness = Math.max(100, this.happiness + 1);
@@ -125,7 +127,7 @@ class NPC {
                 this.health = 0;
                 this.speed = 0;
                 this.happiness = 0;
-                console.log(`NPC ${this.name} práve zomrelo od hladu na pozadí!`);
+                console.log(`NPC ${this.name} práve zomrelo od hladu.`);
                 this.lastUpdate = teraz;
                 return;
             }
@@ -168,7 +170,6 @@ class NPC {
         let dy = this.targetY - this.y;
         let distance = Math.sqrt(dx * dx + dy * dy);
 
-        // Ak sme dostatočne blízko cieľa (menej ako 1 pixel), zastavíme sa na presnej pozícii
         if (distance < 1) {
             this.x = this.targetX;
             this.y = this.targetY;
