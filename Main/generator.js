@@ -3,6 +3,8 @@ var MAP_SIZE = newMapSize;
 var TILE_SIZE = 128;
 var mapData = []; 
 var camera = { x: 0, y: 0, zoom: 1 };
+// Nová globálna premenná pre Realm Name
+let currentRealmName = "Unknown Realm";
 
 console.log("Map size: " + MAP_SIZE);
 
@@ -316,6 +318,14 @@ function getNightIntensity() {
 imgMountains.onload = () => {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
+
+    // --- NAČÍTANIE A ZOBRAZENIE REALM NAME ---
+    let currentRealmName = localStorage.getItem('realmName') || "Unknown Realm";
+    const realmDisplay = document.getElementById('realm-display'); 
+    if (realmDisplay) {
+        realmDisplay.innerText = currentRealmName;
+    }
+    // -----------------------------------------
 
     const shouldLoad = localStorage.getItem('should_load_game');
     const hasExistingSave = localStorage.getItem('rts_save_slot_1');

@@ -57,8 +57,6 @@ function goBack() {
     setTimeout(() => window.location.href = "../Menu/MenuIndex.html", 1000);
 }
 
-// Spustenie hry a uloženie nastavení sveta do sessionStorage
-// TODO: Ukladanie nastavení do sessionStorage (aby sa načítali v hre)
 function startWorld() { 
     const realmInput = document.getElementById('realm-name').value.trim();
     const realmName = realmInput || "Unknown Realm";
@@ -67,10 +65,11 @@ function startWorld() {
 
     const getActiveValue = (id) => document.querySelector(`#${id} .active`)?.getAttribute('data-value');
 
-    sessionStorage.setItem('game_realmName', realmName);
-    sessionStorage.setItem('game_mapSize', getActiveValue('map-size'));
-    sessionStorage.setItem('game_difficulty', getActiveValue('difficulty'));
-    sessionStorage.setItem('game_saveEnabled', getActiveValue('save-mode'));
+    // ZMENA: Používame localStorage, aby sa to uložilo natrvalo
+    localStorage.setItem('realmName', realmName);
+    localStorage.setItem('mapSize', getActiveValue('map-size'));
+    localStorage.setItem('difficulty', getActiveValue('difficulty'));
+    localStorage.setItem('saveEnabled', getActiveValue('save-mode'));
 
     document.body.style.transition = "opacity 1.5s ease";
     document.body.style.opacity = "0";
