@@ -1,3 +1,6 @@
+let newMapSize = 100;
+let newRealmName = "";
+
 // Nastavenie zvuku a prehrávanie pri prejdení myšou
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)(); 
 
@@ -71,4 +74,24 @@ function startWorld() {
     document.body.style.opacity = "0";
     
     setTimeout(() => window.location.href = "../Main/index.html", 1500);
+}
+
+function setMapSize(mapSize){
+    if (mapSize == 1){
+        newMapSize = 80;
+        MAP_SIZE = 80;
+    } else if (mapSize == 2){
+        newMapSize = 140;
+        MAP_SIZE = 140;
+    } else if (mapSize == 3){
+        newMapSize = 200;
+        MAP_SIZE = 200;
+    } else {
+        newMapSize = 80;
+        MAP_SIZE = 80;
+    }
+    console.log("New map size: " + newMapSize);
+    console.log("New realm name: " + newRealmName);
+    console.log("CURRENT MAP_SIZE: " + MAP_SIZE);
+
 }

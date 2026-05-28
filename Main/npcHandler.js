@@ -1,7 +1,7 @@
 var activeNPCs = [];
 const npcList = document.getElementById("citizens-list");
 
-let jobs = ["peasant", "miner", "lumberman", "guard"];
+let jobs = ["peasant", "miner", "lumberman", "guard", "carpenter", "millworker", "blacksmith"];
 let selectedNPC = null;
 
 let peasantImage = "../Resources/NPCs/NPC_Peasant.png";
@@ -9,13 +9,21 @@ let minerImage = "../Resources/NPCs/NPC_Miner.png";
 let lumbermanImage = "../Resources/NPCs/NPC_Lumberman.png";
 let guardImage = "../Resources/NPCs/NPC_Guard.png";
 let skeletonImage = "../Resources/NPCs/NPC_Skeleton.png";
+let kingImage = "../Resources/NPCs/NPC_King.png";
+let millworkerImage = "../Resources/NPCs/NPC_Millworker.png";
+let blacksmithImage = "../Resources/NPCs/NPC_Blacksmith.png";
+let carpenterImage = "../Resources/NPCs/NPC_Carpenter.png";
 
 const npcImages = {
     "peasant": new Image(),
     "miner": new Image(),
     "lumberman": new Image(),
     "guard": new Image(),
-    "skeleton": new Image()
+    "skeleton": new Image(),
+    "king": new Image(),
+    "millworker": new Image(),
+    "blacksmith": new Image(),
+    "carpenter": new Image()
 };
 
 npcImages["peasant"].src = peasantImage;
@@ -23,6 +31,10 @@ npcImages["miner"].src = minerImage;
 npcImages["lumberman"].src = lumbermanImage;
 npcImages["guard"].src = guardImage;
 npcImages["skeleton"].src = skeletonImage;
+npcImages["king"].src = kingImage;
+npcImages["millworker"].src = millworkerImage;
+npcImages["blacksmith"].src = blacksmithImage;
+npcImages["carpenter"].src = carpenterImage;
 
 // Default, kým sa nenačíta JSON s menami NPCs
 let npcNamesData = {
@@ -52,18 +64,18 @@ class NPC {
         this.img = img;
         this.homeX = homeX;
         this.homeY = homeY;
-        
+
         // Aktuálna pozícia
         this.x = (homeX * TILE_SIZE) + (TILE_SIZE / 2) - 10;
         this.y = (homeY * TILE_SIZE) + (TILE_SIZE / 2) - 15;
-        
+
         this.targetX = this.x;
         this.targetY = this.y;
         this.speed = 50; 
-        
+
         this.width = 8;
         this.height = 16;
-        
+
         this.health = health;
         this.hunger = hunger;
         this.happiness = happiness;
@@ -73,6 +85,10 @@ class NPC {
 
         this.state = "Wandering";
         this.lastUpdate = Date.now();
+
+        this.workTimer = 0;
+
+        this.isAbleToWork = true;
     }
 
     update(deltaTime) {
@@ -82,6 +98,8 @@ class NPC {
             this.hunger = 0;
             this.happiness = 0;
             this.img = skeletonImage;
+            this.name = "";
+           // this.state = "";
             return;
         }
 
@@ -90,9 +108,17 @@ class NPC {
         if (teraz - this.lastUpdate > 1000) {
             //Znizovanie hladu podla cinnosti
             if (this.state === "Working") {
-                this.hunger = Math.max(0, this.hunger - 3);
+                this.hunger = Math.max(0, this.hunger - 2);
+                if (this.happiness > 0 && this.happiness < 100)
+                    {
+                        this.happiness = Math.max(0, this.happiness - 1);
+                    }
             } else if (this.state !== "In Home") {
-                this.hunger = Math.max(0, this.hunger - 1);
+                this.hunger = Math.max(0, this.hunger - 10);
+                if (activeHappinessBuildings.length >= 1){
+                    if (this.happiness > 0 && this.happiness < 100)
+                    this.happiness = Math.max(100, this.happiness + 1);
+                }
             }
 
             //Ak hlad klesol na 0, NPC umrie
@@ -101,58 +127,38 @@ class NPC {
                 this.health = 0;
                 this.speed = 0;
                 this.happiness = 0;
-                activeNPCs = activeNPCs.filter(npc => npc.id !== this.id);
-                console.log(`NPC ${this.name} práve zomrelo od hladu na pozadí!`);
-                
+                console.log(`NPC ${this.name} práve zomrelo od hladu.`);
                 this.lastUpdate = teraz;
                 return;
             }
 
-            if (currentHour >= 20 || currentHour < 6) {
-                this.inHome();    
-                if (currentHour === 23 && currentMinute == 0)
-                {
-                    if (Math.random() < 0.25) 
-                    { 
-                        this.reproduce();
-                    }
-                }        
+            if (((currentHour === 7 || currentHour === 12 || currentHour === 18) && currentMinute === 0) && currentFood > 0) {
+                this.hunger = 100;
+                currentFood -= 1;
+                updateHUD();
             }
-            else if (currentHour >= 7 && currentHour < 17) {
-                if (this.workplaceX !== null && this.workplaceY !== null) 
-                {
-                    this.work();
-                    if (currentHour === 12) 
-                    {
-                        this.hunger = 100;
-                        currentFood -= 1;
+
+            if (currentHour >= 20 || currentHour < 6) {
+                if (this.homeX !== null && this.homeY !== null) {
+                    this.inHome();    
+                } else {
+                    if (this.state !== "Wandering") {
+                        this.wander();
                     }
+                }    
+            } else if (currentHour >= 7 && currentHour < 17) {
+                if (this.workplaceX !== null && this.workplaceY !== null && this.isAbleToWork == true) {
+                    this.work();
                 } else {
                     this.wander();
-                    if (currentHour === 12) 
-                    {
-                        this.hunger = 100;
-                        currentFood -= 1;
-                    }
                 }
-            } 
-            else {
+            } else {
                 if (this.state === "In Home") {
                     this.state = "Wandering";
-                    if (currentHour === 7) 
-                    {
-                        this.hunger = 100;
-                        currentFood -= 1;
-                    }
-                    if (currentHour === 18) 
-                    {
-                        this.hunger = 100;
-                        currentFood -= 1;
-                    }
                 }
                 this.wander();
             }
-            
+
             this.lastUpdate = teraz;
         }
         this.moveToTarget(deltaTime);
@@ -164,7 +170,6 @@ class NPC {
         let dy = this.targetY - this.y;
         let distance = Math.sqrt(dx * dx + dy * dy);
 
-        // Ak sme dostatočne blízko cieľa (menej ako 1 pixel), zastavíme sa na presnej pozícii
         if (distance < 1) {
             this.x = this.targetX;
             this.y = this.targetY;
@@ -188,6 +193,10 @@ class NPC {
     draw(ctx) {
         let npcImgAsset = npcImages[this.profession];
 
+        if (this.state === "In Home") {
+            return; 
+        }
+
         if (this.state === "Dead") {
             npcImgAsset = npcImages["skeleton"];
         }
@@ -201,7 +210,7 @@ class NPC {
             else if (this.profession === "lumberman") { ctx.fillStyle = "#228B22"; }
             else if (this.profession === "guard") { ctx.fillStyle = "#800000"; }
             else { ctx.fillStyle = "red"; }
-            
+
             ctx.fillRect(this.x, this.y, this.width, this.height);
             ctx.strokeStyle = "white";
             ctx.lineWidth = 2;
@@ -213,15 +222,14 @@ class NPC {
         ctx.font = "bold 12px MedievalSharp"; 
         ctx.textAlign = "center"; 
         ctx.fillText(this.name, this.x + this.width / 2, this.y - 12);
-        
+
         ctx.font = "10px MedievalSharp";
         ctx.fillStyle = "#FFD700";
         ctx.fillText(`State: ${this.state}`, this.x + this.width / 2, this.y - 2);
     }
 
     wander() {
-        if (this.state !== "Dead") 
-        {
+        if (this.state !== "Dead") {
             this.state = "Wandering";
             const moveRange = 32; 
 
@@ -237,6 +245,10 @@ class NPC {
     }
 
     returnHome() {
+        if (this.homeX === null || this.homeY === null) {
+            this.wander();
+            return;
+        }
         this.state = "Returning Home";
         this.targetX = (this.homeX * TILE_SIZE) + (TILE_SIZE / 2) - 10;
         this.targetY = (this.homeY * TILE_SIZE) + (TILE_SIZE / 2) - 15;
@@ -247,31 +259,169 @@ class NPC {
     }
 
     inHome() {
-        if (this.state !== "Dead") 
-        {
+        if (this.state !== "Dead") {
+            if (this.homeX === null || this.homeY === null) {
+                this.wander();
+                return;
+            }
             this.state = "In Home";
             this.targetX = (this.homeX * TILE_SIZE) + (TILE_SIZE / 2) - 10;
             this.targetY = (this.homeY * TILE_SIZE) + (TILE_SIZE / 2) - 15;
         }
     }
 
-    work(){
-        if (this.state !== "Dead") {
+    work() {
+        if (this.state !== "Dead" && this.isAbleToWork == true) {
             this.state = "Working";
             const randomOffsetX = Math.random() * (TILE_SIZE - 20);
             const randomOffsetY = Math.random() * (TILE_SIZE - 20);
+
             if (this.workplaceX !== null && this.workplaceY !== null) {
                 this.targetX = (this.workplaceX * TILE_SIZE) + randomOffsetX;
                 this.targetY = (this.workplaceY * TILE_SIZE) + randomOffsetY;
             }
+
             if (this.profession === "peasant") {
-                this.happiness = Math.min(100, this.happiness + 1);
+                this.workTimer += 1;
+
+                if (this.workTimer >= 5) {
+                    currentFood += 1;
+
+                    // Správne zobrazenie plávajúceho textu
+                    if (typeof spawnFloatingText === 'function') {
+                        spawnFloatingText("+1 Food", this.workplaceX, this.workplaceY, "#d9ff00");
+                    }
+
+                    updateHUD();
+                    this.workTimer = 0; 
+                }
+            } else if (this.profession === "lumberman") {
+                this.workTimer += 1;
+
+                if (this.workTimer >= 5) {
+                    currentWood += 1;
+                    
+                    // Správne zobrazenie plávajúceho textu
+                    if (typeof spawnFloatingText === 'function') {
+                        spawnFloatingText("+1 Wood", this.workplaceX, this.workplaceY, "#d9ff00");
+                    }
+                    
+                    updateHUD();
+                    this.workTimer = 0; 
+                }
+            } else if (this.profession === "guard") {
+                this.workTimer += 1;
+
+                if (this.workTimer >= 5) {
+                    currentTrainingPoints += 1;
+                    
+                    // Správne zobrazenie plávajúceho textu
+                    if (typeof spawnFloatingText === 'function') {
+                        spawnFloatingText("+1 Training Point", this.workplaceX, this.workplaceY, "#3378b8");
+                    }
+                    
+                    updateHUD();
+                    this.workTimer = 0; 
+                }
+            } else if (this.profession === "miner") {
+                this.workTimer += 1;
+
+                if (this.workTimer >= 5) {
+                    currentStone += 1;
+
+                    if (typeof spawnFloatingText === 'function') {
+                        spawnFloatingText("+1 Stone", this.workplaceX, this.workplaceY, "#3378b8");
+                    }
+
+                    // 70% šanca na uhlie (+1 Coal)
+                    if (Math.random() < 0.7) {
+                        currentCoal += 1;
+                        if (typeof spawnFloatingText === 'function') {
+                            spawnFloatingText("+1 Coal", this.workplaceX, this.workplaceY - 20, "#555555");
+                        }
+                    }
+
+                    // 40% šanca na železo (+1 Iron)
+                    if (Math.random() < 0.4) {
+                        currentIron += 1; 
+                        if (typeof spawnFloatingText === 'function') {
+                            spawnFloatingText("+1 Iron", this.workplaceX, this.workplaceY - 40, "#d47a2a");
+                        }
+                    }
+
+                    if (Math.random() < 0.3) {
+                        currentGold += 25; 
+                        if (typeof spawnFloatingText === 'function') {
+                            spawnFloatingText("+25 Gold", this.workplaceX, this.workplaceY - 40, "#fbff00");
+                        }
+                    }
+                    
+                    updateHUD();
+                    this.workTimer = 0; 
+                }
+            } else if (this.profession === "millworker") {
+                this.workTimer += 1;
+
+                if (this.workTimer >= 5) {
+                    currentFood += 2;
+
+                    // Správne zobrazenie plávajúceho textu
+                    if (typeof spawnFloatingText === 'function') {
+                        spawnFloatingText("+2 Food", this.workplaceX, this.workplaceY, "#d9ff00");
+                    }
+
+                    updateHUD();
+                    this.workTimer = 0; 
+                }
+            } else if (this.profession === "blacksmith") {
+                this.workTimer += 1;
+
+                if (this.workTimer >= 5) {
+                    if (currentCoal >= 1 && currentIron >= 1)
+                    {
+                        currentSteel += 1;
+                        currentCoal -= 1;
+                        currentIron -= 1;
+
+                        // Správne zobrazenie plávajúceho textu
+                        if (typeof spawnFloatingText === 'function') {
+                            spawnFloatingText("+1 Steel", this.workplaceX, this.workplaceY, "#7ce4e7");
+                        }
+
+                        updateHUD();
+                        this.workTimer = 0; 
+                    }
+                    else
+                    {
+                        if (typeof spawnFloatingText === 'function') {
+                            spawnFloatingText("Resources missing", this.workplaceX, this.workplaceY, "#ff0000");
+                        }
+
+                        updateHUD();
+                        this.workTimer = 0; 
+                    }
+                
+                }
+            } else if (this.profession === "carpenter") {
+                this.workTimer += 1;
+
+                if (this.workTimer >= 5) {
+                    currentPlanks += 1;
+                    this.happiness = Math.min(100, this.happiness + 1);
+
+                    // Správne zobrazenie plávajúceho textu
+                    if (typeof spawnFloatingText === 'function') {
+                        spawnFloatingText("+1 Plank", this.workplaceX, this.workplaceY, "#a55353");
+                    }
+
+                    updateHUD();
+                    this.workTimer = 0; 
+                }
             }
         }
     }
 
-    reproduce()
-    {
+    reproduce() {
         this.state = "Reproducing";
         this.targetX = (this.homeX * TILE_SIZE) + (TILE_SIZE / 2) - 10;
         this.targetY = (this.homeY * TILE_SIZE) + (TILE_SIZE / 2) - 15;
@@ -279,16 +429,14 @@ class NPC {
     }
 }
 
-
 function createNPC(homeX, homeY, profession = "peasant", img = null, workplaceX = null, workplaceY = null) {
     const firstNames = npcNamesData.npc_names.first_names;
     const lastNames = npcNamesData.npc_names.surnames;
 
     const randomFirst = firstNames[Math.floor(Math.random() * firstNames.length)];
     const randomLast = lastNames[Math.floor(Math.random() * lastNames.length)];
-    
-    const fullName = `${randomFirst} ${randomLast}`;
 
+    const fullName = `${randomFirst} ${randomLast}`;
     const randomProfession = jobs[Math.floor(Math.random() * jobs.length)];
 
     let assignedImgPath = img;
@@ -297,8 +445,10 @@ function createNPC(homeX, homeY, profession = "peasant", img = null, workplaceX 
         else if (randomProfession === "miner") assignedImgPath = minerImage;
         else if (randomProfession === "lumberman") assignedImgPath = lumbermanImage;
         else if (randomProfession === "guard") assignedImgPath = guardImage;
+        else if (randomProfession === "millworker") assignedImgPath = millworkerImage;
+        else if (randomProfession === "blacksmith") assignedImgPath = blacksmithImage;
+        else if (randomProfession === "carpenter") assignedImgPath = carpenterImage;
     }
-
 
     var npc = new NPC(
         activeNPCs.length + 1, 
@@ -322,13 +472,11 @@ function createNPC(homeX, homeY, profession = "peasant", img = null, workplaceX 
     activeNPCs.push(npc);
     console.log(`Spawned: ${fullName} as ${profession}, working at (${npc.workplaceX}, ${npc.workplaceY})`);
     updateCitizensList(fullName);
-
-    
 }
 
 document.getElementById('gameCanvas').addEventListener('click', (e) => {
     const rect = gameCanvas.getBoundingClientRect();
-    
+
     const screenX = e.clientX - rect.left;
     const screenY = e.clientY - rect.top;
 
@@ -386,19 +534,13 @@ function showNpcInfo(npc) {
     modal.style.display = 'flex'; 
 
     let hungerState = "Full";
-    if (npc.hunger <= 0) 
-    {
+    if (npc.hunger <= 0) {
         hungerState = "Dead";
-    } 
-    else if (npc.hunger < 30) 
-    {
+    } else if (npc.hunger < 30) {
         hungerState = "Starving"; 
-    } 
-    else if (npc.hunger < 70) 
-    {
+    } else if (npc.hunger < 70) {
         hungerState = "Hungry";
     }
-
 
     document.getElementById('npc-info-name').innerText = npc.name;
     document.getElementById('npc-info-state').innerText = `State: ${npc.state}`;
@@ -410,14 +552,14 @@ function showNpcInfo(npc) {
     const jobDropdown = document.getElementById('npc-info-profession-select');
     if (jobDropdown) {
         jobDropdown.innerHTML = ''; // Clear previous selections
-        
+
         // Loop through your existing global 'jobs' array
         jobs.forEach(job => {
             const option = document.createElement('option');
             option.value = job;
             // Capitalize the first letter for clean styling (e.g., "miner" -> "Miner")
             option.textContent = job.charAt(0).toUpperCase() + job.slice(1); 
-            
+
             // Highlight the NPC's actual current profession
             if (job === npc.profession) {
                 option.selected = true;
@@ -426,8 +568,30 @@ function showNpcInfo(npc) {
         });
     }
 
-    const workText = (npc.workplaceX !== null) ? `Workplace: [${npc.workplaceX}, ${npc.workplaceY}]` : "Unemployed";
+    //Kontrola ci sa pracovisko nachadza v 20 tilovom radiuse od domu
+    let distanceFromHome = 0;
+    let distanceText = "";
+
+    if (npc.workplaceX !== null && npc.workplaceY !== null) {
+        let dx = npc.workplaceX - npc.homeX;
+        let dy = npc.workplaceY - npc.homeY;
+
+        distanceFromHome = parseFloat(Math.sqrt(dx * dx + dy * dy).toFixed(0));
+        distanceText = distanceFromHome.toString();
+        npc.isAbleToWork = distanceFromHome <= 20;
+        console.log("Moze pracovat.")
+    } else {
+        npc.isAbleToWork = false; 
+        distanceFromHome = 0;
+        distanceText = "Workplace too far away! - " + distanceFromHome.toString()
+        console.log("Nemoze pracovat.")
+    }
+
+    const workText = (npc.workplaceX !== null) ? `Workplace: [${npc.workplaceX}, ${npc.workplaceY}] (${distanceText})` : "Unemployed";
     document.getElementById('npc-info-work').innerText = workText;
+
+    const homeText = (npc.homeX !== null) ? `Home: [${npc.homeX}, ${npc.homeY}]` : "Homeless";
+    document.getElementById('npc-info-home').innerText = homeText;
 
     if (npc.img) {
         document.getElementById('npc-info-img').src = npc.img;
@@ -451,37 +615,55 @@ function assignWork() {
             npc.workplaceX = x;
             npc.workplaceY = y;
         }
-    } 
-    else if (profession === "lumberman") {
+    } else if (profession === "lumberman") {
         if (typeof activeLumberyards !== 'undefined' && activeLumberyards.length > 0) {
             const lumberyard = activeLumberyards[Math.floor(Math.random() * activeLumberyards.length)];
             let [x, y] = lumberyard.split(',').map(Number);
             npc.workplaceX = x;
             npc.workplaceY = y;
         }
-    }
-    else if (profession === "miner") {
+    } else if (profession === "miner") {
         if (typeof activeMines !== 'undefined' && activeMines.length > 0) {
             const mine = activeMines[Math.floor(Math.random() * activeMines.length)];
             let [x, y] = mine.split(',').map(Number);
             npc.workplaceX = x;
             npc.workplaceY = y;
         }
-    }
-    else if (profession === "guard") {
+    } else if (profession === "guard") {
         if (typeof activeBarracks !== 'undefined' && activeBarracks.length > 0) {
             const barracks = activeBarracks[Math.floor(Math.random() * activeBarracks.length)];
             let [x, y] = barracks.split(',').map(Number);
             npc.workplaceX = x;
             npc.workplaceY = y;
         }
+    }else if (profession === "millworker") { 
+        if (typeof activeWindmills !== 'undefined' && activeWindmills.length > 0) {
+            const mill = activeWindmills[Math.floor(Math.random() * activeWindmills.length)];
+            let [x, y] = mill.split(',').map(Number);
+            npc.workplaceX = x;
+            npc.workplaceY = y;
+        }
+    } else if (profession === "blacksmith") { 
+        if (typeof activeFoundries !== 'undefined' && activeFoundries.length > 0) {
+            const forge = activeFoundries[Math.floor(Math.random() * activeFoundries.length)];
+            let [x, y] = forge.split(',').map(Number);
+            npc.workplaceX = x;
+            npc.workplaceY = y;
+        }
     }
-    
+    else if (profession === "carpenter") { 
+        if (typeof activeSawmills !== 'undefined' && activeSawmills.length > 0) {
+            const forge = activeSawmills[Math.floor(Math.random() * activeSawmills.length)];
+            let [x, y] = forge.split(',').map(Number);
+            npc.workplaceX = x;
+            npc.workplaceY = y;
+        }
+    }
+
     showNpcInfo(npc);
 }
 
 function changeWork() {
-    // Drop execution immediately if the target NPC is invalid or dead
     if (!selectedNPC || selectedNPC.state === "Dead") return;
 
     const jobDropdown = document.getElementById('npc-info-profession-select');
@@ -494,8 +676,113 @@ function changeWork() {
     else if (chosenJob === "miner") selectedNPC.img = minerImage;
     else if (chosenJob === "lumberman") selectedNPC.img = lumbermanImage;
     else if (chosenJob === "guard") selectedNPC.img = guardImage;
-    
+    else if (chosenJob === "millworker") selectedNPC.img = millworkerImage;
+    else if (chosenJob === "blacksmith") selectedNPC.img = blacksmithImage; 
+    else if (chosenJob === "carpenter") selectedNPC.img = carpenterImage;
+
     assignWork();
     console.log(`Changed ${selectedNPC.name}'s job to: ${chosenJob}`);
 }
 
+// Pomocná funkcia na nájdenie nového domu po predaji
+function relocateNPCHomeAfterSell(npc, soldX, soldY) {
+    let closestHome = null;
+    let minDistance = Infinity;
+
+    // 1. Prejdeme celú mapu a hľadáme voľné/iné obytné budovy
+    for (let y = 0; y < MAP_SIZE; y++) {
+        for (let x = 0; x < MAP_SIZE; x++) {
+            const tile = mapData[y][x];
+
+            if (tile && tile.buildingSrc) {
+                const src = tile.buildingSrc.toLowerCase();
+                
+                // Overíme, či ide o obytnú budovu a či to nie sú súradnice práve búraného domu
+                if ((src.includes('cabin') || src.includes('house')) && !(x === soldX && y === soldY)) {
+                    let dx = x - soldX;
+                    let dy = y - soldY;
+                    let distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < minDistance) {
+                        minDistance = distance;
+                        closestHome = { x, y };
+                    }
+                }
+            }
+        }
+    }
+
+    // 2. Aplikujeme výsledok sťahovania
+    if (closestHome) {
+        npc.homeX = closestHome.x;
+        npc.homeY = closestHome.y;
+        console.log(`NPC ${npc.name} sa úspešne presťahoval na nový domov [${npc.homeX}, ${npc.homeY}]`);
+
+        // OPRAVA: Ak je noc, okamžite ho pošleme kráčať k novému domu (aby nezostal stáť na troskách)
+        if (currentHour >= 20 || currentHour < 6) {
+            npc.state = "Returning Home"; // Dočasný stav chôdze namiesto okamžitého "In Home"
+            npc.targetX = (npc.homeX * TILE_SIZE) + (TILE_SIZE / 2) - 10;
+            npc.targetY = (npc.homeY * TILE_SIZE) + (TILE_SIZE / 2) - 15;
+        } else {
+            // Ak je deň, vyženúť ho von blúdiť alebo pracovať
+            npc.wander();
+        }
+
+        if (npc.workplaceX !== null && npc.workplaceY !== null) {
+            let dxWork = npc.workplaceX - npc.homeX;
+            let dyWork = npc.workplaceY - npc.homeY;
+            npc.isAbleToWork = Math.sqrt(dxWork * dxWork + dyWork * dyWork) <= 20;
+            console.log(`Prepočet po presťahovaní: Môže ${npc.name} pracovať z nového domu? ${npc.isAbleToWork}`);
+        }
+
+    } else {
+        // Ak na mape nie je ŽIADNY iný dom
+        npc.homeX = null;
+        npc.homeY = null;
+        npc.isAbleToWork = false; // Bez domu nemôže fungovať režim spánku/práce správne
+        npc.state = "Wandering"; 
+        
+        // Vyhodíme ho na náhodné miesto na mape, nech nezostane visieť v neexistujúcom dome
+        npc.wander();
+        console.log(`NPC ${npc.name} has become homeless.`);
+    }
+}
+
+// Pomocná funkcia na nájdenie novej práce po predaji
+function relocateNPCWorkplaceAfterSell(npc) {
+    let targetArray = [];
+
+    // Priradíme správne pole podľa profesie NPC
+    if (npc.profession === "peasant") targetArray = activeFields;
+    else if (npc.profession === "lumberman") targetArray = activeLumberyards;
+    else if (npc.profession === "miner") targetArray = activeMines;
+    else if (npc.profession === "guard") targetArray = activeBarracks;
+    else if (npc.profession === "quarryman") targetArray = activeQuarries; // Pridané pre lomy
+
+    let closestWork = null;
+    let minDistance = Infinity;
+
+    // Kedže v poliach máš stringy "x,y", musíme ich naparsovať
+    targetArray.forEach(coordsStr => {
+        let [x, y] = coordsStr.split(',').map(Number);
+
+        let dx = x - npc.workplaceX;
+        let dy = y - npc.workplaceY;
+        let distance = Math.sqrt(dx * dx + dy * dy);
+
+        if (distance < minDistance) {
+            minDistance = distance;
+            closestWork = { x, y };
+        }
+    });
+
+    if (closestWork) {
+        npc.workplaceX = closestWork.x;
+        npc.workplaceY = closestWork.y;
+        console.log(`NPC ${npc.name} si našiel novú prácu na [${npc.workplaceX}, ${npc.workplaceY}]`);
+    } else {
+        npc.workplaceX = null;
+        npc.workplaceY = null;
+        console.log(`NPC ${npc.name} je momentálne nezamestnaný.`);
+    }
+}

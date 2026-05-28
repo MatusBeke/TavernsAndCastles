@@ -63,6 +63,7 @@
         <p><strong>Health:</strong> <span id="npc-info-health">100/100</span></p>
         <p><strong>Hunger:</strong> <span id="npc-info-hunger">100</span></p>
         <p><strong>Happiness:</strong> <span id="npc-info-happiness">100</span></p>
+        <p><strong>Home:</strong> <span id="npc-info-home">None</span></p>
         <p><strong>Workplace:</strong> <span id="npc-info-work">None</span></p>
     </div>
 
@@ -105,6 +106,7 @@
                 <div class="stat-item" title="Iron"><span class="stat-icon">Iron: </span> <span id="stat-iron">0</span></div>
                 <div class="stat-item" title="Steel"><span class="stat-icon">Steel: </span> <span id="stat-steel">0</span></div>
                 <div class="stat-item" title="Planks"><span class="stat-icon">Planks: </span> <span id="stat-planks">0</span></div>
+                <div class="stat-item" title="Training Points"><span class="stat-icon">Training Points: </span> <span id="stat-tp">0</span></div>
             </div>
         </div>
 
@@ -131,17 +133,23 @@
     </div>
 
     <div id="tavern-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center;">
-        <div id="tavern-container" style="position: relative; width: 900px; height: 600px; background-image: url('../Resources/Img_TavernBackground.png'); background-size: cover; background-position: center; border: 6px solid #8B4513; border-radius: 15px; box-shadow: 0 0 30px #000; font-family: 'MedievalSharp', cursive; color: #fff; display: flex; flex-direction: column; justify-content: space-between; padding: 35px; box-sizing: border-box;">
+        <div id="tavern-container" style="position: relative; width: 1200px; height: 900px; background-image: url('../Resources/Img_TavernBackground.png'); background-size: cover; background-position: center; border: 6px solid #8B4513; border-radius: 15px; box-shadow: 0 0 30px #000; font-family: 'MedievalSharp', cursive; color: #fff; display: flex; flex-direction: column; justify-content: space-between; padding: 35px; box-sizing: border-box;">
             
             <div style="text-align: center; background: rgba(0, 0, 0, 0.65); padding: 15px; border-radius: 8px;">
                 <h2 style="margin: 0; font-size: 2.8rem; color: #ffd700; text-shadow: 3px 3px 6px #000;">Tavern</h2>
-                <p style="margin: 8px 0 0 0; font-size: 1.3rem;">Minigame coming soon...</p>
+                <p style="margin: 8px 0 0 0; font-size: 1.3rem;">Select what you want to do</p>
             </div>
 
-            <div style="flex-grow: 1; display: flex; justify-content: center; align-items: center; margin: 20px 0;">
-                <div style="background: rgba(0,0,0,0.6); padding: 30px; border-radius: 8px; border: 2px dashed #ffd700; font-size: 1.4rem; text-align: center; width: 80%; height: 60%; display: flex; justify-content: center; align-items: center;">
-                    [ Minigame ]
-                </div>
+            <div style="text-align: center;">
+                <button onclick="browseGoods()" style="font-family: 'MedievalSharp', cursive; font-size: 1.5rem; padding: 12px 35px; background: #8B4513; color: white; border: 3px solid #ffd700; border-radius: 8px; cursor: pointer; text-shadow: 2px 2px 3px #000; transition: transform 0.1s ease;">
+                    Browse goods
+                </button>
+            </div>
+
+            <div style="text-align: center;">
+                <button onclick="sellGoods()" style="font-family: 'MedievalSharp', cursive; font-size: 1.5rem; padding: 12px 35px; background: #8B4513; color: white; border: 3px solid #ffd700; border-radius: 8px; cursor: pointer; text-shadow: 2px 2px 3px #000; transition: transform 0.1s ease;">
+                    Sell goods
+                </button>
             </div>
 
             <div style="text-align: center;">
@@ -151,11 +159,36 @@
             </div>
         </div>
     </div>
+
+    <div id="buy-market-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2100; justify-content: center; align-items: center;">
+        <div style="width: 600px; background: #2b1d0c; border: 4px solid #ffd700; border-radius: 10px; font-family: 'MedievalSharp', cursive; color: #fff; padding: 25px; box-sizing: border-box; box-shadow: 0 0 20px #000;">
+                <h3 style="text-align: center; color: #ffd700; margin-top: 0; font-size: 2rem; border-bottom: 2px solid #8b4513; padding-bottom: 10px;">Merchant (Buy Goods)</h3>
+                
+                <div id="buy-goods-list" style="max-height: 400px; overflow-y: auto; margin-bottom: 20px; padding-right: 5px;"></div>
+                
+                <div style="text-align: center;">
+                    <button onclick="closeBuyModal()" style="font-family: 'MedievalSharp', cursive; font-size: 1.2rem; padding: 8px 25px; background: #8B4513; color: white; border: 2px solid #ffd700; border-radius: 5px; cursor: pointer;">Back to Tavern</button>
+                </div>
+            </div>
+    </div>
+
+    <div id="sell-market-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2100; justify-content: center; align-items: center;">
+        <div style="width: 600px; background: #2b1d0c; border: 4px solid #ffd700; border-radius: 10px; font-family: 'MedievalSharp', cursive; color: #fff; padding: 25px; box-sizing: border-box; box-shadow: 0 0 20px #000;">
+            <h3 style="text-align: center; color: #ffd700; margin-top: 0; font-size: 2rem; border-bottom: 2px solid #8b4513; padding-bottom: 10px;">Merchant (Sell Goods)</h3>
+            
+            <div id="sell-goods-list" style="max-height: 400px; overflow-y: auto; margin-bottom: 20px; padding-right: 5px;"></div>
+            
+            <div style="text-align: center;">
+                <button onclick="closeSellModal()" style="font-family: 'MedievalSharp', cursive; font-size: 1.2rem; padding: 8px 25px; background: #8B4513; color: white; border: 2px solid #ffd700; border-radius: 5px; cursor: pointer;">Back to Tavern</button>
+            </div>
+        </div>
+    </div>
     <div id="realm-display">Realm Name</div>
 
     <div id="building-menu"></div>
 
     <canvas id="gameCanvas"></canvas>
+    <script src="../NewGame/NewGameScript.js"></script>
     <script src="timeHandler.js"></script>
     <script src="npcHandler.js"></script>
     <script src="buildingHandler.js"></script>
