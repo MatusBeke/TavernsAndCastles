@@ -58,7 +58,6 @@ function goBack() {
 }
 
 // Spustenie hry a uloženie nastavení sveta do sessionStorage
-// TODO: Ukladanie nastavení do sessionStorage (aby sa načítali v hre)
 function startWorld() { 
     const realmInput = document.getElementById('realm-name').value.trim();
     const realmName = realmInput || "Unknown Realm";
