@@ -114,7 +114,7 @@ class NPC {
                         this.happiness = Math.max(0, this.happiness - 1);
                     }
             } else if (this.state !== "In Home") {
-                this.hunger = Math.max(0, this.hunger - 10);
+                this.hunger = Math.max(0, this.hunger - 1);
                 if (activeHappinessBuildings.length >= 1){
                     if (this.happiness > 0 && this.happiness < 100)
                     this.happiness = Math.max(100, this.happiness + 1);

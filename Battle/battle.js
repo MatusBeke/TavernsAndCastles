@@ -536,13 +536,20 @@ function updateCombat() {
     document.getElementById('army-count').innerText = (battlePhase === 'attack' ? "Siege Army: " : "Your Army: ") + playerArmy.length;
     document.getElementById('enemy-count').innerText = (battlePhase === 'attack' ? "Defenders: " : "Enemy: ") + enemyArmy.length;
 
-// V tvojom updateCombat():
     if (enemyArmy.length === 0 && playerArmy.length > 0) {
-        battleEnded = true;
-        isFighting = false;
-        showGameMessage("VICTORY!", () => {
-            window.close(); // Okno bitky zmizne, tvoja mapa pod ním zostane
-    });
+    battleEnded = true;
+    isFighting = false;
+
+    if (battlePhase === "field") {
+        const survivors = playerArmy.length;
+        showGameMessage(`VICTORY!\nField is ours. Prepare to siege the castle with ${survivors} survivors!`, () => {
+            window.location.search = `?type=attack&troops=${survivors}`;
+        });
+    } else {
+        showGameMessage("TOTAL VICTORY!\nThe Castle has fallen!", () => {
+            window.close(); 
+        });
+    }
 }
 }
 

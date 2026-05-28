@@ -63,6 +63,8 @@ function startWorld() {
     const realmInput = document.getElementById('realm-name').value.trim();
     const realmName = realmInput || "Unknown Realm";
 
+    newRealmName = realmInput;
+
     const getActiveValue = (id) => document.querySelector(`#${id} .active`)?.getAttribute('data-value');
 
     sessionStorage.setItem('game_realmName', realmName);

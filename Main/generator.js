@@ -671,7 +671,7 @@ function loadMap() {
     const rawData = localStorage.getItem('rts_save_slot_1');
 
     if (!rawData) {
-        alert("Nenašlo sa žiadne uložené pozícia!");
+        alert("No saved world was found, starting new world!");
         return;
     }
 
