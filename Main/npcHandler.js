@@ -101,6 +101,7 @@ class NPC {
                 this.health = 0;
                 this.speed = 0;
                 this.happiness = 0;
+                activeNPCs = activeNPCs.filter(npc => npc.id !== this.id);
                 console.log(`NPC ${this.name} práve zomrelo od hladu na pozadí!`);
                 
                 this.lastUpdate = teraz;
@@ -108,7 +109,14 @@ class NPC {
             }
 
             if (currentHour >= 20 || currentHour < 6) {
-                this.inHome();            
+                this.inHome();    
+                if (currentHour === 23 && currentMinute == 0)
+                {
+                    if (Math.random() < 0.25) 
+                    { 
+                        this.reproduce();
+                    }
+                }        
             }
             else if (currentHour >= 7 && currentHour < 17) {
                 if (this.workplaceX !== null && this.workplaceY !== null) 
@@ -202,11 +210,11 @@ class NPC {
 
         // Meno a stav nad hlavou NPC
         ctx.fillStyle = "white";     
-        ctx.font = "bold 12px Arial"; 
+        ctx.font = "bold 12px MedievalSharp"; 
         ctx.textAlign = "center"; 
         ctx.fillText(this.name, this.x + this.width / 2, this.y - 12);
         
-        ctx.font = "10px Arial";
+        ctx.font = "10px MedievalSharp";
         ctx.fillStyle = "#FFD700";
         ctx.fillText(`State: ${this.state}`, this.x + this.width / 2, this.y - 2);
     }
@@ -260,6 +268,14 @@ class NPC {
                 this.happiness = Math.min(100, this.happiness + 1);
             }
         }
+    }
+
+    reproduce()
+    {
+        this.state = "Reproducing";
+        this.targetX = (this.homeX * TILE_SIZE) + (TILE_SIZE / 2) - 10;
+        this.targetY = (this.homeY * TILE_SIZE) + (TILE_SIZE / 2) - 15;
+        this.happiness += 1;
     }
 }
 
@@ -482,3 +498,4 @@ function changeWork() {
     assignWork();
     console.log(`Changed ${selectedNPC.name}'s job to: ${chosenJob}`);
 }
+

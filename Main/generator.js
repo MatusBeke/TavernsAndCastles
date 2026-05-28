@@ -516,7 +516,8 @@ function saveMap() {
     };
 
     localStorage.setItem('rts_save_slot_1', JSON.stringify(saveGameData));
-    console.log("Hra (vrátane surovín) bola úspešne uložená!");
+    console.log("Hra bola úspešne uložená!");
+    //showWarning("Autosaving game", "yellow");
 }
 
 function loadMap() {
@@ -643,75 +644,7 @@ function loadMap() {
     console.log("Hra bola kompletne načítaná úspešne!");
     clampCamera();
 }
-// --- LOGIKA OBRANY SVETA (Pridaj do JS súboru hlavnej mapy) ---
 
-let worldEnemies = [];
-let isWorldUnderAttack = false;
-
-// 1. Kontrola URL pri načítaní stránky
-window.addEventListener('DOMContentLoaded', () => {
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.has('underAttack') && urlParams.get('underAttack') === 'true') {
-        isWorldUnderAttack = true;
-        alert("🚨 THE KEEP IS UNDER ATTACK! 🚨\nDefend your world!");
-        startWorldInvasion();
-    }
-});
-
-// 2. Spawnovanie nepriateľov z okrajov obrazovky
-function startWorldInvasion() {
-    setInterval(() => {
-        if (!isWorldUnderAttack) return;
-
-        let edge = Math.floor(Math.random() * 4);
-        let startX, startY;
-        
-        // Získame šírku a výšku aktuálneho okna (mapy)
-        let mapW = window.innerWidth; 
-        let mapH = window.innerHeight;
-
-        // 0 = Hore, 1 = Vpravo, 2 = Dole, 3 = Vľavo
-        if (edge === 0) { startX = Math.random() * mapW; startY = -50; } 
-        else if (edge === 1) { startX = mapW + 50; startY = Math.random() * mapH; } 
-        else if (edge === 2) { startX = Math.random() * mapW; startY = mapH + 50; } 
-        else { startX = -50; startY = Math.random() * mapH; } 
-
-        worldEnemies.push({
-            x: startX,
-            y: startY,
-            hp: 100,
-            speed: 1 + Math.random() * 0.5 // Rýchlosť pohybu po svete
-        });
-    }, 4000); // Každé 4 sekundy sa objaví nový nepriateľ
-}
-
-// 3. Toto pridaj do tvojej HLAVNEJ VYKRESLOVACEJ SLUČKY (draw loop) na mape sveta
-function updateAndDrawInvasion(ctx) {
-    if (!isWorldUnderAttack) return;
-
-    // Súradnice tvojej základne (Hradu) na mape sveta - Uprav podľa potreby!
-    let castleX = window.innerWidth / 2;
-    let castleY = window.innerHeight / 2;
-
-    for (let i = worldEnemies.length - 1; i >= 0; i--) {
-        let enemy = worldEnemies[i];
-
-        // Pohyb smerom k hradu/základni
-        let dx = castleX - enemy.x;
-        let dy = castleY - enemy.y;
-        let dist = Math.hypot(dx, dy);
-
-        if (dist > 50) { // Ak ešte nie sú úplne pri hrade
-            enemy.x += (dx / dist) * enemy.speed;
-            enemy.y += (dy / dist) * enemy.speed;
-        } else {
-            // TU NEPRIATEĽ DORAZIL K HRADU -> Môžeš odpočítať HP hradu
-            console.log("Nepriateľ útočí na hrad!");
-            // enemy.hp = 0; // Prípadne ho po útoku vymazať
-        }
-
-        // Vykreslenie nepriateľa na mape (nateraz ako červený obdĺžnik, môžeš nahradiť obrázkom)
-        ctx.fillStyle = "red";
-        ctx.fillRect(enemy.x - 10, enemy.y - 15, 20, 30);
-    }
-}
+//Autosave
+//updateHUD()
+//setInterval(saveMap, 10000);
